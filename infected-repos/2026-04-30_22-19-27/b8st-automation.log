@@ -1,0 +1,60 @@
+repo=branch8/b8st-automation
+BRANCH:main
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/b8st-automation
+  [verbose] Running git grep across 9 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/b8st-automation
+
+  Working Tree (32 finding(s)):
+  - .claude/skills/windmill-mcp-guide/SKILL.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/windmill-mcp-guide/SKILL.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-node-configuration/README.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-node-configuration/OPERATION_PATTERNS.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-node-configuration/OPERATION_PATTERNS.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-node-configuration/SKILL.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-node-configuration/SKILL.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-code-javascript/ERROR_PATTERNS.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-code-javascript/DATA_ACCESS.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-code-javascript/DATA_ACCESS.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-code-javascript/BUILTIN_FUNCTIONS.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-code-javascript/BUILTIN_FUNCTIONS.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-code-javascript/README.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-code-javascript/SKILL.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-code-javascript/SKILL.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-workflow-patterns/ai_agent_workflow.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-workflow-patterns/ai_agent_workflow.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-workflow-patterns/database_operations.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-workflow-patterns/README.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-workflow-patterns/README.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-workflow-patterns/webhook_processing.md: Shell/command execution reference in agent config — verify manually
+  - .claude/skills/n8n-workflow-patterns/webhook_processing.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-workflow-patterns/webhook_processing.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-workflow-patterns/http_api_integration.md: Shell/command execution reference in agent config — verify manually
+  - .claude/skills/n8n-workflow-patterns/http_api_integration.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-workflow-patterns/http_api_integration.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-workflow-patterns/SKILL.md: Shell/command execution reference in agent config — verify manually
+  - .claude/skills/n8n-workflow-patterns/SKILL.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-workflow-patterns/scheduled_tasks.md: Shell/command execution reference in agent config — verify manually
+  - .claude/skills/n8n-workflow-patterns/scheduled_tasks.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-code-python/ERROR_PATTERNS.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-code-python/DATA_ACCESS.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-code-python/STANDARD_LIBRARY.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-code-python/STANDARD_LIBRARY.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-code-python/README.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-code-python/SKILL.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-expression-syntax/EXAMPLES.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-expression-syntax/EXAMPLES.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-expression-syntax/COMMON_MISTAKES.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-expression-syntax/README.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-expression-syntax/SKILL.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-expression-syntax/SKILL.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-validation-expert/ERROR_CATALOG.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-validation-expert/FALSE_POSITIVES.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-validation-expert/FALSE_POSITIVES.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-validation-expert/README.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-validation-expert/README.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-mcp-tools-expert/README.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-mcp-tools-expert/SKILL.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-mcp-tools-expert/SEARCH_GUIDE.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/n8n-mcp-tools-expert/SEARCH_GUIDE.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/n8n-mcp-tools-expert/WORKFLOW_GUIDE.md: Credential access + exfiltration pattern in agent config

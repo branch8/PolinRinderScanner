@@ -1,0 +1,23 @@
+repo=branch8/hktb-demo
+BRANCH:main
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/hktb-demo
+  [verbose] Checking postcss.config.js
+  [verbose] Running git grep across 3 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/hktb-demo
+
+  Working Tree (7 finding(s)):
+  - postcss.config.js: Variant 1 payload (rmcej%otb%) detected
+  - postcss.config.js: Variant 1 decoder (_$_1e42) detected
+  - postcss.config.js: Variant 1 markers (global['!'] + seed) detected
+  - .claude/commands/tm/validate-dependencies.md: Prompt injection pattern (instruction override) detected
+  - .claude/commands/tm/remove-task.md: Prompt injection pattern (instruction override) detected
+  - .claude/commands/tm/remove-subtasks.md: Prompt injection pattern (instruction override) detected
+  - .claude/commands/tm/install-taskmaster.md: curl|bash command in IDE config — verify manually
+  - .claude/commands/tm/install-taskmaster.md: External URL in agent config — potential exfiltration vector
+  - .claude/commands/tm/install-taskmaster.md: Credential access + exfiltration pattern in agent config
+
+  Branch History (3 branch(es) infected):
+  - [git:main] postcss.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] postcss.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/main] postcss.config.js: variant 1 (rmcej%otb%)

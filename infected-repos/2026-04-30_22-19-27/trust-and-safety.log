@@ -1,0 +1,27 @@
+repo=branch8/trust-and-safety
+BRANCH:main
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/trust-and-safety
+  [verbose] Checking packages/frontend/next.config.js
+  [verbose] Running git grep across 14 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/trust-and-safety
+
+  Working Tree (3 finding(s)):
+  - packages/frontend/next.config.js: Variant 1 payload (rmcej%otb%) detected
+  - packages/frontend/next.config.js: Variant 1 decoder (_$_1e42) detected
+  - packages/frontend/next.config.js: Variant 1 markers (global['!'] + seed) detected
+
+  Branch History (3 branch(es) infected):
+  - [git:main] packages/frontend/next.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] packages/frontend/next.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/main] packages/frontend/next.config.js: variant 1 (rmcej%otb%)
+BRANCH:production
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/trust-and-safety
+  [verbose] Checking packages/frontend/next.config.js
+
+[INFECTED] .polinrider-tmp-1777562367/trust-and-safety
+
+  Working Tree (3 finding(s)):
+  - packages/frontend/next.config.js: Variant 1 payload (rmcej%otb%) detected
+  - packages/frontend/next.config.js: Variant 1 decoder (_$_1e42) detected
+  - packages/frontend/next.config.js: Variant 1 markers (global['!'] + seed) detected

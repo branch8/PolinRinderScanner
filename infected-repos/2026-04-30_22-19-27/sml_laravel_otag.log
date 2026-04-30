@@ -1,0 +1,18 @@
+repo=branch8/sml_laravel_otag
+BRANCH:master
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/sml_laravel_otag
+  [verbose] Running git grep across 115 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/sml_laravel_otag
+
+  Branch History (3 branch(es) infected):
+  - [git:staging] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/staging] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+BRANCH:staging
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/sml_laravel_otag
+
+[INFECTED] .polinrider-tmp-1777562367/sml_laravel_otag
+
+  Working Tree (1 finding(s)):
+  - public/fonts/fa-solid-400.woff2: Fake font file with variant 1 payload (rmcej%otb%)

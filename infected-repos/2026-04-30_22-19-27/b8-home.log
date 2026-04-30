@@ -1,0 +1,16 @@
+repo=branch8/b8-home
+BRANCH:main
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/b8-home
+  [verbose] Checking postcss.config.js
+  [verbose] Checking tailwind.config.mjs
+  [verbose] Checking next.config.js
+  [verbose] Running git grep across 5 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/b8-home
+
+  Working Tree (4 finding(s)):
+  - .claude/skills/b8-frontend/SKILL.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/b8-frontend/design-tokens.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/payload/SKILL.md: External URL in agent config — potential exfiltration vector
+  - .claude/skills/payload/SKILL.md: Credential access + exfiltration pattern in agent config
+  - .claude/skills/nextjs-performance/SKILL.md: External URL in agent config — potential exfiltration vector

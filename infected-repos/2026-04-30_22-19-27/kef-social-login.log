@@ -1,0 +1,11 @@
+repo=branch8/kef-social-login
+BRANCH:master
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/kef-social-login
+  [verbose] Running git grep across 3 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/kef-social-login
+
+  Branch History (3 branch(es) infected):
+  - [git:master] web-ui/jest.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] web-ui/jest.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/master] web-ui/jest.config.js: variant 1 (rmcej%otb%)

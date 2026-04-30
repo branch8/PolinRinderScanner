@@ -1,0 +1,17 @@
+repo=branch8/fe-project-me-shopify-merch
+BRANCH:main
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/fe-project-me-shopify-merch
+  [verbose] Checking next.config.js
+  [verbose] Running git grep across 9 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/fe-project-me-shopify-merch
+
+  Working Tree (3 finding(s)):
+  - next.config.js: Variant 1 payload (rmcej%otb%) detected
+  - next.config.js: Variant 1 decoder (_$_1e42) detected
+  - next.config.js: Variant 1 markers (global['!'] + seed) detected
+
+  Branch History (3 branch(es) infected):
+  - [git:main] next.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] next.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/main] next.config.js: variant 1 (rmcej%otb%)

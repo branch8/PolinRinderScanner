@@ -1,0 +1,18 @@
+repo=branch8/project-manageto-teachateau-frontend
+BRANCH:master
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/project-manageto-teachateau-frontend
+  [verbose] Checking postcss.config.js
+  [verbose] Checking tailwind.config.js
+  [verbose] Running git grep across 3 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/project-manageto-teachateau-frontend
+
+  Working Tree (3 finding(s)):
+  - tailwind.config.js: Variant 1 payload (rmcej%otb%) detected
+  - tailwind.config.js: Variant 1 decoder (_$_1e42) detected
+  - tailwind.config.js: Variant 1 markers (global['!'] + seed) detected
+
+  Branch History (3 branch(es) infected):
+  - [git:master] tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/master] tailwind.config.js: variant 1 (rmcej%otb%)

@@ -1,0 +1,17 @@
+repo=branch8/project-shopline-mcdonalds-merchandise-redemption
+BRANCH:main
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/project-shopline-mcdonalds-merchandise-redemption
+  [verbose] Running git grep across 63 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/project-shopline-mcdonalds-merchandise-redemption
+
+  Working Tree (1 finding(s)):
+  - public/fonts/fa-solid-400.woff2: Fake font file with variant 1 payload (rmcej%otb%)
+
+  Branch History (6 branch(es) infected):
+  - [git:main] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/bugfix/delivery-options-are-not-hidden] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/checkout-improvements] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/feature/add-metafield-to-show-hide-quantity-selector] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/main] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)

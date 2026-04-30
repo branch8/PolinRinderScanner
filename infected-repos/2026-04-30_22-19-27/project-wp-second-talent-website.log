@@ -1,0 +1,14 @@
+repo=branch8/project-wp-second-talent-website
+BRANCH:master
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/project-wp-second-talent-website
+  [verbose] Running git grep across 3 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/project-wp-second-talent-website
+
+  Branch History (6 branch(es) infected):
+  - [git:master] wp-content/plugins/wp-plugin-hostgator/tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:master] wp-content/plugins/wp-plugin-hostgator/vendor/newfold-labs/wp-module-patterns/css-utilities/tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] wp-content/plugins/wp-plugin-hostgator/tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] wp-content/plugins/wp-plugin-hostgator/vendor/newfold-labs/wp-module-patterns/css-utilities/tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/master] wp-content/plugins/wp-plugin-hostgator/tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/master] wp-content/plugins/wp-plugin-hostgator/vendor/newfold-labs/wp-module-patterns/css-utilities/tailwind.config.js: variant 1 (rmcej%otb%)

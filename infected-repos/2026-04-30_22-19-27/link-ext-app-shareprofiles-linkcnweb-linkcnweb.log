@@ -1,0 +1,11 @@
+repo=branch8/link-ext-app-shareprofiles-linkcnweb-linkcnweb
+BRANCH:master
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/link-ext-app-shareprofiles-linkcnweb-linkcnweb
+  [verbose] Running git grep across 6 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/link-ext-app-shareprofiles-linkcnweb-linkcnweb
+
+  Branch History (3 branch(es) infected):
+  - [git:hotfix] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/hotfix] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)

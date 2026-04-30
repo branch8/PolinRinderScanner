@@ -1,0 +1,14 @@
+repo=branch8/project-choco-up-frontend
+BRANCH:main
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/project-choco-up-frontend
+  [verbose] Running git grep across 3 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/project-choco-up-frontend
+
+  Branch History (6 branch(es) infected):
+  - [git:main-branch8] apps/dashboard-root/tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:main-branch8] libs/ui/tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] apps/dashboard-root/tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] libs/ui/tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/main-branch8] apps/dashboard-root/tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/main-branch8] libs/ui/tailwind.config.js: variant 1 (rmcej%otb%)

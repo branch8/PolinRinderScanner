@@ -1,0 +1,11 @@
+repo=branch8/project-shopify-qpet
+BRANCH:production
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/project-shopify-qpet
+  [verbose] Running git grep across 16 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/project-shopify-qpet
+
+  Branch History (3 branch(es) infected):
+  - [git:dev] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/dev] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)

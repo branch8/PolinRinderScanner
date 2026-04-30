@@ -1,0 +1,17 @@
+repo=branch8/liberte-bot
+BRANCH:main
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/liberte-bot
+  [verbose] Checking App.js
+  [verbose] Checking app.js
+  [verbose] Checking index.js
+  [verbose] Running git grep across 3 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/liberte-bot
+
+  Working Tree (1 finding(s)):
+  - public/fonts/fa-solid-400.woff2: Fake font file with variant 1 payload (rmcej%otb%)
+
+  Branch History (3 branch(es) infected):
+  - [git:main] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/main] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)

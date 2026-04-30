@@ -1,0 +1,12 @@
+repo=branch8/link-ext-app-linknamecard-link-linknamecard
+BRANCH:master
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/link-ext-app-linknamecard-link-linknamecard
+  [verbose] Checking tailwind.config.js
+  [verbose] Running git grep across 8 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/link-ext-app-linknamecard-link-linknamecard
+
+  Branch History (3 branch(es) infected):
+  - [git:docker_test] tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/docker_test] tailwind.config.js: variant 1 (rmcej%otb%)

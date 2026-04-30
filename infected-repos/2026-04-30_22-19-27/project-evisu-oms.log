@@ -1,0 +1,36 @@
+repo=branch8/project-evisu-oms
+BRANCH:main
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/project-evisu-oms
+  [verbose] Checking packages/ui/postcss.config.mjs
+  [verbose] Checking packages/ui/postcss.config.mjs
+  [verbose] Running git grep across 48 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/project-evisu-oms
+
+  Working Tree (6 finding(s)):
+  - packages/ui/postcss.config.mjs: Variant 1 payload (rmcej%otb%) detected
+  - packages/ui/postcss.config.mjs: Variant 1 decoder (_$_1e42) detected
+  - packages/ui/postcss.config.mjs: Variant 1 markers (global['!'] + seed) detected
+  - packages/ui/postcss.config.mjs: Variant 1 payload (rmcej%otb%) detected
+  - packages/ui/postcss.config.mjs: Variant 1 decoder (_$_1e42) detected
+  - packages/ui/postcss.config.mjs: Variant 1 markers (global['!'] + seed) detected
+
+  Branch History (4 branch(es) infected):
+  - [git:main] packages/ui/postcss.config.mjs: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] packages/ui/postcss.config.mjs: variant 1 (rmcej%otb%)
+  - [git:origin/main] packages/ui/postcss.config.mjs: variant 1 (rmcej%otb%)
+  - [git:origin/staging] packages/ui/postcss.config.mjs: variant 1 (rmcej%otb%)
+BRANCH:staging
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/project-evisu-oms
+  [verbose] Checking packages/ui/postcss.config.mjs
+  [verbose] Checking packages/ui/postcss.config.mjs
+
+[INFECTED] .polinrider-tmp-1777562367/project-evisu-oms
+
+  Working Tree (6 finding(s)):
+  - packages/ui/postcss.config.mjs: Variant 1 payload (rmcej%otb%) detected
+  - packages/ui/postcss.config.mjs: Variant 1 decoder (_$_1e42) detected
+  - packages/ui/postcss.config.mjs: Variant 1 markers (global['!'] + seed) detected
+  - packages/ui/postcss.config.mjs: Variant 1 payload (rmcej%otb%) detected
+  - packages/ui/postcss.config.mjs: Variant 1 decoder (_$_1e42) detected
+  - packages/ui/postcss.config.mjs: Variant 1 markers (global['!'] + seed) detected

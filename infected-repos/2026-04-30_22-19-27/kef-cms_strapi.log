@@ -1,0 +1,11 @@
+repo=branch8/kef-cms_strapi
+BRANCH:master
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/kef-cms_strapi
+  [verbose] Running git grep across 5 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/kef-cms_strapi
+
+  Branch History (3 branch(es) infected):
+  - [git:master] src-react/babel.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] src-react/babel.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/master] src-react/babel.config.js: variant 1 (rmcej%otb%)

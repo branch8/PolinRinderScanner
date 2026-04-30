@@ -1,0 +1,15 @@
+repo=branch8/kef-promo-app-frontend
+BRANCH:main
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/kef-promo-app-frontend
+  [verbose] Checking src/index.js
+  [verbose] Running git grep across 8 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/kef-promo-app-frontend
+
+  Working Tree (1 finding(s)):
+  - public/fonts/fa-solid-400.woff2: Fake font file with variant 1 payload (rmcej%otb%)
+
+  Branch History (3 branch(es) infected):
+  - [git:main] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/main] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)

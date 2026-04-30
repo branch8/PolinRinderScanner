@@ -1,0 +1,14 @@
+repo=branch8/project-magento2-pandatvmall
+BRANCH:master
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/project-magento2-pandatvmall
+  [verbose] Running git grep across 18 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/project-magento2-pandatvmall
+
+  Working Tree (1 finding(s)):
+  - public/fonts/fa-solid-400.woff2: Fake font file with variant 1 payload (rmcej%otb%)
+
+  Branch History (3 branch(es) infected):
+  - [git:master] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)
+  - [git:origin/master] public/fonts/fa-solid-400.woff2: variant 1 (rmcej%otb%)

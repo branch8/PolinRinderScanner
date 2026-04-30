@@ -1,0 +1,11 @@
+repo=branch8/project-magento2-katun
+BRANCH:production
+  [verbose] Scanning repo: .polinrider-tmp-1777562367/project-magento2-katun
+  [verbose] Running git grep across 51 branch(es)
+
+[INFECTED] .polinrider-tmp-1777562367/project-magento2-katun
+
+  Branch History (3 branch(es) infected):
+  - [git:production] live-search/storefront-product-listing-page/tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/HEAD] live-search/storefront-product-listing-page/tailwind.config.js: variant 1 (rmcej%otb%)
+  - [git:origin/production] live-search/storefront-product-listing-page/tailwind.config.js: variant 1 (rmcej%otb%)
