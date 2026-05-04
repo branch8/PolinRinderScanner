@@ -1,0 +1,13 @@
+[2026-05-04 14:06:44] PolinRider Fast Scanner v3.0 started
+[2026-05-04 14:06:45] GitHub owners: branch8
+[2026-05-04 14:06:45] Workers: 10, Clone delay: 0.5s
+[2026-05-04 14:06:45] [branch8] Listing repositories...
+[2026-05-04 14:06:47] [branch8] Found 162 repositories
+[2026-05-04 14:06:47] [branch8] Scanning with 10 parallel workers, 0.5s delay
+[2026-05-04 14:21:24] [branch8] Complete: 162 repos, 124 infected, 38 clean
+[2026-05-04 14:21:31] JSON report saved to logs/result.json
+[2026-05-04 14:21:34] [branch8] Report saved to logs/report-fast-github-branch8-2026-05-04_14-21-31.txt
+[2026-05-04 14:21:40] JSON report saved to logs/result.json
+[2026-05-04 14:21:40] Scan complete. Duration: 14m56s
+[2026-05-04 14:21:40] Total repos: 162, Infected: 124
+[2026-05-04 14:21:47] JSON report saved to logs/result.json

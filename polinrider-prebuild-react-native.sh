@@ -1,7 +1,6 @@
 #!/bin/bash
 #
 # PolinRider Pre-Build Scanner for React Native v1.2
-# https://opensourcemalware.com
 #
 # Scans a React Native project for PolinRider / TasksJacker malware
 # before allowing the build/archive to proceed.
