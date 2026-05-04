@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# PolinRider Pre-Build Scanner for React Native v1.2
+# PolinRider Pre-Build Scanner for React Native v1.3
 #
 # Scans a React Native project for PolinRider / TasksJacker malware
 # before allowing the build/archive to proceed.
@@ -31,7 +31,7 @@
 
 set -u
 
-VERSION="1.2"
+VERSION="1.3"
 FINDING_COUNT=0
 FINDINGS=""
 SCAN_ERRORS=0
@@ -233,6 +233,8 @@ check_file_signatures() {
     if grep -qF "$V1_GLOBAL" "$filepath" 2>/dev/null; then
         if grep -qF "$V1_SEED" "$filepath" 2>/dev/null || grep -qF "$V1_SEED2" "$filepath" 2>/dev/null; then
             add_finding "HIGH" "${label}: Variant 1 markers (global['!'] + seed)"
+        else
+            add_finding "HIGH" "${label}: PolinRider global['!'] assignment (variant 1 marker)"
         fi
     fi
 
@@ -243,6 +245,8 @@ check_file_signatures() {
     if grep -qF "$V2_GLOBAL" "$filepath" 2>/dev/null; then
         if grep -qF "$V2_SEED" "$filepath" 2>/dev/null || grep -qF "$V2_SEED2" "$filepath" 2>/dev/null || grep -qF "$V2_DECODER" "$filepath" 2>/dev/null; then
             add_finding "HIGH" "${label}: Variant 2 markers (global['_V'] + seed/decoder)"
+        else
+            add_finding "HIGH" "${label}: PolinRider global['_V'] assignment (variant 2 marker)"
         fi
     fi
 

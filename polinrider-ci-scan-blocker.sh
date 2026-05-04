@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# PolinRider Pre-Build Scanner v1.0
+# PolinRider Pre-Build Scanner v1.1
 # https://opensourcemalware.com
 #
 # Lightweight source-code scanner designed for CI/CD pipelines.
@@ -18,7 +18,7 @@
 
 set -u
 
-VERSION="1.0"
+VERSION="1.1"
 SCAN_DIR="${1:-.}"
 FINDING_COUNT=0
 FINDINGS=""
@@ -133,6 +133,8 @@ check_file_signatures() {
     if grep -qF "$V1_GLOBAL" "$filepath" 2>/dev/null; then
         if grep -qF "$V1_SEED" "$filepath" 2>/dev/null || grep -qF "$V1_SEED2" "$filepath" 2>/dev/null; then
             add_finding "HIGH" "${label}: Variant 1 markers (global['!'] + seed)"
+        else
+            add_finding "HIGH" "${label}: PolinRider global['!'] assignment (variant 1 marker)"
         fi
     fi
 
@@ -143,6 +145,8 @@ check_file_signatures() {
     if grep -qF "$V2_GLOBAL" "$filepath" 2>/dev/null; then
         if grep -qF "$V2_SEED" "$filepath" 2>/dev/null || grep -qF "$V2_SEED2" "$filepath" 2>/dev/null || grep -qF "$V2_DECODER" "$filepath" 2>/dev/null; then
             add_finding "HIGH" "${label}: Variant 2 markers (global['_V'] + seed/decoder)"
+        else
+            add_finding "HIGH" "${label}: PolinRider global['_V'] assignment (variant 2 marker)"
         fi
     fi
 
