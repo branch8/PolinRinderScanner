@@ -1,0 +1,27 @@
+name: PolinRider Security Scan
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  scan:
+    name: Scan for malicious code injection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download PolinRider pre-build scanner
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/branch8/PolinRinderScanner/main/polinrider-prebuild-adobe-cloud.sh \
+            -o polinrider-prebuild.sh
+          chmod +x polinrider-prebuild.sh
+
+      - name: Run scanner
+        run: ./polinrider-prebuild.sh
