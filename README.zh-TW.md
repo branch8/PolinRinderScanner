@@ -1,6 +1,8 @@
-# Branch8 PolinRider Scanner — 使用說明
+# Branch8 PolinRider Scanner
 
-本 repo fork 自 [OpenSourceMalware/PolinRider](https://opensourcemalware.com)，在官方掃描腳本基礎上新增適合 Branch8 工作流程的工具。威脅背景與技術細節請見 [README.md](README.md)。
+[English](README.md) | [繁體中文](README.zh-TW.md)
+
+本 repo fork 自 [OpenSourceMalware/PolinRider](README-OFFICIAL.md)，在官方掃描腳本基礎上新增適合 Branch8 工作流程的工具。威脅背景與技術細節請見 [README-OFFICIAL.md](README-OFFICIAL.md)。
 
 ---
 
@@ -8,7 +10,7 @@
 
 | 檔案 | 說明 |
 |---|---|
-| `polinrider-scanner-fast.sh` | 主力掃描工具。bare clone + git grep，一次掃所有 branch，無需 checkout，支援平行 worker |
+| `polinrider-scanner-fast.sh` | **主力掃描工具**。bare clone + git grep，一次掃所有 branch，無需 checkout，支援平行 worker |
 | `polinrider-scanner-fast-progress.sh` | 同上，附即時 progress bar |
 | `polinrider-ci-scan-blocker.sh` | CI/CD 守門器。掃 working tree，有感染就 exit 1 block build |
 | `polinrider-prebuild-react-native.sh` | React Native 專案用，可整合進 Xcode Build Phase |
@@ -61,7 +63,7 @@
 
 ## 部署 GitHub Action 到各 repo
 
-`.github/workflows/polinrider-scan.yml` 是各 repo 的 CI 守門模板。部署後每次 push / PR 自動從本 repo 下載最新版 `polinrider-ci-scan-blocker.sh` 執行，**不需要手動同步 signature**。
+`.github/workflows/polinrider-scan.yml` 是 CI 守門模板。部署後每次 push / PR 自動從本 repo 下載最新版 `polinrider-ci-scan-blocker.sh` 執行，**不需要手動同步 signature**。
 
 **單一 repo：** 複製 `.github/workflows/polinrider-scan.yml` 到目標 repo 的同路徑即可。
 
@@ -98,5 +100,6 @@ done
 3. 刪除 `temp_auto_push.bat`、`config.bat`（若存在）
 4. 移除 `.gitignore` 裡的 `config.bat` 條目
 5. 移除 `package.json` 裡的惡意 npm 套件並重跑 `npm install`
-6. Force push 乾淨版本到 GitHub
-7. **所有曾在感染環境跑過 build 的開發者**：輪換 GitHub token 及 SSH key
+6. 刪除掃描器標記的 `.woff2` / `.woff` 字型檔
+7. Force push 乾淨版本到 GitHub
+8. **所有曾在感染環境跑過 build 的開發者**：輪換 GitHub token 及 SSH key
