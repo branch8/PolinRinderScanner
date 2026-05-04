@@ -27,7 +27,9 @@ param(
     [string]$Path,
     [switch]$FullSystem,
     [switch]$Quick,
-    [switch]$JsAll
+    [switch]$JsAll,
+    [string]$ReportKey,
+    [string]$ReportChannel
 )
 
 Set-StrictMode -Version Latest
@@ -135,7 +137,15 @@ $script:ActiveC2Conns  = [System.Collections.ArrayList]::new()
 $script:SuspiciousProcs = [System.Collections.ArrayList]::new()
 $script:StealerArtifactsFound = $false
 $script:RiskScore      = 0
+$script:RiskLevel      = 'NONE'
 $script:ModuleStatus   = [ordered]@{}
+
+# -------------------------------------------------------------------------
+# JSON report data collectors
+# -------------------------------------------------------------------------
+$script:ReportFindings    = [System.Collections.ArrayList]::new()
+$script:ReportInfectedRepos = [ordered]@{}
+$script:CurrentRepoDir    = ''
 
 # -------------------------------------------------------------------------
 # Utility functions
@@ -177,11 +187,29 @@ function Write-Section ([string]$Tag, [string]$Msg) {
 function Add-RepoFinding ([string]$Label, [string]$Detail, [string]$Severity) {
     $color = if ($Severity -eq 'HIGH') { 'Red' } else { 'Yellow' }
     Write-Host "  - $Label : $Detail" -ForegroundColor $color
+
+    $repoDir = $script:CurrentRepoDir
+    if ($repoDir) {
+        if (-not $script:ReportInfectedRepos.Contains($repoDir)) {
+            $script:ReportInfectedRepos[$repoDir] = [System.Collections.ArrayList]::new()
+        }
+        $null = $script:ReportInfectedRepos[$repoDir].Add([ordered]@{
+            file        = $Label
+            description = $Detail
+            severity    = $Severity
+        })
+    }
 }
 
 function Add-SystemFinding ([string]$Category, [string]$Detail) {
     $script:SystemFindings++
     $null = $script:Findings.Add("[$Category] $Detail")
+    $null = $script:ReportFindings.Add([ordered]@{
+        category      = $Category
+        severity      = 'HIGH'
+        detail        = $Detail
+        timestamp_utc = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+    })
     Write-Host "  - [$Category] $Detail" -ForegroundColor Red
 }
 
@@ -255,6 +283,7 @@ function Test-FileForSignatures ([string]$FilePath, [string]$Label) {
 # -------------------------------------------------------------------------
 function Scan-Repo ([string]$RepoDir) {
     $script:TotalRepos++
+    $script:CurrentRepoDir = $RepoDir
     $findingCount = 0
     Write-Verbose "Scanning repo: $RepoDir"
 
@@ -522,6 +551,7 @@ function Scan-Repo ([string]$RepoDir) {
     } else {
         Write-Verbose "Clean: $RepoDir"
     }
+    $script:CurrentRepoDir = ''
     return $findingCount
 }
 
@@ -1363,6 +1393,7 @@ function Write-RiskAssessment {
     $script:RiskScore = $score
 
     # --- Risk level ---
+    $level = 'LOW'
     if ($score -ge 70) {
         $level = 'CRITICAL'
         $color = 'Red'
@@ -1384,6 +1415,7 @@ function Write-RiskAssessment {
         $bar = '[' + ('#' * $filled) + ('-' * (10 - $filled)) + ']'
     }
 
+    $script:RiskLevel = $level
     Write-Host "  Risk Level:  $level ($score/100)  $bar" -ForegroundColor $color
     Write-Host ''
     Write-Host '  Scoring factors:' -ForegroundColor White
@@ -1538,6 +1570,249 @@ function Write-Remediation {
 }
 
 # =========================================================================
+#  JSON REPORT
+# =========================================================================
+function Get-SystemInfo {
+    $cs = Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue
+    $os = Get-CimInstance Win32_OperatingSystem -ErrorAction SilentlyContinue
+    $sid = ([System.Security.Principal.WindowsIdentity]::GetCurrent()).User.Value
+
+    return [ordered]@{
+        hostname           = $env:COMPUTERNAME
+        username           = $env:USERNAME
+        domain             = $env:USERDOMAIN
+        os_version         = if ($os) { "$($os.Caption) $($os.Version)" } else { [System.Environment]::OSVersion.VersionString }
+        powershell_version = "$($PSVersionTable.PSVersion)"
+        user_sid           = $sid
+    }
+}
+
+function New-JsonReport ([int]$ExitCode, [timespan]$Duration) {
+    $scanMode = if ($Quick) { 'Quick' } elseif ($FullSystem) { 'FullSystem' } else { 'RepoScan' }
+
+    $infectedReposList = [System.Collections.ArrayList]::new()
+    foreach ($entry in $script:ReportInfectedRepos.GetEnumerator()) {
+        $null = $infectedReposList.Add([ordered]@{
+            path          = $entry.Key
+            finding_count = $entry.Value.Count
+            details       = @($entry.Value)
+        })
+    }
+
+    $modulesOk = @($script:ModuleStatus.GetEnumerator() | Where-Object { $_.Value.Status -eq 'OK' })
+    $modulesFailed = [System.Collections.ArrayList]::new()
+    foreach ($m in ($script:ModuleStatus.GetEnumerator() | Where-Object { $_.Value.Status -ne 'OK' })) {
+        $null = $modulesFailed.Add([ordered]@{ name = $m.Key; error = $m.Value.Detail })
+    }
+
+    $report = [ordered]@{
+        report_metadata = [ordered]@{
+            report_id            = [guid]::NewGuid().ToString()
+            scanner_version      = '1.3'
+            scan_mode            = $scanMode
+            scan_timestamp_utc   = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+            scan_duration_seconds = [math]::Round($Duration.TotalSeconds, 1)
+            exit_code            = $ExitCode
+        }
+        system_info     = Get-SystemInfo
+        scan_summary    = [ordered]@{
+            total_repos_scanned    = $script:TotalRepos
+            infected_repos         = $script:InfectedRepos
+            system_findings_count  = $script:SystemFindings
+            risk_score             = $script:RiskScore
+            risk_level             = $script:RiskLevel
+        }
+        findings        = @($script:ReportFindings)
+        infected_repos  = @($infectedReposList)
+        dns_investigation = [ordered]@{
+            c2_domains_hit          = @($script:DnsC2Hits)
+            blockchain_endpoints_hit = @($script:DnsBlockchain)
+            exfil_channels_hit      = @($script:DnsExfil)
+            active_c2_connections   = @($script:ActiveC2Conns)
+            suspicious_processes    = @($script:SuspiciousProcs)
+        }
+        scan_coverage   = [ordered]@{
+            modules_run            = $script:ModuleStatus.Count
+            modules_ok             = $modulesOk.Count
+            modules_failed         = @($modulesFailed)
+            user_profiles_scanned  = @(Get-AllUserProfiles | ForEach-Object { Split-Path $_ -Leaf })
+        }
+    }
+    return $report
+}
+
+# -------------------------------------------------------------------------
+# Telegram reporting
+# -------------------------------------------------------------------------
+$TG_BOT_TOKEN = $ReportKey
+$TG_CHAT_ID   = $ReportChannel
+$TG_API_BASE  = "https://api.telegram.org/bot$TG_BOT_TOKEN"
+$TG_MAX_RETRIES = 3
+$TG_RETRY_DELAY = 5
+
+function Send-TelegramMessage ([string]$Text) {
+    $uri = "$TG_API_BASE/sendMessage"
+    $body = @{
+        chat_id    = $TG_CHAT_ID
+        text       = $Text
+        parse_mode = 'HTML'
+    }
+    for ($i = 1; $i -le $TG_MAX_RETRIES; $i++) {
+        try {
+            $null = Invoke-RestMethod -Uri $uri -Method Post -Body $body -ErrorAction Stop
+            return $true
+        } catch {
+            Write-Host "  Telegram message attempt $i/$TG_MAX_RETRIES failed: $($_.Exception.Message)" -ForegroundColor Yellow
+            if ($i -lt $TG_MAX_RETRIES) { Start-Sleep -Seconds $TG_RETRY_DELAY }
+        }
+    }
+    return $false
+}
+
+function Send-TelegramDocument ([string]$FilePath, [string]$Caption) {
+    $uri = "$TG_API_BASE/sendDocument"
+    $fileBytes = [System.IO.File]::ReadAllBytes($FilePath)
+    $fileName  = [System.IO.Path]::GetFileName($FilePath)
+    $boundary  = [guid]::NewGuid().ToString()
+    $nl        = "`r`n"
+
+    $bodyLines = @(
+        "--$boundary",
+        "Content-Disposition: form-data; name=`"chat_id`"$nl",
+        $TG_CHAT_ID,
+        "--$boundary",
+        "Content-Disposition: form-data; name=`"caption`"$nl",
+        $Caption,
+        "--$boundary",
+        "Content-Disposition: form-data; name=`"parse_mode`"$nl",
+        "HTML",
+        "--$boundary",
+        "Content-Disposition: form-data; name=`"document`"; filename=`"$fileName`"",
+        "Content-Type: application/json$nl"
+    )
+    $headerBytes = [System.Text.Encoding]::UTF8.GetBytes(($bodyLines -join $nl) + $nl)
+    $footerBytes = [System.Text.Encoding]::UTF8.GetBytes("$nl--$boundary--$nl")
+
+    $bodyStream = [System.IO.MemoryStream]::new()
+    $bodyStream.Write($headerBytes, 0, $headerBytes.Length)
+    $bodyStream.Write($fileBytes, 0, $fileBytes.Length)
+    $bodyStream.Write($footerBytes, 0, $footerBytes.Length)
+    $fullBody = $bodyStream.ToArray()
+    $bodyStream.Close()
+
+    for ($i = 1; $i -le $TG_MAX_RETRIES; $i++) {
+        try {
+            $null = Invoke-RestMethod -Uri $uri -Method Post -Body $fullBody `
+                -ContentType "multipart/form-data; boundary=$boundary" -ErrorAction Stop
+            return $true
+        } catch {
+            Write-Host "  Telegram file upload attempt $i/$TG_MAX_RETRIES failed: $($_.Exception.Message)" -ForegroundColor Yellow
+            if ($i -lt $TG_MAX_RETRIES) { Start-Sleep -Seconds $TG_RETRY_DELAY }
+        }
+    }
+    return $false
+}
+
+function Send-TelegramReport ([hashtable]$Report, [string]$ReportFilePath) {
+    if (-not $TG_BOT_TOKEN -or -not $TG_CHAT_ID) { return }
+    Write-Host ''
+    Write-Host '  Sending report to Telegram...' -ForegroundColor Cyan
+
+    $si = $Report.system_info
+    $ss = $Report.scan_summary
+    $rm = $Report.report_metadata
+    $rl = $ss.risk_level
+
+    $emoji = switch ($rl) {
+        'CRITICAL' { [char]0x1F534 }
+        'HIGH'     { [char]0x1F7E0 }
+        'MEDIUM'   { [char]0x1F7E1 }
+        'LOW'      { [char]0x1F7E2 }
+        default    { [char]0x2705  }
+    }
+
+    $statusLine = if ($ss.infected_repos -gt 0 -or $ss.system_findings_count -gt 0) {
+        "$emoji <b>INFECTIONS DETECTED</b>"
+    } else {
+        "$emoji <b>CLEAN</b>"
+    }
+
+    $summaryText = @(
+        "<b>PolinRider Scan Report</b> (v$($rm.scanner_version))",
+        "━━━━━━━━━━━━━━━━━━━━",
+        $statusLine,
+        "",
+        "<b>System:</b>",
+        "  Host: <code>$($si.hostname)</code>",
+        "  User: <code>$($si.domain)\$($si.username)</code>",
+        "  OS: <code>$($si.os_version)</code>",
+        "  SID: <code>$($si.user_sid)</code>",
+        "",
+        "<b>Results:</b>",
+        "  Repos scanned: $($ss.total_repos_scanned)",
+        "  Infected repos: $($ss.infected_repos)",
+        "  System findings: $($ss.system_findings_count)",
+        "  Risk score: <b>$($ss.risk_score)/100 ($rl)</b>",
+        "",
+        "<b>Scan:</b>",
+        "  Mode: $($rm.scan_mode)",
+        "  Duration: $($rm.scan_duration_seconds)s",
+        "  Time (UTC): $($rm.scan_timestamp_utc)",
+        "  Report ID: <code>$($rm.report_id)</code>"
+    ) -join "`n"
+
+    $msgOk = Send-TelegramMessage -Text $summaryText
+    if ($msgOk) {
+        Write-Host '  Summary sent to Telegram.' -ForegroundColor Green
+    } else {
+        Write-Host '  Failed to send summary to Telegram after retries.' -ForegroundColor Red
+    }
+
+    if ($ReportFilePath -and (Test-Path $ReportFilePath)) {
+        $caption = "$emoji Report: $($si.hostname) | $rl | $($rm.scan_timestamp_utc)"
+        $fileOk = Send-TelegramDocument -FilePath $ReportFilePath -Caption $caption
+        if ($fileOk) {
+            Write-Host '  Report file sent to Telegram.' -ForegroundColor Green
+        } else {
+            Write-Host '  Failed to send report file to Telegram after retries.' -ForegroundColor Red
+        }
+    }
+}
+
+# -------------------------------------------------------------------------
+# Export report + send to Telegram
+# -------------------------------------------------------------------------
+function Export-ScanReport ([int]$ExitCode, [timespan]$Duration) {
+    $report = New-JsonReport -ExitCode $ExitCode -Duration $Duration
+    $hostname = $env:COMPUTERNAME
+    $ts = (Get-Date).ToString('yyyyMMdd-HHmmss')
+    $fileName = "polinrider-report-${hostname}-${ts}.json"
+    $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
+    $filePath = Join-Path $scriptDir $fileName
+    $savedPath = $null
+
+    try {
+        $json = $report | ConvertTo-Json -Depth 10 -Compress:$false
+        [System.IO.File]::WriteAllText($filePath, $json, [System.Text.Encoding]::UTF8)
+        $savedPath = $filePath
+        Write-Host ''
+        Write-Host "  Report saved: $filePath" -ForegroundColor Cyan
+    } catch {
+        Write-Host "  WARNING: Failed to save report: $($_.Exception.Message)" -ForegroundColor Yellow
+        $fallback = Join-Path $env:TEMP $fileName
+        try {
+            [System.IO.File]::WriteAllText($fallback, $json, [System.Text.Encoding]::UTF8)
+            $savedPath = $fallback
+            Write-Host "  Report saved to fallback: $fallback" -ForegroundColor Cyan
+        } catch {
+            Write-Host "  ERROR: Could not save report anywhere: $($_.Exception.Message)" -ForegroundColor Red
+        }
+    }
+
+    Send-TelegramReport -Report $report -ReportFilePath $savedPath
+}
+
+# =========================================================================
 #  MAIN
 # =========================================================================
 Write-Banner
@@ -1596,11 +1871,13 @@ if ($Quick) {
 
         Write-Remediation
         Write-ScanCoverage
+        Export-ScanReport -ExitCode 1 -Duration ((Get-Date) - $startTime)
         exit 1
     } else {
         Write-Host '  RESULTS: No active threats detected' -ForegroundColor Green
         Write-Host '================================================' -ForegroundColor White
         Write-ScanCoverage
+        Export-ScanReport -ExitCode 0 -Duration ((Get-Date) - $startTime)
         exit 0
     }
 }
@@ -1644,6 +1921,7 @@ if (-not $Path) { $Path = '.' }
 $Path = (Resolve-Path $Path -ErrorAction SilentlyContinue).Path
 if (-not $Path -or -not (Test-Path $Path -PathType Container)) {
     Write-Host "Error: Directory not found: $Path" -ForegroundColor Red
+    Export-ScanReport -ExitCode 2 -Duration ((Get-Date) - $startTime)
     exit 2
 }
 
@@ -1714,6 +1992,7 @@ if ($totalIssues -gt 0) {
     Write-Remediation
     Write-ScanCoverage
     Write-Host "Scan complete in $([math]::Floor($duration.TotalMinutes))m$($duration.Seconds)s"
+    Export-ScanReport -ExitCode 1 -Duration $duration
     exit 1
 } else {
     Write-Host '  RESULTS: No infections found' -ForegroundColor Green
@@ -1721,5 +2000,6 @@ if ($totalIssues -gt 0) {
     Write-ScanCoverage
     Write-Host ''
     Write-Host "Scan complete in $([math]::Floor($duration.TotalMinutes))m$($duration.Seconds)s"
+    Export-ScanReport -ExitCode 0 -Duration $duration
     exit 0
 }
