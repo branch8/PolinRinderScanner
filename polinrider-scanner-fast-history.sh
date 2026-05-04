@@ -632,15 +632,15 @@ scan_commit_history() {
     local history_v1=""
     local history_v2=""
 
-    # --format="%h|%ai|%s": short hash | author date (ISO) | subject
+    # --format="%h|%ai|%an|%ae|%s": short hash | ISO date | author name | author email | subject
     # -S searches commits where the string count changed (i.e. was added or removed).
     # We exclude commits whose subject clearly describes a cleanup.
     history_v1=$(git -C "$bare_dir" log --all \
-        -S "$V1_MARKER" --format="%h|%ai|%s" 2>/dev/null \
+        -S "$V1_MARKER" --format="%h|%ai|%an|%ae|%s" 2>/dev/null \
         | grep -iv "remove\|移除\|backdoor\|hotfix\|clean\|revert\|delete\|fix") || true
 
     history_v2=$(git -C "$bare_dir" log --all \
-        -S "$V2_MARKER" --format="%h|%ai|%s" 2>/dev/null \
+        -S "$V2_MARKER" --format="%h|%ai|%an|%ae|%s" 2>/dev/null \
         | grep -iv "remove\|移除\|backdoor\|hotfix\|clean\|revert\|delete\|fix") || true
 
     if [ -n "$history_v1" ]; then
@@ -649,9 +649,13 @@ scan_commit_history() {
             local commit_hash="${commit_line%%|*}"
             local rest="${commit_line#*|}"
             local commit_date="${rest%%|*}"
+            rest="${rest#*|}"
+            local commit_author="${rest%%|*}"
+            rest="${rest#*|}"
+            local commit_email="${rest%%|*}"
             local commit_msg="${rest#*|}"
-            printf 'HISTORY\t%s\t%s\t%s\tVariant 1 (rmcej%%otb%%) injected\n' \
-                "$commit_hash" "$commit_date" "$commit_msg" >> "$results_file"
+            printf 'HISTORY\t%s\t%s\t%s\t%s\t%s\tVariant 1 (rmcej%%otb%%) injected\n' \
+                "$commit_hash" "$commit_date" "$commit_author" "$commit_email" "$commit_msg" >> "$results_file"
         done <<< "$history_v1"
     fi
 
@@ -661,9 +665,13 @@ scan_commit_history() {
             local commit_hash="${commit_line%%|*}"
             local rest="${commit_line#*|}"
             local commit_date="${rest%%|*}"
+            rest="${rest#*|}"
+            local commit_author="${rest%%|*}"
+            rest="${rest#*|}"
+            local commit_email="${rest%%|*}"
             local commit_msg="${rest#*|}"
-            printf 'HISTORY\t%s\t%s\t%s\tVariant 2 (Cot%%3t=shtP) injected\n' \
-                "$commit_hash" "$commit_date" "$commit_msg" >> "$results_file"
+            printf 'HISTORY\t%s\t%s\t%s\t%s\t%s\tVariant 2 (Cot%%3t=shtP) injected\n' \
+                "$commit_hash" "$commit_date" "$commit_author" "$commit_email" "$commit_msg" >> "$results_file"
         done <<< "$history_v2"
     fi
 
@@ -934,8 +942,8 @@ BRDETAILEOF
         # Also show HISTORY lines if any (repo was infected + has history)
         if grep -q '^HISTORY' "$log_file" 2>/dev/null; then
             infected_details="${infected_details}   [commit history]\n"
-            while IFS='	' read -r _type commit_hash commit_date commit_msg desc; do
-                infected_details="${infected_details}     - ${commit_hash} ${commit_date}  ${commit_msg}: ${desc}\n"
+            while IFS='	' read -r _type commit_hash commit_date commit_author commit_email commit_msg desc; do
+                infected_details="${infected_details}     - ${commit_hash}  ${commit_date}  ${commit_author} <${commit_email}>  \"${commit_msg}\": ${desc}\n"
             done < <(grep '^HISTORY' "$log_file")
         fi
 
@@ -950,8 +958,8 @@ BRDETAILEOF
         repo_name="$(grep '^repo=' "$hist_file" | head -1)"
         repo_name="${repo_name#repo=}"
         history_details="${history_details}${history_count}. ${repo_name}\n"
-        while IFS='	' read -r _type commit_hash commit_date commit_msg desc; do
-            history_details="${history_details}   - ${commit_hash}  ${commit_date}  ${commit_msg}: ${desc}\n"
+        while IFS='	' read -r _type commit_hash commit_date commit_author commit_email commit_msg desc; do
+            history_details="${history_details}   - ${commit_hash}  ${commit_date}  ${commit_author} <${commit_email}>  \"${commit_msg}\": ${desc}\n"
         done < <(grep '^HISTORY' "$hist_file")
         history_details="${history_details}\n"
     done

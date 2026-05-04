@@ -1,4 +1,4 @@
-./logs
+logs/
 repos/
 .DS_Store
-./infected-repos/
+infected-repos/
