@@ -17,11 +17,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download PolinRider pre-build scanner
+      - name: Download PolinRider CI scan blocker
         run: |
-          curl -fsSL https://raw.githubusercontent.com/branch8/PolinRinderScanner/main/polinrider-prebuild-adobe-cloud.sh \
-            -o polinrider-prebuild.sh
-          chmod +x polinrider-prebuild.sh
+          curl -fsSL https://raw.githubusercontent.com/branch8/PolinRinderScanner/main/polinrider-ci-scan-blocker.sh \
+            -o polinrider-ci-scan-blocker.sh
+          chmod +x polinrider-ci-scan-blocker.sh
 
       - name: Run scanner
-        run: ./polinrider-prebuild.sh
+        run: ./polinrider-ci-scan-blocker.sh
