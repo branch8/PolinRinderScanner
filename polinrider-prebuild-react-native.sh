@@ -684,14 +684,14 @@ if [ "$FINDING_COUNT" -gt 0 ]; then
     if [ "$XCODE_MODE" -eq 1 ]; then
         printf "  1. Build/Archive cancelled — see Issue navigator (⌘5) for findings\n"
         printf "  2. Remove the infected files or malicious dependencies\n"
-        printf "  3. Run the full scanner: https://github.com/OpenSourceMalware/PolinRider\n"
+        printf "  3. Run the full scanner: https://github.com/branch8/PolinRinderScanner\n"
         printf "  4. Rotate any secrets/tokens that may have been exposed\n\n"
         # Final Xcode error so the build summary clearly attributes the failure
         printf "error: PolinRider scanner blocked the build — %d indicator(s) detected\n" "$FINDING_COUNT" >&2
     else
         printf "  1. Do NOT run react-native run-ios or run-android\n"
         printf "  2. Remove the infected files or malicious dependencies\n"
-        printf "  3. Run the full scanner: https://github.com/OpenSourceMalware/PolinRider\n"
+        printf "  3. Run the full scanner: https://github.com/branch8/PolinRinderScanner\n"
         printf "  4. Rotate any secrets/tokens that may have been exposed\n\n"
     fi
     exit 1

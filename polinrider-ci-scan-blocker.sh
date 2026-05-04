@@ -393,7 +393,7 @@ if [ "$FINDING_COUNT" -gt 0 ]; then
     printf "${BOLD}Findings:${RESET}\n"
     printf "$FINDINGS"
     printf "\n${BOLD}Action required:${RESET} Remove malware before building.\n"
-    printf "Full scanner: https://github.com/OpenSourceMalware/PolinRider\n\n"
+    printf "Full scanner: https://github.com/branch8/PolinRinderScanner\n\n"
     exit 1
 else
     printf "  ${GREEN}${BOLD}CLEAN: No PolinRider indicators found — build may proceed${RESET}\n"
