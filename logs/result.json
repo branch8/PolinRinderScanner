@@ -1,0 +1,1789 @@
+[
+  {
+    "repository": "branch8/all-in-tracker",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/b8-home",
+    "infected": true,
+    "infected_files": {
+      "src/payload.config.ts": "child_process.spawn with detached/hidden execution"
+    },
+    "infected_branches": {
+      "main": {
+        "src/payload.config.ts": "child_process.spawn with detached/hidden execution"
+      },
+      "staging": {
+        "src/payload.config.ts": "child_process.spawn with detached/hidden execution"
+      }
+    }
+  },
+  {
+    "repository": "branch8/b8st-automation",
+    "infected": true,
+    "infected_files": {
+      "claudedocs/INCIDENT_VM_INVESTIGATION_2026-04-29.md": "Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG",
+      "claudedocs/team-notification-2026-04-30.md": "Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP"
+    },
+    "infected_branches": {
+      "main": {
+        "claudedocs/INCIDENT_VM_INVESTIGATION_2026-04-29.md": "Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG",
+        "claudedocs/team-notification-2026-04-30.md": "Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP"
+      },
+      "seo/b8-locale-cleanup": {
+        "claudedocs/INCIDENT_VM_INVESTIGATION_2026-04-29.md": "Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG",
+        "claudedocs/team-notification-2026-04-30.md": "Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP"
+      }
+    }
+  },
+  {
+    "repository": "branch8/be-project-me-shopify-merch",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/cv-generator",
+    "infected": true,
+    "infected_files": {
+      "postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/dimorder-keeta",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/eatizen-ringus",
+    "infected": true,
+    "infected_files": {
+      "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "branch8/local-development": {
+        "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/extension-magento2-Branch8_CustomSalesSequence",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/extension-magento2-ImBee_MagentoConnector",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/extension-magento2-Magento_DeferredTotalCalculating",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/fe-project-me-shopify-merch",
+    "infected": true,
+    "infected_files": {
+      "next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/francfranc-taiwan",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "feature/enable-cc-small-furniture": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "hotfix/disable-POS-requests": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/frappe-payroll-extensions",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/hktb-demo",
+    "infected": true,
+    "infected_files": {
+      "postcss.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "postcss.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/hypermint-landingpage",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/imaginovation-sml-integration_grapesjs-accordion",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/imaginovation-sml-integration_tests-selenium",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/just-for-test-anything",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/kef-cms_strapi",
+    "infected": true,
+    "infected_files": {
+      "src-react/babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "src-react/babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/kef-cms",
+    "infected": true,
+    "infected_files": {
+      "next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/kef-promo-app-frontend",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/kef-promo-app",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/kef-promo-pos",
+    "infected": true,
+    "infected_files": {
+      "next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/kef-social-login",
+    "infected": true,
+    "infected_files": {
+      "web-ui/jest.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "web-ui/jest.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/liberte-bot",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/lifung-optimus",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-carparkfpspayment-carpark-fps-site",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-freshmarketbook-freshmarketbook_source",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-linkcmsapi",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-linkcorp-LINK_CorporateWebsiteRevamp_Backend",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "Link/kyletestseo": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-linknamecard-link-linknamecard",
+    "infected": true,
+    "infected_files": {
+      "tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "docker_test": {
+        "tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-linkrsvpsystem-wetech-linkrsvpsystem_frontend",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-linkup",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-linkweb-TheLinkRevamp_Web",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-shareprofiles-linkcarparkpayment-linkcarparkpayment-api",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-shareprofiles-linkcarparkpayment-linkcarparkpayment",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-shareprofiles-linkcnweb-linkcnweb",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "hotfix": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-shareprofiles-linkcorp-LINK_CorporateWebsiteRevamp_Backend",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-shareprofiles-linknamecard-linknamecard",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/link-ext-app-shareprofiles-linkweb-TheLinkRevamp_Web",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/magento2-docker",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/magento2-traefik-docker",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/magic-eden-list",
+    "infected": true,
+    "infected_files": {
+      "src/css/tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "src/css/tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/magicdao",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/me-creator",
+    "infected": true,
+    "infected_files": {
+      "packages/frontend/next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "packages/frontend/next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/moca-box",
+    "infected": true,
+    "infected_files": {
+      "tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/mocaverse-raffle",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/mother-care-strapi",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/phpStan-Magento2",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/PolinRinderScanner",
+    "infected": true,
+    "infected_files": {
+      "polinrider-ci-scan-blocker.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+      "polinrider-prebuild-react-native.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+      "polinrider-scanner-fast-progress.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+      "polinrider-scanner-fast.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+      "polinrider-scanner-windows.ps1": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+      "polinrider-scanner.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+      "README-OFFICIAL.md": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+      "README.md": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID"
+    },
+    "infected_branches": {
+      "feature/add-github-action": {
+        "polinrider-ci-scan-blocker.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+        "polinrider-prebuild-react-native.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+        "polinrider-scanner-fast-progress.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+        "polinrider-scanner-fast.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+        "polinrider-scanner-windows.ps1": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+        "polinrider-scanner.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+        "README.md": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID"
+      },
+      "main": {
+        "polinrider-ci-scan-blocker.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+        "polinrider-prebuild-react-native.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+        "polinrider-scanner-fast-progress.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+        "polinrider-scanner-fast.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+        "polinrider-scanner-windows.ps1": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+        "polinrider-scanner.sh": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID",
+        "README-OFFICIAL.md": "Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3 | Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e | Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP | Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG | StakingGame weaponized template UUID"
+      }
+    }
+  },
+  {
+    "repository": "branch8/potadao-landing",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project_gce_kinesis_video_player",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-4sIOT-GCE",
+    "infected": true,
+    "infected_files": {
+      "frontend/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "feature/noindex-gceiot": {
+        "frontend/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "main": {
+        "frontend/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-aem-cic",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-api-optimization-link-reit",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-aws-mwaa-local-runner-kef",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "branch8/main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-choco-up-backend",
+    "infected": true,
+    "infected_files": {
+      "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "dev-branch8": {
+        "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-choco-up-cal-engine",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main-branch8": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-choco-up-databricks",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-choco-up-frontend",
+    "infected": true,
+    "infected_files": {
+      "apps/dashboard-root/tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+      "libs/ui/tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main-branch8": {
+        "apps/dashboard-root/tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+        "libs/ui/tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-cors-proxy",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-evisu-emarsys",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-evisu-oms",
+    "infected": true,
+    "infected_files": {
+      "packages/ui/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "packages/ui/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "staging": {
+        "packages/ui/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-evisu-shopify2fb-converter",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-HKAA-product-comparison",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-hkbu-python",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-hotai-wrapper",
+    "infected": true,
+    "infected_files": {
+      "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "feature/update-axios": {
+        "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-imbee_lambda_cros-proxy",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-internal-nftAnalytics",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-internalProduct-promotionApp",
+    "infected": true,
+    "infected_files": {
+      "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "remaster": {
+        "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-internalProduct-promotionAppFrontend",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "bugfix/fix-the-onec-per-custoner-checkbox": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-lms",
+    "infected": true,
+    "infected_files": {
+      "frontend/jest.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "frontend/jest.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-magento-chowsangsang",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-magento-maxims-sdk-example",
+    "infected": true,
+    "infected_files": {
+      "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-magento-mobile-maxims-eatizen",
+    "infected": true,
+    "infected_files": {
+      "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-magento-mobile-maxims-ringus-eatizen",
+    "infected": true,
+    "infected_files": {
+      "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "release/13.6.10": {
+        "babel.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-magento2-Alfred",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-magento2-hkaa-plantuml",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-magento2-jvdb",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-magento2-katun",
+    "infected": true,
+    "infected_files": {
+      "live-search/storefront-product-listing-page/tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "production": {
+        "live-search/storefront-product-listing-page/tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-magento2-nutritionus",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "dev": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-magento2-pandatvmall",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-magento2-theclub",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "dev": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-magiceden-blog-frontend",
+    "infected": true,
+    "infected_files": {
+      "next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "dev": {
+        "next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-magiceden-whitelabel-okaybears",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-manageto-ebanner",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-manageto-teachateau-frontend",
+    "infected": true,
+    "infected_files": {
+      "tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-me-analytics",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "develop": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-me-contenthub",
+    "infected": true,
+    "infected_files": {
+      "packages/frontend/next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main-092022": {
+        "packages/frontend/next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-me-eth-starter",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-me-insights",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "production": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-me-nftshop-account",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-me-nftshop",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-me-ocp-landingpage",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-me-whitelabel-bayc",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-me-whitelabelmarketplace",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "develop": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-netsuite-scandale",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-oc-id-full",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-open-campus-id",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-open-campus-labs",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "prod": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-opencampus-labs",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "dev": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-shopify-aisl",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-shopify-evisu",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "feature/390-track-your-order-page-fraudcheckpassed-tt-13-mar-2026-hk": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "feature/402-product-launch-ss26-drop-14-15-cl-01-apr-2026-hk": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "feature/408-product-launch-ss26-drop-16-launching-cl-20-apr-2026-hk": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "feature/update-drawer-cart-promo-not-style-hk": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "revert/374-theme-kite-discount-app-cc-04-mar-2026-24h-hk": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-shopify-indicaid-us",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-shopify-indicaid",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-shopify-qpet",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "dev": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-shopify-roarguns",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-shopify-scandale-dataPreprocessing",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-shopify-theme-francfranc",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-shopify-theme-scandale",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-shopline-mcdonalds-merchandise-redemption",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "bugfix/delivery-options-are-not-hidden": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "checkout-improvements": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "feature/add-metafield-to-show-hide-quantity-selector": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-shopline-mcdonalds-promo-code-gift-cards",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "bugfix/delivery-options-are-not-hidden": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "fix/random-missing-order-data": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      },
+      "update/error-message-translation": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-shopline-mcdonalds-webview",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/project-wp-second-talent-website",
+    "infected": true,
+    "infected_files": {
+      "wp-content/plugins/wp-plugin-hostgator/tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+      "wp-content/plugins/wp-plugin-hostgator/vendor/newfold-labs/wp-module-patterns/css-utilities/tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "master": {
+        "wp-content/plugins/wp-plugin-hostgator/tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+        "wp-content/plugins/wp-plugin-hostgator/vendor/newfold-labs/wp-module-patterns/css-utilities/tailwind.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/qpets",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/saas-template",
+    "infected": true,
+    "infected_files": {
+      "apps/ai-avatars/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+      "apps/blog-writer/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+      "apps/chatbots/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+      "apps/dev-tool/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+      "apps/kanban/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+      "apps/pdf-chat/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+      "apps/web/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "apps/ai-avatars/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+        "apps/blog-writer/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+        "apps/chatbots/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+        "apps/dev-tool/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+        "apps/kanban/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+        "apps/pdf-chat/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")",
+        "apps/web/postcss.config.mjs": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/shopify-checkout-ui-custom-app",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/shopify-emarsys-app",
+    "infected": true,
+    "infected_files": {
+      "vite.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "vite.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/sim-agents",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/sml_laravel_otag",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "staging": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/sol",
+    "infected": true,
+    "infected_files": {
+      "frontend/next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "frontend/next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/spec-project-magento2-hotai",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/trust-and-safety",
+    "infected": true,
+    "infected_files": {
+      "packages/frontend/next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "packages/frontend/next.config.js": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/twitter-bot",
+    "infected": true,
+    "infected_files": {
+      "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+    },
+    "infected_branches": {
+      "main": {
+        "public/fonts/fa-solid-400.woff2": "V1 decoder (\"_$_1e42\") | V1 global (\"global['!']\") | V1 marker (\"rmcej%otb%\") | V1 payload confirmed (\"global['!']\" + seed \"2857687|2667686\")"
+      }
+    }
+  },
+  {
+    "repository": "branch8/b8-backend",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/b8-magento",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/b8",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/breezy",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/lazada-open-platform-sdk",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/link-ext-app-carparkfpspayment-carpark-fps-api",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/link-ext-app-linkcnweb-linkcnweb",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/link-ext-app-linkrsvpsystem-wetech-linkrsvpsystem_cms",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/maxims-hk-genki-hk-revamp-2021-diagram",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/maxims-hk-genki-hk-revamp-2021-infrastructure",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/maxims-hk-genki-hk-revamp-2021-integration-presentation",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/maxims-hk-genki-hk-revamp-2021-integration-process",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/maxims-hk-genki-hk-revamp-2021-integration-service-discovery",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/maxims-hk-genki-hk-revamp-2021-integration-system",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/maxims-hk-genki-hk-revamp-2021-magento",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/maxims-hk-genki-hk-revamp-2021-react-native",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project_gce_iot",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-choco-up-test",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-hkbu-node",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-laravelvue-qpmn",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-magento-hkaa-2023",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-magento-maxims-eatizen",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-magento2-hkaa",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-magento2-homePlus",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-magento2-hotai",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-magiceden-blog-backend",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-manageto-teachateau-backend",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-shopify-evisu-palace",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-shopify-qpet-plugins",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-shopify-theme-babobag",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-shopify-theme-breezy",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-shopify-theme-mothercare",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-shopify-theme-pure_SG",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/project-shopify-theme-pure",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  },
+  {
+    "repository": "branch8/shopify-merch",
+    "infected": false,
+    "infected_files": {},
+    "infected_branches": {}
+  }
+]

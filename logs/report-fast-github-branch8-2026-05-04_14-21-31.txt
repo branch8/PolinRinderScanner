@@ -1,0 +1,1054 @@
+PolinRider Fast Scan Report
+Generated: 2026-05-04 14:21:34
+Scanner: v3.0 (bare-clone, all branches)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Owner:          branch8
+Total repos:    162
+Infected:       124
+Clean:          38
+
+INFECTED REPOSITORIES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. branch8/all-in-tracker
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+2. branch8/b8-home
+   [main]
+     - src/payload.config.ts: child_process.spawn with detached/hidden execution
+   [staging]
+     - src/payload.config.ts: child_process.spawn with detached/hidden execution
+
+3. branch8/b8st-automation
+   [main]
+     - claudedocs/INCIDENT_VM_INVESTIGATION_2026-04-29.md: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - claudedocs/INCIDENT_VM_INVESTIGATION_2026-04-29.md: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - claudedocs/team-notification-2026-04-30.md: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+   [seo/b8-locale-cleanup]
+     - claudedocs/INCIDENT_VM_INVESTIGATION_2026-04-29.md: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - claudedocs/INCIDENT_VM_INVESTIGATION_2026-04-29.md: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - claudedocs/team-notification-2026-04-30.md: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+
+4. branch8/be-project-me-shopify-merch
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+5. branch8/cv-generator
+   [main]
+     - postcss.config.mjs: V1 decoder ("_$_1e42")
+     - postcss.config.mjs: V1 global ("global['!']")
+     - postcss.config.mjs: V1 marker ("rmcej%otb%")
+     - postcss.config.mjs: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+6. branch8/dimorder-keeta
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+7. branch8/eatizen-ringus
+   [branch8/local-development]
+     - babel.config.js: V1 decoder ("_$_1e42")
+     - babel.config.js: V1 global ("global['!']")
+     - babel.config.js: V1 marker ("rmcej%otb%")
+     - babel.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+8. branch8/extension-magento2-Branch8_CustomSalesSequence
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+9. branch8/extension-magento2-ImBee_MagentoConnector
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+10. branch8/extension-magento2-Magento_DeferredTotalCalculating
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+11. branch8/fe-project-me-shopify-merch
+   [main]
+     - next.config.js: V1 decoder ("_$_1e42")
+     - next.config.js: V1 global ("global['!']")
+     - next.config.js: V1 marker ("rmcej%otb%")
+     - next.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+12. branch8/francfranc-taiwan
+   [feature/enable-cc-small-furniture]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [hotfix/disable-POS-requests]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+13. branch8/frappe-payroll-extensions
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+14. branch8/hktb-demo
+   [main]
+     - postcss.config.js: V1 decoder ("_$_1e42")
+     - postcss.config.js: V1 global ("global['!']")
+     - postcss.config.js: V1 marker ("rmcej%otb%")
+     - postcss.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+15. branch8/hypermint-landingpage
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+16. branch8/imaginovation-sml-integration_grapesjs-accordion
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+17. branch8/imaginovation-sml-integration_tests-selenium
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+18. branch8/just-for-test-anything
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+19. branch8/kef-cms_strapi
+   [master]
+     - src-react/babel.config.js: V1 decoder ("_$_1e42")
+     - src-react/babel.config.js: V1 global ("global['!']")
+     - src-react/babel.config.js: V1 marker ("rmcej%otb%")
+     - src-react/babel.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+20. branch8/kef-cms
+   [master]
+     - next.config.js: V1 decoder ("_$_1e42")
+     - next.config.js: V1 global ("global['!']")
+     - next.config.js: V1 marker ("rmcej%otb%")
+     - next.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+21. branch8/kef-promo-app-frontend
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+22. branch8/kef-promo-app
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+23. branch8/kef-promo-pos
+   [main]
+     - next.config.js: V1 decoder ("_$_1e42")
+     - next.config.js: V1 global ("global['!']")
+     - next.config.js: V1 marker ("rmcej%otb%")
+     - next.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+24. branch8/kef-social-login
+   [master]
+     - web-ui/jest.config.js: V1 decoder ("_$_1e42")
+     - web-ui/jest.config.js: V1 global ("global['!']")
+     - web-ui/jest.config.js: V1 marker ("rmcej%otb%")
+     - web-ui/jest.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+25. branch8/liberte-bot
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+26. branch8/lifung-optimus
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+27. branch8/link-ext-app-carparkfpspayment-carpark-fps-site
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+28. branch8/link-ext-app-freshmarketbook-freshmarketbook_source
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+29. branch8/link-ext-app-linkcmsapi
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+30. branch8/link-ext-app-linkcorp-LINK_CorporateWebsiteRevamp_Backend
+   [Link/kyletestseo]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+31. branch8/link-ext-app-linknamecard-link-linknamecard
+   [docker_test]
+     - tailwind.config.js: V1 decoder ("_$_1e42")
+     - tailwind.config.js: V1 global ("global['!']")
+     - tailwind.config.js: V1 marker ("rmcej%otb%")
+     - tailwind.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+32. branch8/link-ext-app-linkrsvpsystem-wetech-linkrsvpsystem_frontend
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+33. branch8/link-ext-app-linkup
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+34. branch8/link-ext-app-linkweb-TheLinkRevamp_Web
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+35. branch8/link-ext-app-shareprofiles-linkcarparkpayment-linkcarparkpayment-api
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+36. branch8/link-ext-app-shareprofiles-linkcarparkpayment-linkcarparkpayment
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+37. branch8/link-ext-app-shareprofiles-linkcnweb-linkcnweb
+   [hotfix]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+38. branch8/link-ext-app-shareprofiles-linkcorp-LINK_CorporateWebsiteRevamp_Backend
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+39. branch8/link-ext-app-shareprofiles-linknamecard-linknamecard
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+40. branch8/link-ext-app-shareprofiles-linkweb-TheLinkRevamp_Web
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+41. branch8/magento2-docker
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+42. branch8/magento2-traefik-docker
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+43. branch8/magic-eden-list
+   [main]
+     - src/css/tailwind.config.js: V1 decoder ("_$_1e42")
+     - src/css/tailwind.config.js: V1 global ("global['!']")
+     - src/css/tailwind.config.js: V1 marker ("rmcej%otb%")
+     - src/css/tailwind.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+44. branch8/magicdao
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+45. branch8/me-creator
+   [main]
+     - packages/frontend/next.config.js: V1 decoder ("_$_1e42")
+     - packages/frontend/next.config.js: V1 global ("global['!']")
+     - packages/frontend/next.config.js: V1 marker ("rmcej%otb%")
+     - packages/frontend/next.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+46. branch8/moca-box
+   [main]
+     - tailwind.config.js: V1 decoder ("_$_1e42")
+     - tailwind.config.js: V1 global ("global['!']")
+     - tailwind.config.js: V1 marker ("rmcej%otb%")
+     - tailwind.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+47. branch8/mocaverse-raffle
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+48. branch8/mother-care-strapi
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+49. branch8/phpStan-Magento2
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+50. branch8/PolinRinderScanner
+   [feature/add-github-action]
+     - polinrider-ci-scan-blocker.sh: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - polinrider-ci-scan-blocker.sh: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - polinrider-ci-scan-blocker.sh: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - polinrider-ci-scan-blocker.sh: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - polinrider-ci-scan-blocker.sh: StakingGame weaponized template UUID
+     - polinrider-prebuild-react-native.sh: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - polinrider-prebuild-react-native.sh: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - polinrider-prebuild-react-native.sh: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - polinrider-prebuild-react-native.sh: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - polinrider-prebuild-react-native.sh: StakingGame weaponized template UUID
+     - polinrider-scanner-fast-progress.sh: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - polinrider-scanner-fast-progress.sh: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - polinrider-scanner-fast-progress.sh: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - polinrider-scanner-fast-progress.sh: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - polinrider-scanner-fast-progress.sh: StakingGame weaponized template UUID
+     - polinrider-scanner-fast.sh: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - polinrider-scanner-fast.sh: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - polinrider-scanner-fast.sh: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - polinrider-scanner-fast.sh: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - polinrider-scanner-fast.sh: StakingGame weaponized template UUID
+     - polinrider-scanner-windows.ps1: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - polinrider-scanner-windows.ps1: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - polinrider-scanner-windows.ps1: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - polinrider-scanner-windows.ps1: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - polinrider-scanner-windows.ps1: StakingGame weaponized template UUID
+     - polinrider-scanner.sh: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - polinrider-scanner.sh: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - polinrider-scanner.sh: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - polinrider-scanner.sh: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - polinrider-scanner.sh: StakingGame weaponized template UUID
+     - README.md: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - README.md: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - README.md: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - README.md: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - README.md: StakingGame weaponized template UUID
+   [main]
+     - polinrider-ci-scan-blocker.sh: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - polinrider-ci-scan-blocker.sh: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - polinrider-ci-scan-blocker.sh: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - polinrider-ci-scan-blocker.sh: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - polinrider-ci-scan-blocker.sh: StakingGame weaponized template UUID
+     - polinrider-prebuild-react-native.sh: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - polinrider-prebuild-react-native.sh: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - polinrider-prebuild-react-native.sh: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - polinrider-prebuild-react-native.sh: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - polinrider-prebuild-react-native.sh: StakingGame weaponized template UUID
+     - polinrider-scanner-fast-progress.sh: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - polinrider-scanner-fast-progress.sh: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - polinrider-scanner-fast-progress.sh: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - polinrider-scanner-fast-progress.sh: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - polinrider-scanner-fast-progress.sh: StakingGame weaponized template UUID
+     - polinrider-scanner-fast.sh: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - polinrider-scanner-fast.sh: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - polinrider-scanner-fast.sh: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - polinrider-scanner-fast.sh: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - polinrider-scanner-fast.sh: StakingGame weaponized template UUID
+     - polinrider-scanner-windows.ps1: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - polinrider-scanner-windows.ps1: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - polinrider-scanner-windows.ps1: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - polinrider-scanner-windows.ps1: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - polinrider-scanner-windows.ps1: StakingGame weaponized template UUID
+     - polinrider-scanner.sh: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - polinrider-scanner.sh: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - polinrider-scanner.sh: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - polinrider-scanner.sh: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - polinrider-scanner.sh: StakingGame weaponized template UUID
+     - README-OFFICIAL.md: Blockchain C2 address: 0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3
+     - README-OFFICIAL.md: Blockchain C2 address: 0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e
+     - README-OFFICIAL.md: Blockchain C2 address: TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP
+     - README-OFFICIAL.md: Blockchain C2 address: TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG
+     - README-OFFICIAL.md: StakingGame weaponized template UUID
+
+51. branch8/potadao-landing
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+52. branch8/project_gce_kinesis_video_player
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+53. branch8/project-4sIOT-GCE
+   [feature/noindex-gceiot]
+     - frontend/postcss.config.mjs: V1 decoder ("_$_1e42")
+     - frontend/postcss.config.mjs: V1 global ("global['!']")
+     - frontend/postcss.config.mjs: V1 marker ("rmcej%otb%")
+     - frontend/postcss.config.mjs: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [main]
+     - frontend/postcss.config.mjs: V1 decoder ("_$_1e42")
+     - frontend/postcss.config.mjs: V1 global ("global['!']")
+     - frontend/postcss.config.mjs: V1 marker ("rmcej%otb%")
+     - frontend/postcss.config.mjs: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+54. branch8/project-aem-cic
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+55. branch8/project-api-optimization-link-reit
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+56. branch8/project-aws-mwaa-local-runner-kef
+   [branch8/main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+57. branch8/project-choco-up-backend
+   [dev-branch8]
+     - babel.config.js: V1 decoder ("_$_1e42")
+     - babel.config.js: V1 global ("global['!']")
+     - babel.config.js: V1 marker ("rmcej%otb%")
+     - babel.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+58. branch8/project-choco-up-cal-engine
+   [main-branch8]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+59. branch8/project-choco-up-databricks
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+60. branch8/project-choco-up-frontend
+   [main-branch8]
+     - apps/dashboard-root/tailwind.config.js: V1 decoder ("_$_1e42")
+     - apps/dashboard-root/tailwind.config.js: V1 global ("global['!']")
+     - apps/dashboard-root/tailwind.config.js: V1 marker ("rmcej%otb%")
+     - apps/dashboard-root/tailwind.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+     - libs/ui/tailwind.config.js: V1 decoder ("_$_1e42")
+     - libs/ui/tailwind.config.js: V1 global ("global['!']")
+     - libs/ui/tailwind.config.js: V1 marker ("rmcej%otb%")
+     - libs/ui/tailwind.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+61. branch8/project-cors-proxy
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+62. branch8/project-evisu-emarsys
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+63. branch8/project-evisu-oms
+   [main]
+     - packages/ui/postcss.config.mjs: V1 decoder ("_$_1e42")
+     - packages/ui/postcss.config.mjs: V1 global ("global['!']")
+     - packages/ui/postcss.config.mjs: V1 marker ("rmcej%otb%")
+     - packages/ui/postcss.config.mjs: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [staging]
+     - packages/ui/postcss.config.mjs: V1 decoder ("_$_1e42")
+     - packages/ui/postcss.config.mjs: V1 global ("global['!']")
+     - packages/ui/postcss.config.mjs: V1 marker ("rmcej%otb%")
+     - packages/ui/postcss.config.mjs: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+64. branch8/project-evisu-shopify2fb-converter
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+65. branch8/project-HKAA-product-comparison
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+66. branch8/project-hkbu-python
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+67. branch8/project-hotai-wrapper
+   [feature/update-axios]
+     - babel.config.js: V1 decoder ("_$_1e42")
+     - babel.config.js: V1 global ("global['!']")
+     - babel.config.js: V1 marker ("rmcej%otb%")
+     - babel.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+68. branch8/project-imbee_lambda_cros-proxy
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+69. branch8/project-internal-nftAnalytics
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+70. branch8/project-internalProduct-promotionApp
+   [remaster]
+     - babel.config.js: V1 decoder ("_$_1e42")
+     - babel.config.js: V1 global ("global['!']")
+     - babel.config.js: V1 marker ("rmcej%otb%")
+     - babel.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+71. branch8/project-internalProduct-promotionAppFrontend
+   [bugfix/fix-the-onec-per-custoner-checkbox]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+72. branch8/project-lms
+   [main]
+     - frontend/jest.config.js: V1 decoder ("_$_1e42")
+     - frontend/jest.config.js: V1 global ("global['!']")
+     - frontend/jest.config.js: V1 marker ("rmcej%otb%")
+     - frontend/jest.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+73. branch8/project-magento-chowsangsang
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+74. branch8/project-magento-maxims-sdk-example
+   [main]
+     - babel.config.js: V1 decoder ("_$_1e42")
+     - babel.config.js: V1 global ("global['!']")
+     - babel.config.js: V1 marker ("rmcej%otb%")
+     - babel.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+75. branch8/project-magento-mobile-maxims-eatizen
+   [main]
+     - babel.config.js: V1 decoder ("_$_1e42")
+     - babel.config.js: V1 global ("global['!']")
+     - babel.config.js: V1 marker ("rmcej%otb%")
+     - babel.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+76. branch8/project-magento-mobile-maxims-ringus-eatizen
+   [release/13.6.10]
+     - babel.config.js: V1 decoder ("_$_1e42")
+     - babel.config.js: V1 global ("global['!']")
+     - babel.config.js: V1 marker ("rmcej%otb%")
+     - babel.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+77. branch8/project-magento2-Alfred
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+78. branch8/project-magento2-hkaa-plantuml
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+79. branch8/project-magento2-jvdb
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+80. branch8/project-magento2-katun
+   [production]
+     - live-search/storefront-product-listing-page/tailwind.config.js: V1 decoder ("_$_1e42")
+     - live-search/storefront-product-listing-page/tailwind.config.js: V1 global ("global['!']")
+     - live-search/storefront-product-listing-page/tailwind.config.js: V1 marker ("rmcej%otb%")
+     - live-search/storefront-product-listing-page/tailwind.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+81. branch8/project-magento2-nutritionus
+   [dev]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+82. branch8/project-magento2-pandatvmall
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+83. branch8/project-magento2-theclub
+   [dev]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+84. branch8/project-magiceden-blog-frontend
+   [dev]
+     - next.config.js: V1 decoder ("_$_1e42")
+     - next.config.js: V1 global ("global['!']")
+     - next.config.js: V1 marker ("rmcej%otb%")
+     - next.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+85. branch8/project-magiceden-whitelabel-okaybears
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+86. branch8/project-manageto-ebanner
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+87. branch8/project-manageto-teachateau-frontend
+   [master]
+     - tailwind.config.js: V1 decoder ("_$_1e42")
+     - tailwind.config.js: V1 global ("global['!']")
+     - tailwind.config.js: V1 marker ("rmcej%otb%")
+     - tailwind.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+88. branch8/project-me-analytics
+   [develop]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+89. branch8/project-me-contenthub
+   [main-092022]
+     - packages/frontend/next.config.js: V1 decoder ("_$_1e42")
+     - packages/frontend/next.config.js: V1 global ("global['!']")
+     - packages/frontend/next.config.js: V1 marker ("rmcej%otb%")
+     - packages/frontend/next.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+90. branch8/project-me-eth-starter
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+91. branch8/project-me-insights
+   [production]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+92. branch8/project-me-nftshop-account
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+93. branch8/project-me-nftshop
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+94. branch8/project-me-ocp-landingpage
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+95. branch8/project-me-whitelabel-bayc
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+96. branch8/project-me-whitelabelmarketplace
+   [develop]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+97. branch8/project-netsuite-scandale
+   [master]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+98. branch8/project-oc-id-full
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+99. branch8/project-open-campus-id
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+100. branch8/project-open-campus-labs
+   [prod]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+101. branch8/project-opencampus-labs
+   [dev]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+102. branch8/project-shopify-aisl
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+103. branch8/project-shopify-evisu
+   [feature/390-track-your-order-page-fraudcheckpassed-tt-13-mar-2026-hk]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [feature/402-product-launch-ss26-drop-14-15-cl-01-apr-2026-hk]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [feature/408-product-launch-ss26-drop-16-launching-cl-20-apr-2026-hk]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [feature/update-drawer-cart-promo-not-style-hk]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [revert/374-theme-kite-discount-app-cc-04-mar-2026-24h-hk]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+104. branch8/project-shopify-indicaid-us
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+105. branch8/project-shopify-indicaid
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+106. branch8/project-shopify-qpet
+   [dev]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+107. branch8/project-shopify-roarguns
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+108. branch8/project-shopify-scandale-dataPreprocessing
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+109. branch8/project-shopify-theme-francfranc
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+110. branch8/project-shopify-theme-scandale
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+111. branch8/project-shopline-mcdonalds-merchandise-redemption
+   [bugfix/delivery-options-are-not-hidden]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [checkout-improvements]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [feature/add-metafield-to-show-hide-quantity-selector]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+112. branch8/project-shopline-mcdonalds-promo-code-gift-cards
+   [bugfix/delivery-options-are-not-hidden]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [fix/random-missing-order-data]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+   [update/error-message-translation]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+113. branch8/project-shopline-mcdonalds-webview
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+114. branch8/project-wp-second-talent-website
+   [master]
+     - wp-content/plugins/wp-plugin-hostgator/tailwind.config.js: V1 decoder ("_$_1e42")
+     - wp-content/plugins/wp-plugin-hostgator/tailwind.config.js: V1 global ("global['!']")
+     - wp-content/plugins/wp-plugin-hostgator/tailwind.config.js: V1 marker ("rmcej%otb%")
+     - wp-content/plugins/wp-plugin-hostgator/tailwind.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+     - wp-content/plugins/wp-plugin-hostgator/vendor/newfold-labs/wp-module-patterns/css-utilities/tailwind.config.js: V1 decoder ("_$_1e42")
+     - wp-content/plugins/wp-plugin-hostgator/vendor/newfold-labs/wp-module-patterns/css-utilities/tailwind.config.js: V1 global ("global['!']")
+     - wp-content/plugins/wp-plugin-hostgator/vendor/newfold-labs/wp-module-patterns/css-utilities/tailwind.config.js: V1 marker ("rmcej%otb%")
+     - wp-content/plugins/wp-plugin-hostgator/vendor/newfold-labs/wp-module-patterns/css-utilities/tailwind.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+115. branch8/qpets
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+116. branch8/saas-template
+   [main]
+     - apps/ai-avatars/postcss.config.mjs: V1 decoder ("_$_1e42")
+     - apps/ai-avatars/postcss.config.mjs: V1 global ("global['!']")
+     - apps/ai-avatars/postcss.config.mjs: V1 marker ("rmcej%otb%")
+     - apps/ai-avatars/postcss.config.mjs: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+     - apps/blog-writer/postcss.config.mjs: V1 decoder ("_$_1e42")
+     - apps/blog-writer/postcss.config.mjs: V1 global ("global['!']")
+     - apps/blog-writer/postcss.config.mjs: V1 marker ("rmcej%otb%")
+     - apps/blog-writer/postcss.config.mjs: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+     - apps/chatbots/postcss.config.mjs: V1 decoder ("_$_1e42")
+     - apps/chatbots/postcss.config.mjs: V1 global ("global['!']")
+     - apps/chatbots/postcss.config.mjs: V1 marker ("rmcej%otb%")
+     - apps/chatbots/postcss.config.mjs: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+     - apps/dev-tool/postcss.config.mjs: V1 decoder ("_$_1e42")
+     - apps/dev-tool/postcss.config.mjs: V1 global ("global['!']")
+     - apps/dev-tool/postcss.config.mjs: V1 marker ("rmcej%otb%")
+     - apps/dev-tool/postcss.config.mjs: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+     - apps/kanban/postcss.config.mjs: V1 decoder ("_$_1e42")
+     - apps/kanban/postcss.config.mjs: V1 global ("global['!']")
+     - apps/kanban/postcss.config.mjs: V1 marker ("rmcej%otb%")
+     - apps/kanban/postcss.config.mjs: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+     - apps/pdf-chat/postcss.config.mjs: V1 decoder ("_$_1e42")
+     - apps/pdf-chat/postcss.config.mjs: V1 global ("global['!']")
+     - apps/pdf-chat/postcss.config.mjs: V1 marker ("rmcej%otb%")
+     - apps/pdf-chat/postcss.config.mjs: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+     - apps/web/postcss.config.mjs: V1 decoder ("_$_1e42")
+     - apps/web/postcss.config.mjs: V1 global ("global['!']")
+     - apps/web/postcss.config.mjs: V1 marker ("rmcej%otb%")
+     - apps/web/postcss.config.mjs: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+117. branch8/shopify-checkout-ui-custom-app
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+118. branch8/shopify-emarsys-app
+   [main]
+     - vite.config.js: V1 decoder ("_$_1e42")
+     - vite.config.js: V1 global ("global['!']")
+     - vite.config.js: V1 marker ("rmcej%otb%")
+     - vite.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+119. branch8/sim-agents
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+120. branch8/sml_laravel_otag
+   [staging]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+121. branch8/sol
+   [main]
+     - frontend/next.config.js: V1 decoder ("_$_1e42")
+     - frontend/next.config.js: V1 global ("global['!']")
+     - frontend/next.config.js: V1 marker ("rmcej%otb%")
+     - frontend/next.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+122. branch8/spec-project-magento2-hotai
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+123. branch8/trust-and-safety
+   [main]
+     - packages/frontend/next.config.js: V1 decoder ("_$_1e42")
+     - packages/frontend/next.config.js: V1 global ("global['!']")
+     - packages/frontend/next.config.js: V1 marker ("rmcej%otb%")
+     - packages/frontend/next.config.js: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+124. branch8/twitter-bot
+   [main]
+     - public/fonts/fa-solid-400.woff2: V1 decoder ("_$_1e42")
+     - public/fonts/fa-solid-400.woff2: V1 global ("global['!']")
+     - public/fonts/fa-solid-400.woff2: V1 marker ("rmcej%otb%")
+     - public/fonts/fa-solid-400.woff2: V1 payload confirmed ("global['!']" + seed "2857687|2667686")
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Report: logs/report-fast-github-branch8-2026-05-04_14-21-31.txt
+Full log: logs/scan-fast-github-2026-05-04_14-06-44.log
