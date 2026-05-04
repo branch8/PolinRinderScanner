@@ -36,10 +36,12 @@ LOG_FILE=""
 SCAN_START_TIME=""
 SKIP_GIT_GREP=0
 GITHUB_TMP_DIRS=""
-MAX_PARALLEL=3
-CLONE_DELAY=2
+MAX_PARALLEL=6
+CLONE_DELAY=0.5
 REPORT_FILE=""
 GITHUB_RESULTS_DIR=""
+LOG_JSON=0
+JSON_FILE=""
 
 # ---------------------------------------------------------------------------
 # Variant 1 signatures (original — rmcej%otb%)
@@ -146,6 +148,9 @@ print_usage() {
     printf "  --js-all       Scan all .js/.mjs/.cjs files (not just known configs)\n"
     printf "  --github <owner>  Scan all GitHub repos of a user/org (repeatable)\n"
     printf "  --ssh-host <host> SSH host alias for cloning (default: github.com-nhatitsforce)\n"
+    printf "  --parallel <n>    Max parallel clone workers (default: 6)\n"
+    printf "  --clone-delay <s> Seconds between clone starts (default: 0.5)\n"
+    printf "  --log-json     Output a single JSON log file with all repo results (GitHub mode)\n"
     printf "  --help         Show this help message\n"
     printf "\n"
     printf "Examples:\n"
@@ -187,13 +192,17 @@ init_log() {
         mode_parts="repo"
     fi
 
-    local timestamp
-    timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-    mkdir -p logs
-    LOG_FILE="logs/scan-${mode_parts}-${timestamp}.log"
-    : > "$LOG_FILE"
-
     SCAN_START_TIME="$(date '+%s')"
+
+    if [ "$LOG_JSON" -eq 1 ]; then
+        LOG_FILE=""
+    else
+        local timestamp
+        timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
+        mkdir -p logs
+        LOG_FILE="logs/scan-${mode_parts}-${timestamp}.log"
+        : > "$LOG_FILE"
+    fi
 
     log_msg "PolinRider Scanner v${VERSION} started"
 }
@@ -827,11 +836,16 @@ scan_single_repo_worker() {
         } > "$result_file"
         log_msg "[${owner}] [${repo_idx}/${repo_count}] Done — INFECTED"
     else
+        local result_file="${results_dir}/${repo_short}.clean"
+        printf "repo=%s\n" "$full_name" > "$result_file"
         log_msg "[${owner}] [${repo_idx}/${repo_count}] Done — clean"
     fi
 
     rm -rf "$clone_dir"
-    log_msg "[${owner}] [${repo_idx}/${repo_count}] Cleaned up local clone"
+
+    local done_count
+    done_count=$(find "$results_dir" -name "*.log" -o -name "*.clean" 2>/dev/null | wc -l | tr -d ' ')
+    printf "\r[${owner}] Progress: %s/%d repos scanned" "$done_count" "$repo_count" >&2
 }
 
 # ---------------------------------------------------------------------------
@@ -906,6 +920,7 @@ GHREPOEOF
     for pid in $pids; do
         wait "$pid" 2>/dev/null || true
     done
+    printf "\n" >&2
 
     # Aggregate results
     local gh_infected=0
@@ -920,7 +935,14 @@ GHREPOEOF
 
     log_msg "[${owner}] Complete: ${repo_count} repos scanned, ${gh_infected} infected, ${gh_clean} clean"
 
-    generate_github_report "$owner" "$repo_count" "$GITHUB_RESULTS_DIR"
+    if [ "$LOG_JSON" -eq 1 ]; then
+        generate_github_json_report "$owner" "$repo_count" "$GITHUB_RESULTS_DIR"
+    else
+        generate_github_report "$owner" "$repo_count" "$GITHUB_RESULTS_DIR"
+    fi
+
+    # Clean up .clean marker files
+    rm -f "${GITHUB_RESULTS_DIR}"/*.clean 2>/dev/null
 
     if [ "$gh_infected" -gt 0 ]; then
         log_msg "[${owner}] Infected repo details saved to ${GITHUB_RESULTS_DIR}/"
@@ -1005,6 +1027,229 @@ generate_github_report() {
     printf "\n"
     cat "$REPORT_FILE"
     printf "\n"
+}
+
+# ---------------------------------------------------------------------------
+# json_escape — escape a string for safe JSON embedding (POSIX-compatible)
+# ---------------------------------------------------------------------------
+json_escape() {
+    printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e 's/	/\\t/g' | tr -d '\n\r'
+}
+
+# ---------------------------------------------------------------------------
+# generate_github_json_report — produce a single JSON file with all repo results
+# ---------------------------------------------------------------------------
+generate_github_json_report() {
+    local owner="$1"
+    local repo_count="$2"
+    local results_dir="$3"
+
+    mkdir -p logs
+    JSON_FILE="logs/result.json"
+
+    local first_repo=1
+
+    printf '[\n' > "$JSON_FILE"
+
+    # Process infected repos
+    for log_file in "${results_dir}"/*.log; do
+        [ -f "$log_file" ] || continue
+
+        local repo_name
+        repo_name="$(grep '^repo=' "$log_file" | head -1)"
+        repo_name="${repo_name#repo=}"
+
+        if [ "$first_repo" -eq 0 ]; then
+            printf ',\n' >> "$JSON_FILE"
+        fi
+        first_repo=0
+
+        printf '  {\n' >> "$JSON_FILE"
+        printf '    "repository": "%s",\n' "$(json_escape "$repo_name")" >> "$JSON_FILE"
+        printf '    "infected": true,\n' >> "$JSON_FILE"
+
+        # Parse findings from the log file into a temp file:
+        # Format: WT|branch\tfile\tdescription (working tree findings)
+        #         BR|branch\tfile\tdescription (branch history findings)
+        local findings_file
+        findings_file=$(mktemp)
+        local current_branch=""
+        local section=""
+
+        while IFS= read -r line; do
+            case "$line" in
+                repo=*) continue ;;
+                BRANCH:*)
+                    current_branch="${line#BRANCH:}"
+                    section=""
+                    ;;
+                *"Working Tree"*)
+                    section="worktree"
+                    ;;
+                *"Branch History"*)
+                    section="history"
+                    ;;
+                "["*) continue ;;
+                *"[verbose]"*) continue ;;
+                "")  continue ;;
+                *"- "*)
+                    local detail="${line#*- }"
+                    detail="$(printf '%s' "$detail" | sed 's/\x1b\[[0-9;]*m//g')"
+
+                    if [ "$section" = "worktree" ] && [ -n "$current_branch" ]; then
+                        local wt_file="${detail%%:*}"
+                        local wt_desc="${detail#*: }"
+                        wt_file="$(printf '%s' "$wt_file" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')"
+                        wt_desc="$(printf '%s' "$wt_desc" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')"
+                        if [ -n "$wt_file" ] && [ -n "$wt_desc" ]; then
+                            printf 'WT\t%s\t%s\t%s\n' "$current_branch" "$wt_file" "$wt_desc" >> "$findings_file"
+                        fi
+                    elif [ "$section" = "history" ]; then
+                        if printf '%s' "$detail" | grep -q '^\[git:'; then
+                            local br_info="${detail#\[git:}"
+                            local br_name="${br_info%%]*}"
+                            local br_rest="${br_info#*] }"
+                            local br_file="${br_rest%%:*}"
+                            local br_desc="${br_rest#*: }"
+                            br_file="$(printf '%s' "$br_file" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')"
+                            br_desc="$(printf '%s' "$br_desc" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')"
+                            case "$br_name" in
+                                origin/*) continue ;;
+                                */HEAD) continue ;;
+                            esac
+                            if [ -n "$br_name" ] && [ -n "$br_file" ] && [ -n "$br_desc" ]; then
+                                printf 'BR\t%s\t%s\t%s\n' "$br_name" "$br_file" "$br_desc" >> "$findings_file"
+                            fi
+                        fi
+                    fi
+                    ;;
+            esac
+        done < "$log_file"
+
+        # Build infected_files: merge unique descriptions for the same file path
+        printf '    "infected_files": {' >> "$JSON_FILE"
+        if [ -s "$findings_file" ]; then
+            local wt_files
+            wt_files="$(grep '^WT' "$findings_file" | cut -f3 | sort -u)"
+            if [ -n "$wt_files" ]; then
+                local wt_entries_file
+                wt_entries_file=$(mktemp)
+                grep '^WT' "$findings_file" > "$wt_entries_file"
+                local wt_first=1
+                while IFS= read -r wt_file; do
+                    if [ -z "$wt_file" ]; then continue; fi
+                    local combined_desc=""
+                    local seen_descs=""
+                    while IFS='	' read -r _type _br _f _d; do
+                        if [ "$_f" = "$wt_file" ]; then
+                            case "$seen_descs" in
+                                *"|${_d}|"*) continue ;;
+                            esac
+                            seen_descs="${seen_descs}|${_d}|"
+                            if [ -n "$combined_desc" ]; then
+                                combined_desc="${combined_desc} | ${_d}"
+                            else
+                                combined_desc="$_d"
+                            fi
+                        fi
+                    done < "$wt_entries_file"
+                    if [ "$wt_first" -eq 0 ]; then
+                        printf ',' >> "$JSON_FILE"
+                    fi
+                    wt_first=0
+                    printf '\n      "%s": "%s"' "$(json_escape "$wt_file")" "$(json_escape "$combined_desc")" >> "$JSON_FILE"
+                done <<WTFILESEOF
+$wt_files
+WTFILESEOF
+                rm -f "$wt_entries_file"
+                printf '\n    },\n' >> "$JSON_FILE"
+            else
+                printf '},\n' >> "$JSON_FILE"
+            fi
+        else
+            printf '},\n' >> "$JSON_FILE"
+        fi
+
+        # Build infected_branches: group by branch, merge per-file descriptions
+        printf '    "infected_branches": {' >> "$JSON_FILE"
+        if [ -s "$findings_file" ]; then
+            local all_branches
+            all_branches="$(awk -F'\t' '{print $2}' "$findings_file" | sort -u)"
+            local br_first=1
+            while IFS= read -r br_name; do
+                if [ -z "$br_name" ]; then continue; fi
+                if [ "$br_first" -eq 0 ]; then
+                    printf ',' >> "$JSON_FILE"
+                fi
+                br_first=0
+                printf '\n      "%s": {' "$(json_escape "$br_name")" >> "$JSON_FILE"
+
+                local br_files
+                br_files="$(awk -F'\t' -v br="$br_name" '$2 == br {print $3}' "$findings_file" | sort -u)"
+                local file_first=1
+                while IFS= read -r br_file; do
+                    if [ -z "$br_file" ]; then continue; fi
+                    local combined_desc=""
+                    local seen_descs=""
+                    while IFS='	' read -r _type _br _f _d; do
+                        if [ "$_br" = "$br_name" ] && [ "$_f" = "$br_file" ]; then
+                            case "$seen_descs" in
+                                *"|${_d}|"*) continue ;;
+                            esac
+                            seen_descs="${seen_descs}|${_d}|"
+                            if [ -n "$combined_desc" ]; then
+                                combined_desc="${combined_desc} | ${_d}"
+                            else
+                                combined_desc="$_d"
+                            fi
+                        fi
+                    done < "$findings_file"
+                    if [ "$file_first" -eq 0 ]; then
+                        printf ',' >> "$JSON_FILE"
+                    fi
+                    file_first=0
+                    printf '\n        "%s": "%s"' "$(json_escape "$br_file")" "$(json_escape "$combined_desc")" >> "$JSON_FILE"
+                done <<BRFILESEOF
+$br_files
+BRFILESEOF
+                printf '\n      }' >> "$JSON_FILE"
+            done <<BRANCHESEOF
+$all_branches
+BRANCHESEOF
+            printf '\n    }\n' >> "$JSON_FILE"
+        else
+            printf '}\n' >> "$JSON_FILE"
+        fi
+
+        rm -f "$findings_file"
+        printf '  }' >> "$JSON_FILE"
+    done
+
+    # Process clean repos
+    for clean_file in "${results_dir}"/*.clean; do
+        [ -f "$clean_file" ] || continue
+
+        local repo_name
+        repo_name="$(grep '^repo=' "$clean_file" | head -1)"
+        repo_name="${repo_name#repo=}"
+
+        if [ "$first_repo" -eq 0 ]; then
+            printf ',\n' >> "$JSON_FILE"
+        fi
+        first_repo=0
+
+        printf '  {\n' >> "$JSON_FILE"
+        printf '    "repository": "%s",\n' "$(json_escape "$repo_name")" >> "$JSON_FILE"
+        printf '    "infected": false,\n' >> "$JSON_FILE"
+        printf '    "infected_files": {},\n' >> "$JSON_FILE"
+        printf '    "infected_branches": {}\n' >> "$JSON_FILE"
+        printf '  }' >> "$JSON_FILE"
+    done
+
+    printf '\n]\n' >> "$JSON_FILE"
+
+    log_msg "[${owner}] JSON report saved to ${JSON_FILE}"
+    printf "  JSON report: ${BOLD}%s${RESET}\n" "$JSON_FILE"
 }
 
 # ===================================================================
@@ -1576,6 +1821,28 @@ while [ $# -gt 0 ]; do
             fi
             SSH_HOST="$2"
             shift 2
+            ;;
+        --parallel)
+            if [ $# -lt 2 ]; then
+                printf "Error: --parallel requires a number\n" >&2
+                print_usage >&2
+                exit 2
+            fi
+            MAX_PARALLEL="$2"
+            shift 2
+            ;;
+        --clone-delay)
+            if [ $# -lt 2 ]; then
+                printf "Error: --clone-delay requires a number\n" >&2
+                print_usage >&2
+                exit 2
+            fi
+            CLONE_DELAY="$2"
+            shift 2
+            ;;
+        --log-json)
+            LOG_JSON=1
+            shift
             ;;
         --help|-h)
             print_usage
