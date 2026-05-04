@@ -289,6 +289,9 @@ check_file_for_signatures() {
         if grep -qF "$V1_SEED" "$filepath" 2>/dev/null || grep -qF "$V1_SEED2" "$filepath" 2>/dev/null; then
             findings="${findings}  ${RED}-${RESET} ${BOLD}${label}${RESET}: Variant 1 markers (global['!'] + seed) detected\n"
             found=$((found + 1))
+        else
+            findings="${findings}  ${RED}-${RESET} ${BOLD}${label}${RESET}: PolinRider global['!'] assignment (variant 1 marker)\n"
+            found=$((found + 1))
         fi
     fi
 
@@ -300,6 +303,9 @@ check_file_for_signatures() {
     if grep -qF "$V2_GLOBAL" "$filepath" 2>/dev/null; then
         if grep -qF "$V2_SEED" "$filepath" 2>/dev/null || grep -qF "$V2_SEED2" "$filepath" 2>/dev/null || grep -qF "$V2_DECODER" "$filepath" 2>/dev/null; then
             findings="${findings}  ${RED}-${RESET} ${BOLD}${label}${RESET}: Variant 2 markers (global['_V'] + seed/decoder) detected\n"
+            found=$((found + 1))
+        else
+            findings="${findings}  ${RED}-${RESET} ${BOLD}${label}${RESET}: PolinRider global['_V'] assignment (variant 2 marker)\n"
             found=$((found + 1))
         fi
     fi
