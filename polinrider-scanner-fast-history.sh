@@ -41,6 +41,7 @@ GITHUB_RESULTS_DIR=""
 LOG_JSON=0
 JSON_FILE=""
 GIT_GREP_TIMEOUT=30
+KEEP_REPO=0
 
 # ---------------------------------------------------------------------------
 # Variant 1 signatures (original — rmcej%otb%)
@@ -205,6 +206,18 @@ init_progress_ui() {
     else
         PROGRESS_UI=0
     fi
+}
+
+prompt_keep_repos() {
+    if [ ! -t 0 ]; then
+        return  # non-interactive, default: delete after scan
+    fi
+    printf "Keep cloned repos after scan? (stored in repos/, skipped on re-run) [y/N]: "
+    local answer
+    read -r answer </dev/tty
+    case "$answer" in
+        [yY]*) KEEP_REPO=1 ;;
+    esac
 }
 
 ui_emit_event() {
@@ -726,7 +739,13 @@ scan_single_repo_worker() {
     local status_dir="$7"
 
     local repo_short="${full_name#*/}"
-    local bare_dir="${tmp_dir}/${repo_short}.git"
+    local bare_dir
+    if [ "$KEEP_REPO" -eq 1 ]; then
+        mkdir -p "repos/${owner}"
+        bare_dir="repos/${owner}/${repo_short}.git"
+    else
+        bare_dir="${tmp_dir}/${repo_short}.git"
+    fi
     local worker_prefix="[${owner}] [${repo_idx}/${repo_count}]"
 
     ui_emit_event "$status_dir" "${worker_prefix} Cloning ${full_name}..."
@@ -796,7 +815,9 @@ scan_single_repo_worker() {
 
     ui_mark_state "$status_dir" "$repo_short" "done"
     rm -f "$scan_results" "$history_results"
-    rm -rf "$bare_dir"
+    if [ "$KEEP_REPO" -ne 1 ]; then
+        rm -rf "$bare_dir"
+    fi
 }
 
 # ---------------------------------------------------------------------------
@@ -1264,6 +1285,7 @@ fi
 # ===================================================================
 print_banner
 init_progress_ui
+prompt_keep_repos
 init_log
 
 if ! command -v gh >/dev/null 2>&1; then

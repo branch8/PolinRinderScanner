@@ -198,6 +198,21 @@ init_progress_ui() {
     fi
 }
 
+prompt_keep_repos() {
+    if [ "$CLEAN_REPO" -eq 1 ]; then
+        return  # already decided via --clean-repo flag
+    fi
+    if [ ! -t 0 ]; then
+        return  # non-interactive, keep default (retain repos)
+    fi
+    printf "Keep cloned repos after scan? Saves time on re-runs via incremental fetch. [Y/n]: "
+    local answer
+    read -r answer </dev/tty
+    case "$answer" in
+        [nN]*) CLEAN_REPO=1 ;;
+    esac
+}
+
 ui_emit_event() {
     local status_dir="$1"
     local msg="$2"
@@ -1253,6 +1268,7 @@ fi
 # ===================================================================
 print_banner
 init_progress_ui
+prompt_keep_repos
 init_log
 
 if ! command -v gh >/dev/null 2>&1; then
