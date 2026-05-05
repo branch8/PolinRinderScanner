@@ -24,6 +24,7 @@ ORIG_ARGS=("$@")
 
 VERSION="3.0"
 VERBOSE=0
+VERBOSE_DETAIL=0
 GITHUB_OWNERS=""
 SSH_HOST="git@github.com"
 USE_HTTPS=0
@@ -109,6 +110,8 @@ TOTAL_REPOS=0
 INFECTED_REPOS=0
 PROGRESS_UI=0
 PROGRESS_LINES=0
+LAST_QUEUE_LINE=0
+SPINNER_IDX=0
 JSON_RESULT_DIRS=""
 
 # ---------------------------------------------------------------------------
@@ -139,7 +142,8 @@ print_usage() {
     printf "  --clone-delay <s>   Seconds between clone starts (default: 0.5)\n"
     printf "  --clean-repo        Remove cloned repos after scan (default: keep in repos/)\n"
     printf "  --log-json          Output a single JSON log with all repo results\n"
-    printf "  --verbose           Show detailed output\n"
+    printf "  --verbose           Show scan results in scrolling log above progress bar\n"
+    printf "  --verbose-detail    Show all events (clone, scan, result) in scrolling log\n"
     printf "  --help              Show this help message\n"
     printf "\n"
     printf "Examples:\n"
@@ -222,6 +226,22 @@ ui_emit_event() {
     local status_dir="$1"
     local msg="$2"
     printf "%s\n" "$msg" > "${status_dir}/latest-event"
+    if [ "$VERBOSE_DETAIL" -eq 1 ]; then
+        local _ts
+        _ts="$(date '+%Y-%m-%d %H:%M:%S')"
+        printf "[%s] %s\n" "$_ts" "$msg" >> "${status_dir}/event-log"
+    fi
+}
+
+ui_log_result() {
+    local status_dir="$1"
+    local msg="$2"
+    printf "%s\n" "$msg" > "${status_dir}/latest-event"
+    if [ "$VERBOSE" -eq 1 ] || [ "$VERBOSE_DETAIL" -eq 1 ]; then
+        local _ts
+        _ts="$(date '+%Y-%m-%d %H:%M:%S')"
+        printf "[%s] %s\n" "$_ts" "$msg" >> "${status_dir}/event-log"
+    fi
 }
 
 ui_mark_state() {
@@ -305,6 +325,29 @@ render_progress_bar() {
         return
     fi
 
+    # Flush new events from workers above the sticky progress bar
+    if [ "$VERBOSE" -eq 1 ] || [ "$VERBOSE_DETAIL" -eq 1 ]; then
+        local queue_file="${status_dir}/event-log"
+        if [ -f "$queue_file" ]; then
+            local current_lines
+            current_lines=$(wc -l < "$queue_file" 2>/dev/null | tr -d ' ')
+            if [ "$current_lines" -gt "$LAST_QUEUE_LINE" ]; then
+                if [ "$PROGRESS_LINES" -gt 0 ]; then
+                    printf "\033[%sA" "$PROGRESS_LINES"
+                    printf "\033[J"
+                    PROGRESS_LINES=0
+                fi
+                tail -n +"$((LAST_QUEUE_LINE + 1))" "$queue_file"
+                LAST_QUEUE_LINE=$current_lines
+            fi
+        fi
+    fi
+
+    # Spinner to indicate activity
+    local _sp='|/-\'
+    local spinner="${_sp:$((SPINNER_IDX % 4)):1}"
+    SPINNER_IDX=$((SPINNER_IDX + 1))
+
     local infected done latest_event active_repos
     infected=$(find "$status_dir" -type f -name '*.infected' 2>/dev/null | wc -l | tr -d ' ')
     done=$(find "$status_dir" -type f -name '*.done' 2>/dev/null | wc -l | tr -d ' ')
@@ -326,9 +369,9 @@ render_progress_bar() {
         printf "\033[%sA" "$PROGRESS_LINES"
     fi
 
-    printf "\033[2K${CYAN}[%s]${RESET} [%s%s] %3d%%  done:%d/%d  ${RED}infected:%d${RESET}  workers:%d\n" \
-        "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$infected" "$running"
-    printf "\033[2K  scanning: %-60s | %s\n" "$active_repos" "$latest_event"
+    printf "\033[2K%s ${CYAN}[%s]${RESET} [%s%s] %3d%%  done:%d/%d  ${RED}infected:%d${RESET}  workers:%d\n" \
+        "$spinner" "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$infected" "$running"
+    printf "\033[2K  scanning: %s\n" "$active_repos"
     PROGRESS_LINES=2
 }
 
@@ -860,7 +903,7 @@ scan_single_repo_worker() {
     fi
 
     mkdir -p "scan-bare-clones/${owner}"
-    printf "%s\n" "$repo_short" > "${status_dir}/active-${repo_short}"
+    printf "%s\n" "$full_name" > "${status_dir}/active-${repo_short}"
 
     local clone_url
     if [ "$USE_HTTPS" -eq 1 ]; then
@@ -874,10 +917,10 @@ scan_single_repo_worker() {
         # Fetch branch refs explicitly to avoid "remote ref HEAD" issues.
         git -C "$bare_dir" config --replace-all remote.origin.fetch '+refs/heads/*:refs/heads/*' >/dev/null 2>&1 || true
         if ! _git_network_timeout git -C "$bare_dir" fetch --prune --quiet origin '+refs/heads/*:refs/heads/*' >/dev/null 2>&1; then
-            ui_emit_event "$status_dir" "${worker_prefix} WARN: fetch failed, re-cloning ${full_name}..."
+            ui_log_result "$status_dir" "${worker_prefix} WARN: fetch failed, re-cloning ${full_name}..."
             rm -rf "$bare_dir" 2>/dev/null
             if ! _git_network_timeout git clone --bare --quiet "$clone_url" "$bare_dir" >/dev/null 2>&1; then
-                ui_emit_event "$status_dir" "${worker_prefix} ERROR: Re-clone failed for ${full_name}"
+                ui_log_result "$status_dir" "${worker_prefix} ERROR: Re-clone failed for ${full_name}"
                 ui_mark_state "$status_dir" "$repo_short" "done"
                 return 1
             fi
@@ -885,7 +928,7 @@ scan_single_repo_worker() {
     else
         ui_emit_event "$status_dir" "${worker_prefix} Cloning ${full_name}..."
         if ! _git_network_timeout git clone --bare --quiet "$clone_url" "$bare_dir" >/dev/null 2>&1; then
-            ui_emit_event "$status_dir" "${worker_prefix} ERROR: Clone failed for ${full_name}"
+            ui_log_result "$status_dir" "${worker_prefix} ERROR: Clone failed for ${full_name}"
             ui_mark_state "$status_dir" "$repo_short" "done"
             rm -rf "$bare_dir" 2>/dev/null
             return 1
@@ -910,13 +953,13 @@ scan_single_repo_worker() {
 
         local finding_count
         finding_count=$(wc -l < "$scan_results" | tr -d ' ')
-        ui_emit_event "$status_dir" "${worker_prefix} INFECTED ${full_name} (${finding_count} findings)"
+        ui_log_result "$status_dir" "${worker_prefix} INFECTED ${full_name} (${finding_count} findings)"
         ui_mark_state "$status_dir" "$repo_short" "infected"
         persist_repo_result "$owner" "$repo_short" "infected ${finding_count}"
     else
         local result_file="${results_dir}/${repo_short}.clean"
         printf "repo=%s\n" "$full_name" > "$result_file"
-        ui_emit_event "$status_dir" "${worker_prefix} CLEAN ${full_name}"
+        ui_log_result "$status_dir" "${worker_prefix} CLEAN ${full_name}"
         ui_mark_state "$status_dir" "$repo_short" "clean"
         persist_repo_result "$owner" "$repo_short" "clean"
     fi
@@ -937,6 +980,7 @@ scan_github_owner() {
     local owner="$1"
 
     check_previous_run "$owner"
+    LAST_QUEUE_LINE=0
 
     log_msg "[${owner}] Listing repositories..."
 
@@ -1307,6 +1351,11 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --verbose)
             VERBOSE=1
+            shift
+            ;;
+        --verbose-detail)
+            VERBOSE=1
+            VERBOSE_DETAIL=1
             shift
             ;;
         --github)
