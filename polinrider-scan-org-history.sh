@@ -663,8 +663,7 @@ SIGSEOF
 
 # ---------------------------------------------------------------------------
 # scan_commit_history — scan git commit history for payload signatures
-# Uses `git log --all -S` to find commits where V1/V2 markers were added.
-# Excludes commits whose message clearly indicates a cleanup/removal.
+# Uses `git log --all -S` to find ALL commits where V1/V2 markers were added or removed.
 # Writes HISTORY\t<hash>\t<date>\t<message>\t<description> lines to results_file.
 # Returns 0 = no history hits, 1 = history hits found.
 # ---------------------------------------------------------------------------
@@ -679,14 +678,11 @@ scan_commit_history() {
 
     # --format="%h|%ai|%an|%ae|%s": short hash | ISO date | author name | author email | subject
     # -S searches commits where the string count changed (i.e. was added or removed).
-    # We exclude commits whose subject clearly describes a cleanup.
     history_v1=$(git -C "$bare_dir" log --all \
-        -S "$V1_MARKER" --format="%h|%ai|%an|%ae|%s" 2>/dev/null \
-        | grep -iv "remove\|移除\|backdoor\|hotfix\|clean\|revert\|delete\|fix") || true
+        -S "$V1_MARKER" --format="%h|%ai|%an|%ae|%s" 2>/dev/null) || true
 
     history_v2=$(git -C "$bare_dir" log --all \
-        -S "$V2_MARKER" --format="%h|%ai|%an|%ae|%s" 2>/dev/null \
-        | grep -iv "remove\|移除\|backdoor\|hotfix\|clean\|revert\|delete\|fix") || true
+        -S "$V2_MARKER" --format="%h|%ai|%an|%ae|%s" 2>/dev/null) || true
 
     if [ -n "$history_v1" ]; then
         while IFS= read -r commit_line; do

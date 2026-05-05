@@ -187,21 +187,13 @@ init_log() {
     LOG_FILE="scan-logs/local/scan-${mode_parts}-${timestamp}.log"
     : > "$LOG_FILE"
 
-    log_msg "PolinRider Scanner v${VERSION} started"
+    if [ "${_POLINRIDER_LOGGING:-0}" = "1" ]; then
+        log_msg "PolinRider Scanner v${VERSION} started"
+    fi
 }
 
 cleanup() {
     local exit_code=$?
-    if [ -n "$GITHUB_TMP_DIRS" ]; then
-        local old_ifs="$IFS"
-        IFS=' '
-        for tmp_dir in $GITHUB_TMP_DIRS; do
-            if [ -d "$tmp_dir" ]; then
-                rm -rf "$tmp_dir"
-            fi
-        done
-        IFS="$old_ifs"
-    fi
     wait 2>/dev/null
     exit $exit_code
 }
@@ -1500,7 +1492,6 @@ done
 # ===================================================================
 #  MAIN EXECUTION
 # ===================================================================
-print_banner
 init_log
 
 # Log all output: re-exec the script through a pipe that writes to the log file.
@@ -1514,6 +1505,8 @@ if [ -n "$LOG_FILE" ] && [ "${_POLINRIDER_LOGGING:-0}" = "0" ]; then
     done
     exit "${PIPESTATUS[0]}"
 fi
+
+print_banner
 
 # --- Quick scan mode ---
 if [ "$QUICK_SCAN" -eq 1 ]; then
