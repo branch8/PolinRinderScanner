@@ -1154,7 +1154,31 @@ function Scan-TempDirs {
 }
 
 # -------------------------------------------------------------------------
-# 9. Browser extensions
+# 9. Propagation scripts (filesystem-wide)
+# -------------------------------------------------------------------------
+function Scan-PropagationScripts {
+    Write-Section 'PROPAGATION' 'Searching for propagation scripts across user directories...'
+
+    $searchDirs = @()
+    foreach ($userProfile in (Get-AllUserProfiles)) {
+        if (Test-Path $userProfile) { $searchDirs += $userProfile }
+    }
+
+    $batNames = @('temp_auto_push.bat', 'config.bat')
+    foreach ($dir in $searchDirs) {
+        Write-Verbose "Scanning $dir for propagation scripts"
+        foreach ($batName in $batNames) {
+            $hits = @(Get-ChildItem $dir -Recurse -Filter $batName -File -ErrorAction SilentlyContinue)
+            foreach ($hit in $hits) {
+                Add-SystemFinding 'PROPAGATION' "Propagation script found: $($hit.FullName)"
+                $null = $script:CleanupBatFiles.Add($hit.FullName)
+            }
+        }
+    }
+}
+
+# -------------------------------------------------------------------------
+# 10. Browser extensions
 # -------------------------------------------------------------------------
 function Scan-BrowserExtensions {
     Write-Section 'BROWSER' 'Scanning browser extension directories (all users)...'
@@ -2053,6 +2077,7 @@ if ($FullSystem) {
         @{ Name = 'VSCodeExtensions'; Fn = { Scan-VSCodeExtensions } },
         @{ Name = 'NpmGlobal';        Fn = { Scan-NpmGlobal } },
         @{ Name = 'TempDirs';         Fn = { Scan-TempDirs } },
+        @{ Name = 'PropagationScripts'; Fn = { Scan-PropagationScripts } },
         @{ Name = 'BrowserExtensions';Fn = { Scan-BrowserExtensions } },
         @{ Name = 'DnsInvestigation'; Fn = { Scan-DnsInvestigation } }
     )
