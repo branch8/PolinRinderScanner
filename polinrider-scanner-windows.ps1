@@ -34,6 +34,9 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Continue'
 
+# Resolve scanner's own path so we can skip it during file scans
+$ScannerScriptPath = if ($PSCommandPath) { (Resolve-Path $PSCommandPath -ErrorAction SilentlyContinue).Path } else { $null }
+
 # -------------------------------------------------------------------------
 # Variant 1 signatures (original)
 # -------------------------------------------------------------------------
@@ -1133,6 +1136,8 @@ function Scan-TempDirs {
             Write-Verbose "WARNING: $tmpDir has $($tmpFiles.Count) script files -- scanning all"
         }
         $tmpFiles | ForEach-Object {
+                if ($ScannerScriptPath -and $_.FullName -eq $ScannerScriptPath) { return }
+
                 $content = Get-FileContent $_.FullName
                 if (-not $content) { return }
 
