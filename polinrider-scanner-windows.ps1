@@ -241,7 +241,7 @@ function Test-FileForSignatures ([string]$FilePath, [string]$Label) {
 
     # Variant 1
     if ($content.Contains($V1_MARKER)) {
-        Add-RepoFinding $Label '[V1 CONFIRMED] Active payload — decoder marker "rmcej%otb%" detected' 'HIGH'
+        Add-RepoFinding $Label 'Variant 1 payload (rmcej%otb%) detected' 'HIGH'
         $found++
     }
     if ($content.Contains($V1_DECODER)) {
@@ -249,17 +249,17 @@ function Test-FileForSignatures ([string]$FilePath, [string]$Label) {
         $found++
     }
     if ($content.Contains($V1_GLOBAL) -and ($content.Contains($V1_SEED) -or $content.Contains($V1_SEED2))) {
-        Add-RepoFinding $Label "[V1 CONFIRMED] Active payload — global hook global['!'] + seed both present" 'HIGH'
+        Add-RepoFinding $Label "Variant 1 markers (global['!'] + seed) detected" 'HIGH'
         $found++
     }
 
     # Variant 2
     if ($content.Contains($V2_MARKER)) {
-        Add-RepoFinding $Label '[V2 CONFIRMED] Active payload — decoder marker "Cot%3t=shtP" detected' 'HIGH'
+        Add-RepoFinding $Label 'Variant 2 payload (Cot%3t=shtP) detected' 'HIGH'
         $found++
     }
     if ($content.Contains($V2_GLOBAL) -and ($content.Contains($V2_SEED) -or $content.Contains($V2_SEED2) -or $content.Contains($V2_DECODER))) {
-        Add-RepoFinding $Label "[V2 CONFIRMED] Active payload — global hook global['_V'] + seed/decoder both present" 'HIGH'
+        Add-RepoFinding $Label "Variant 2 markers (global['_V'] + seed/decoder) detected" 'HIGH'
         $found++
     }
 
@@ -275,7 +275,7 @@ function Test-FileForSignatures ([string]$FilePath, [string]$Label) {
     # eval() with global markers
     if ($content -match 'eval\(' -and
         ($content.Contains($COMMON_GLOBAL_R) -or $content.Contains($V1_GLOBAL) -or $content.Contains($V2_GLOBAL))) {
-        Add-RepoFinding $Label '[SUSPICIOUS] eval() with PolinRider global markers' 'MEDIUM'
+        Add-RepoFinding $Label 'eval() with PolinRider global markers' 'MEDIUM'
         $found++
     }
 
@@ -323,17 +323,17 @@ function Scan-Repo ([string]$RepoDir) {
             if ($content) {
                 $hit = $false
                 if ($content.Contains($V1_MARKER)) {
-                    Add-RepoFinding $rel '[V1 CONFIRMED] Fake font file with embedded V1 payload' 'HIGH'; $hit = $true
+                    Add-RepoFinding $rel 'Fake font with variant 1 payload' 'HIGH'; $hit = $true
                 }
                 if ($content.Contains($V2_MARKER)) {
-                    Add-RepoFinding $rel '[V2 CONFIRMED] Fake font file with embedded V2 payload' 'HIGH'; $hit = $true
+                    Add-RepoFinding $rel 'Fake font with variant 2 payload' 'HIGH'; $hit = $true
                 }
                 if (-not $hit) {
                     if ($content.Contains($V1_DECODER) -and $content.Contains($V1_GLOBAL)) {
-                        Add-RepoFinding $rel '[V1] Fake font file with V1 signature markers' 'HIGH'; $hit = $true
+                        Add-RepoFinding $rel 'Fake font with variant 1 markers' 'HIGH'; $hit = $true
                     }
                     if ($content.Contains($COMMON_GLOBAL_R) -and $content.Contains($COMMON_GLOBAL_M)) {
-                        Add-RepoFinding $rel '[SUSPICIOUS] Fake font file with PolinRider global markers' 'HIGH'; $hit = $true
+                        Add-RepoFinding $rel 'Fake font with PolinRider global markers' 'HIGH'; $hit = $true
                     }
                 }
                 if ($hit) { $findingCount++ }
@@ -355,7 +355,7 @@ function Scan-Repo ([string]$RepoDir) {
     if (Test-Path $batFile) {
         $content = Get-FileContent $batFile
         if ($content -and ($content.Contains('LAST_COMMIT_DATE') -or $content.Contains('--no-verify') -or $content.Contains('git push -uf'))) {
-            Add-RepoFinding 'temp_auto_push.bat' '[PROPAGATION] Auto-push script detected — spreads infection to other repos via git' 'HIGH'
+            Add-RepoFinding 'temp_auto_push.bat' 'PolinRider propagation script (confirmed)' 'HIGH'
             $null = $script:CleanupBatFiles.Add($batFile)
         } else {
             Add-RepoFinding 'temp_auto_push.bat' 'Propagation script found (verify manually)' 'MEDIUM'
@@ -435,7 +435,7 @@ function Scan-Repo ([string]$RepoDir) {
                 # C2 domains
                 foreach ($domain in $C2_DOMAINS) {
                     if ($content.Contains($domain)) {
-                        Add-RepoFinding $rel "[C2] Command & control domain in config: $domain" 'HIGH'
+                        Add-RepoFinding $rel "C2 domain reference ($domain)" 'HIGH'
                         $findingCount++
                     }
                 }
@@ -443,7 +443,7 @@ function Scan-Repo ([string]$RepoDir) {
                 # Blockchain C2 addresses
                 foreach ($addr in @($TRON_ADDR_1, $TRON_ADDR_2, $APTOS_HASH_1, $APTOS_HASH_2)) {
                     if ($content.Contains($addr)) {
-                        Add-RepoFinding $rel "[C2] Blockchain exfiltration address: $addr" 'HIGH'
+                        Add-RepoFinding $rel "Blockchain C2 address ($addr)" 'HIGH'
                         $findingCount++
                     }
                 }
@@ -460,14 +460,14 @@ function Scan-Repo ([string]$RepoDir) {
 
                 # TasksJacker URL-shape pattern: vercel.app/settings/(mac|linux|win)?flag=N
                 if ($content -match 'vercel\.app/settings/(mac|linux|win)\?flag=') {
-                    Add-RepoFinding $rel '[RCE] TasksJacker C2 URL — auto-executes curl|bash on folder open' 'HIGH'
+                    Add-RepoFinding $rel 'TasksJacker C2 URL pattern (vercel.app/settings/...)' 'HIGH'
                     $findingCount++
                 }
 
                 # node -e with suspicious payload
                 if ($content -match 'node\s+-e' -and
                     ($content.Contains('global[') -or $content.Contains('child_process') -or $content.Contains('eval('))) {
-                    Add-RepoFinding $rel '[RCE] node -e with suspicious payload in IDE task config' 'HIGH'
+                    Add-RepoFinding $rel 'node -e with suspicious payload in IDE config' 'HIGH'
                     $findingCount++
                 }
 
@@ -513,7 +513,7 @@ function Scan-Repo ([string]$RepoDir) {
     # --- ShoeVista template detection ---
     $clientPkg = Join-Path $RepoDir 'client\package.json'
     if ((Test-Path $clientPkg) -and (Test-FileContains $clientPkg 'tailwindcss-style-animate')) {
-        Add-RepoFinding 'client/package.json' '[SUPPLY CHAIN] ShoeVista weaponized template — contains tailwindcss-style-animate dropper' 'HIGH'
+        Add-RepoFinding 'client/package.json' 'ShoeVista weaponized template (tailwindcss-style-animate)' 'HIGH'
         $findingCount++
     }
 
@@ -527,7 +527,7 @@ function Scan-Repo ([string]$RepoDir) {
                     $hasClientServer = (Test-Path (Join-Path $RepoDir 'client')) -and (Test-Path (Join-Path $RepoDir 'server'))
                     $hasMalDep = $rootContent.Contains('tailwindcss-style-animate')
                     if ($hasMalDep -or $hasClientServer) {
-                        Add-RepoFinding 'package.json' "[SUSPICIOUS] Possible ShoeVista weaponized template — project name matches '$svName'" 'MEDIUM'
+                        Add-RepoFinding 'package.json' "Possible ShoeVista weaponized template (name '$svName')" 'MEDIUM'
                         $findingCount++
                         break
                     }
@@ -562,7 +562,7 @@ function Scan-Repo ([string]$RepoDir) {
                         }
                     }
                 }
-            Add-RepoFinding $rel "[SUPPLY CHAIN] Malicious npm package installed: $pkg$payloadNote" 'HIGH'
+            Add-RepoFinding $rel "Malicious package installed: $pkg$payloadNote" 'HIGH'
             $findingCount++
             $nmParent = Split-Path $nmDir -Parent
             if (-not $script:CleanupNodeModules.Contains($nmParent)) {
@@ -628,7 +628,7 @@ function Scan-Processes {
             ($cmd.Contains('global[') -or $cmd.Contains($V1_MARKER) -or $cmd.Contains($V2_MARKER) -or
              $cmd.Contains($V1_DECODER) -or $cmd.Contains($V2_GLOBAL) -or
              $cmd -match 'eval\(' -or $cmd.Contains('child_process'))) {
-            Add-SystemFinding 'PROCESS' "[SUSPICIOUS] node -e process (PID $($proc.ProcessId)) — likely PolinRider payload executing"
+            Add-SystemFinding 'PROCESS' "Suspicious node -e process (PID $($proc.ProcessId)): likely PolinRider payload"
         }
 
         # Stage 4 Python credential stealer patterns
@@ -649,12 +649,12 @@ function Scan-Processes {
         # C2 / blockchain references in command line
         foreach ($domain in ($C2_DOMAINS + $BLOCKCHAIN_HOSTS)) {
             if ($cmd.Contains($domain)) {
-                Add-SystemFinding 'PROCESS' "[C2] Process connecting to C2 endpoint: $domain (PID $($proc.ProcessId))"
+                Add-SystemFinding 'PROCESS' "Process referencing C2 endpoint: $domain (PID $($proc.ProcessId))"
             }
         }
         foreach ($addr in @($TRON_ADDR_1, $TRON_ADDR_2, $APTOS_HASH_1, $APTOS_HASH_2)) {
             if ($cmd.Contains($addr)) {
-                Add-SystemFinding 'PROCESS' "[C2] Process connecting to blockchain C2: $addr (PID $($proc.ProcessId))"
+                Add-SystemFinding 'PROCESS' "Process referencing blockchain C2: $addr (PID $($proc.ProcessId))"
             }
         }
     }
@@ -707,13 +707,13 @@ function Scan-Network {
         foreach ($domain in $C2_DOMAINS) {
             if ($dnsCache.Contains($domain)) {
                 $null = $script:DnsC2Hits.Add($domain)
-                Add-SystemFinding 'DNS-C2' "[C2] DNS cache hit for C2 domain: $domain — machine likely connected recently"
+                Add-SystemFinding 'DNS-C2' "DNS cache entry for C2 domain: $domain"
             }
         }
         foreach ($domain in $BLOCKCHAIN_HOSTS) {
             if ($dnsCache.Contains($domain)) {
                 $null = $script:DnsBlockchain.Add($domain)
-                Add-SystemFinding 'DNS-BLOCKCHAIN' "[C2] DNS cache hit for blockchain C2: $domain — crypto wallet drainer"
+                Add-SystemFinding 'DNS-BLOCKCHAIN' "DNS cache entry for blockchain C2: $domain (crypto wallet drainer)"
             }
         }
         if ($dnsCache.Contains('api.telegram.org')) {
@@ -728,7 +728,7 @@ function Scan-Network {
         if ($script:DnsExfil.Count -gt 0)       { $dnsCategories++ }
 
         if ($dnsCategories -ge 2) {
-            Add-SystemFinding 'DNS-RISK' "[HIGH RISK] DNS cache spans $dnsCategories C2 categories — full attack chain likely executed on this machine"
+            Add-SystemFinding 'DNS-RISK' "HIGH RISK: DNS cache contains entries across $dnsCategories C2 categories -- indicates full attack chain execution"
         }
         if ($script:DnsBlockchain.Count -ge 3) {
             Add-SystemFinding 'DNS-RISK' 'CRITICAL: Multiple blockchain endpoints resolved -- Stage 4 crypto wallet drainer likely executed'
@@ -756,7 +756,7 @@ function Test-ScheduledTaskAction ([string]$TaskName, [string]$ActionStr) {
     }
     foreach ($domain in $C2_DOMAINS) {
         if ($ActionStr.Contains($domain)) {
-            Add-SystemFinding 'SCHED-TASK' "[PERSISTENCE] Scheduled task references C2 domain: $TaskName ($domain)"
+            Add-SystemFinding 'SCHED-TASK' "Scheduled task referencing C2 domain: $TaskName ($domain)"
         }
     }
 }
@@ -830,7 +830,7 @@ function Scan-StartupRegistry {
             }
             foreach ($domain in $C2_DOMAINS) {
                 if ($val.Contains($domain)) {
-                    Add-SystemFinding 'REGISTRY' "[PERSISTENCE] Startup registry entry references C2: '$($_.Name)' ($domain)"
+                    Add-SystemFinding 'REGISTRY' "Startup entry referencing C2: '$($_.Name)' ($domain)"
                 }
             }
         }
@@ -859,7 +859,7 @@ function Scan-WindowsServices {
         }
         foreach ($domain in $C2_DOMAINS) {
             if ($pathName.Contains($domain)) {
-                Add-SystemFinding 'SERVICE' "[PERSISTENCE] Service references C2 '$($svc.Name)': $domain"
+                Add-SystemFinding 'SERVICE' "Service referencing C2 '$($svc.Name)': $domain"
             }
         }
     }
@@ -905,12 +905,12 @@ function Scan-PSProfiles {
         }
         foreach ($domain in ($C2_DOMAINS + $BLOCKCHAIN_HOSTS)) {
             if ($content.Contains($domain)) {
-                Add-SystemFinding 'PS-PROFILE' "[PERSISTENCE] C2 domain in PowerShell profile: $pp ($domain)"
+                Add-SystemFinding 'PS-PROFILE' "C2 domain in PowerShell profile: $pp ($domain)"
             }
         }
         foreach ($addr in @($TRON_ADDR_1, $TRON_ADDR_2, $APTOS_HASH_1, $APTOS_HASH_2)) {
             if ($content.Contains($addr)) {
-                Add-SystemFinding 'PS-PROFILE' "[PERSISTENCE] Blockchain C2 address in PowerShell profile: $pp"
+                Add-SystemFinding 'PS-PROFILE' "Blockchain C2 address in PowerShell profile: $pp"
             }
         }
     }
@@ -1010,7 +1010,7 @@ function Scan-VSCodeExtensions {
                     $content = Get-FileContent $_.FullName
                     foreach ($pkg in $MALICIOUS_NPM_PKGS) {
                         if ($content.Contains("`"$pkg`"")) {
-                            Add-SystemFinding 'VSCODE-EXT' "[SUPPLY CHAIN] VS Code extension depends on malicious package '$pkg' ($userName): $($_.FullName)"
+                            Add-SystemFinding 'VSCODE-EXT' "Extension depends on malicious package '$pkg' ($userName): $($_.FullName)"
                         }
                     }
                 }
@@ -1036,7 +1036,7 @@ function Scan-VSCodeExtensions {
                     }
                     foreach ($domain in $C2_DOMAINS) {
                         if ($content.Contains($domain)) {
-                            Add-SystemFinding 'AGENT-CONFIG' "[C2] C2 domain in AI agent config ($userName): $($_.FullName) ($domain)"
+                            Add-SystemFinding 'AGENT-CONFIG' "C2 domain in agent config ($userName): $($_.FullName) ($domain)"
                         }
                     }
                     if ($content -match '(ignore previous|ignore above|disregard|forget all|new instructions|you are now|act as|pretend)') {
@@ -1060,7 +1060,7 @@ function Scan-VSCodeExtensions {
                     }
                     foreach ($domain in $C2_DOMAINS) {
                         if ($content.Contains($domain)) {
-                            Add-SystemFinding 'VSCODE-TASKS' "[RCE] C2 domain in workspace tasks ($userName): $($_.FullName) ($domain)"
+                            Add-SystemFinding 'VSCODE-TASKS' "C2 domain in workspace tasks ($userName): $($_.FullName) ($domain)"
                         }
                     }
                 }
@@ -1147,14 +1147,14 @@ function Scan-TempDirs {
 
                 foreach ($domain in $C2_DOMAINS) {
                     if ($content.Contains($domain)) {
-                        Add-SystemFinding 'TEMP' "[C2] C2 domain in temp file: $($_.FullName) ($domain)"
+                        Add-SystemFinding 'TEMP' "C2 domain in temp file: $($_.FullName) ($domain)"
                     }
                 }
             }
 
         $propagation = Join-Path $tmpDir 'temp_auto_push.bat'
         if (Test-Path $propagation) {
-            Add-SystemFinding 'TEMP' "[PROPAGATION] Auto-push script in temp directory: $propagation"
+            Add-SystemFinding 'TEMP' "Propagation script in temp: $propagation"
         }
     }
 }
@@ -1196,7 +1196,7 @@ function Scan-BrowserExtensions {
 
                     foreach ($domain in $C2_DOMAINS) {
                         if ($content.Contains($domain)) {
-                            Add-SystemFinding 'BROWSER' "[C2] Browser extension references C2 ($userName): $($_.FullName) ($domain)"
+                            Add-SystemFinding 'BROWSER' "Browser extension references C2 ($userName): $($_.FullName) ($domain)"
                         }
                     }
                 }
@@ -1945,11 +1945,9 @@ function Export-ScanReport ([int]$ExitCode, [timespan]$Duration) {
     $report = New-JsonReport -ExitCode $ExitCode -Duration $Duration
     $hostname = $env:COMPUTERNAME
     $ts = (Get-Date).ToString('yyyyMMdd-HHmmss')
-    $fileName = "report-${hostname}-${ts}.json"
+    $fileName = "polinrider-report-${hostname}-${ts}.json"
     $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
-    $logDir = Join-Path $scriptDir 'scan-logs\local-windows'
-    $null = New-Item -ItemType Directory -Force -Path $logDir -ErrorAction SilentlyContinue
-    $filePath = Join-Path $logDir $fileName
+    $filePath = Join-Path $scriptDir $fileName
     $savedPath = $null
 
     try {
