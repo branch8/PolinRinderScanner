@@ -38,6 +38,8 @@ JSON_FILE=""
 GIT_GREP_TIMEOUT=30
 GIT_NET_TIMEOUT=120
 CLEAN_REPO=0
+RESTART=0
+RESUME_MODE=0
 
 # ---------------------------------------------------------------------------
 # Variant 1 signatures (original — rmcej%otb%)
@@ -132,6 +134,7 @@ print_usage() {
     printf "  --github <owner>    Scan all repos of a user/org (repeatable)\n"
     printf "  --ssh-host <host>   SSH host alias for cloning (default: git@github.com)
   --https             Clone via HTTPS instead of SSH (use if SSH key not set up)\n"
+    printf "  --restart           Clear previous scan state and rescan all repos\n"
     printf "  --parallel <n>      Max parallel clone workers (default: 6)\n"
     printf "  --clone-delay <s>   Seconds between clone starts (default: 0.5)\n"
     printf "  --clean-repo        Remove cloned repos after scan (default: keep in repos/)\n"
@@ -228,6 +231,70 @@ ui_mark_state() {
     : > "${status_dir}/${repo_short}.${state}"
 }
 
+# ---------------------------------------------------------------------------
+# Persistent resume state helpers
+# State dir: scan-bare-clones/<owner>/.scan-state/
+#   last-run-time     — timestamp of last run
+#   last-results-dir  — path to last run's infected-repos dir
+#   <repo_short>      — per-repo result: "infected N" | "clean" | "error"
+# ---------------------------------------------------------------------------
+_state_dir() { printf "scan-bare-clones/%s/.scan-state" "$1"; }
+
+check_previous_run() {
+    local owner="$1"
+    local sd
+    sd="$(_state_dir "$owner")"
+    RESUME_MODE=0
+
+    if [ ! -d "$sd" ] || [ -z "$(ls -A "$sd" 2>/dev/null)" ]; then
+        return
+    fi
+
+    local last_ts done_count infected_count
+    last_ts=$(cat "${sd}/last-run-time" 2>/dev/null || printf "unknown")
+    done_count=$(find "$sd" -maxdepth 1 -type f \
+        ! -name 'last-run-time' ! -name 'last-results-dir' 2>/dev/null | wc -l | tr -d ' ')
+    infected_count=$(grep -rl '^infected' "$sd" 2>/dev/null | wc -l | tr -d ' ')
+
+    printf "\n${BOLD}[%s] Previous scan found:${RESET}\n" "$owner"
+    printf "  Time:      %s\n" "$last_ts"
+    printf "  Completed: %d repo(s)   infected: %d\n" "$done_count" "$infected_count"
+
+    if [ "$RESTART" -eq 1 ]; then
+        printf "  -> Restart mode (--restart), clearing previous state...\n\n"
+        rm -rf "$sd"
+        return
+    fi
+
+    [ ! -t 0 ] && return
+
+    printf "\n  [Y] Resume  — skip already-done %d repo(s)\n" "$done_count"
+    printf "  [r] Restart — rescan everything\n"
+    printf "  [n] Cancel\n"
+    printf "> " >/dev/tty
+    local answer
+    read -r answer </dev/tty
+    printf "\n"
+    case "$answer" in
+        [rR]*) rm -rf "$sd" ;;
+        [nN]*) printf "Cancelled.\n"; exit 0 ;;
+        *) RESUME_MODE=1 ;;
+    esac
+}
+
+persist_repo_result() {
+    local owner="$1" repo_short="$2" result="$3"
+    local sd
+    sd="$(_state_dir "$owner")"
+    mkdir -p "$sd"
+    printf "%s\n" "$result" > "${sd}/${repo_short}"
+    date '+%Y-%m-%d %H:%M:%S' > "${sd}/last-run-time"
+}
+
+repo_already_done() {
+    [ -f "$(_state_dir "$1")/$2" ]
+}
+
 render_progress_bar() {
     local owner="$1"
     local total="$2"
@@ -259,9 +326,9 @@ render_progress_bar() {
         printf "\033[%sA" "$PROGRESS_LINES"
     fi
 
-    printf "\033[2K${CYAN}[%s]${RESET} [%s%s] %3d%%  done:%d/%d  ${RED}infected:%d${RESET}  active:%d\n" \
+    printf "\033[2K${CYAN}[%s]${RESET} [%s%s] %3d%%  done:%d/%d  ${RED}infected:%d${RESET}  workers:%d\n" \
         "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$infected" "$running"
-    printf "\033[2K  處理中: %-60s | %s\n" "$active_repos" "$latest_event"
+    printf "\033[2K  scanning: %-60s | %s\n" "$active_repos" "$latest_event"
     PROGRESS_LINES=2
 }
 
@@ -776,6 +843,22 @@ scan_single_repo_worker() {
     local bare_dir="scan-bare-clones/${owner}/${repo_short}.git"
     local worker_prefix="[${owner}] #${repo_idx}"
 
+    # Resume mode: skip repos already completed in a previous run
+    if [ "$RESUME_MODE" -eq 1 ] && repo_already_done "$owner" "$repo_short"; then
+        local _prev_result _old_results_dir
+        _prev_result=$(cat "$(_state_dir "$owner")/${repo_short}" 2>/dev/null || true)
+        _old_results_dir=$(cat "$(_state_dir "$owner")/last-results-dir" 2>/dev/null || true)
+        case "$_prev_result" in
+            infected*)
+                if [ -n "$_old_results_dir" ] && [ -f "${_old_results_dir}/${repo_short}.log" ]; then
+                    cp "${_old_results_dir}/${repo_short}.log" "${results_dir}/${repo_short}.log" 2>/dev/null || true
+                fi
+                ;;
+        esac
+        ui_mark_state "$status_dir" "$repo_short" "done"
+        return 0
+    fi
+
     mkdir -p "scan-bare-clones/${owner}"
     printf "%s\n" "$repo_short" > "${status_dir}/active-${repo_short}"
 
@@ -829,11 +912,13 @@ scan_single_repo_worker() {
         finding_count=$(wc -l < "$scan_results" | tr -d ' ')
         ui_emit_event "$status_dir" "${worker_prefix} INFECTED ${full_name} (${finding_count} findings)"
         ui_mark_state "$status_dir" "$repo_short" "infected"
+        persist_repo_result "$owner" "$repo_short" "infected ${finding_count}"
     else
         local result_file="${results_dir}/${repo_short}.clean"
         printf "repo=%s\n" "$full_name" > "$result_file"
         ui_emit_event "$status_dir" "${worker_prefix} CLEAN ${full_name}"
         ui_mark_state "$status_dir" "$repo_short" "clean"
+        persist_repo_result "$owner" "$repo_short" "clean"
     fi
 
     rm -f "${status_dir}/active-${repo_short}"
@@ -850,6 +935,8 @@ scan_single_repo_worker() {
 # ---------------------------------------------------------------------------
 scan_github_owner() {
     local owner="$1"
+
+    check_previous_run "$owner"
 
     log_msg "[${owner}] Listing repositories..."
 
@@ -885,6 +972,11 @@ scan_github_owner() {
     scan_timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
     GITHUB_RESULTS_DIR="infected-repos/${scan_timestamp}"
     mkdir -p "$GITHUB_RESULTS_DIR"
+
+    local _sd
+    _sd="$(_state_dir "$owner")"
+    mkdir -p "$_sd"
+    printf "%s\n" "$GITHUB_RESULTS_DIR" > "${_sd}/last-results-dir"
 
     # Track results dirs for deferred JSON generation
     JSON_RESULT_DIRS="${JSON_RESULT_DIRS:+${JSON_RESULT_DIRS} }${GITHUB_RESULTS_DIR}"
@@ -1233,6 +1325,10 @@ while [ $# -gt 0 ]; do
             ;;
         --https)
             USE_HTTPS=1
+            shift
+            ;;
+        --restart)
+            RESTART=1
             shift
             ;;
         --parallel)
