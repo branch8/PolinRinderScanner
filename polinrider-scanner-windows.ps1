@@ -1,7 +1,6 @@
 #Requires -Version 5.1
 <#
     PolinRider Malware Scanner v1.3 (Windows)
-    https://opensourcemalware.com
 
     Scans a Windows system for PolinRider / TasksJacker malware indicators.
     Detects both obfuscator variants (rmcej%otb% and Cot%3t=shtP),
