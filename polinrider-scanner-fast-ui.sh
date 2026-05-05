@@ -211,7 +211,7 @@ ui_mark_state() {
     : > "${status_dir}/${repo_short}.${state}"
 }
 
-render_progress_dashboard() {
+render_progress_bar() {
     local owner="$1"
     local total="$2"
     local running="$3"
@@ -232,19 +232,23 @@ render_progress_dashboard() {
         latest_event="Waiting for workers..."
     fi
 
+    local percent=$((done * 100 / total))
+    local width=30
+    local fill=$((done * width / total))
+    local empty=$((width - fill))
+    local bar_fill bar_empty
+    bar_fill="$(printf "%${fill}s" "" | tr ' ' '#')"
+    bar_empty="$(printf "%${empty}s" "" | tr ' ' '-')"
+
     if [ "$PROGRESS_LINES" -gt 0 ]; then
         printf "\033[%sA" "$PROGRESS_LINES"
     fi
 
-    printf "\033[2K############################################################\n"
-    printf "\033[2K# PolinRider Scanner V%s  owner:%s\n" "$VERSION" "$owner"
-    printf "\033[2K############################################################\n"
-    printf "\033[2K| Total Repos | Cloned | Scanned | Infected | Clean | Active |\n"
-    printf "\033[2K| %11d | %6d | %7d | %8d | %5d | %6d |\n" "$total" "$cloned" "$scanned" "$infected" "$clean" "$running"
-    printf "\033[2K| Completed: %d/%d\n" "$done" "$total"
-    printf "\033[2K| Latest: %s\n" "$latest_event"
-    printf "\033[2K\n"
-    PROGRESS_LINES=8
+    printf "\033[2K${CYAN}[%s]${RESET} [%s%s] %3d%%  %d/%d  ${RED}infected:%d${RESET}  active:%d\n" \
+        "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$infected" "$running"
+    printf "\033[2K  clone:%d  scan:%d  clean:%d  | %s\n" \
+        "$cloned" "$scanned" "$clean" "$latest_event"
+    PROGRESS_LINES=2
 }
 
 clear_progress_line() {
@@ -864,7 +868,7 @@ scan_github_owner() {
 
     if [ "$PROGRESS_UI" -eq 1 ]; then
         ui_emit_event "$status_dir" "[${owner}] Starting scan..."
-        render_progress_dashboard "$owner" "$repo_count" 0 "$status_dir"
+        render_progress_bar "$owner" "$repo_count" 0 "$status_dir"
     fi
 
     while IFS= read -r full_name; do
@@ -875,7 +879,7 @@ scan_github_owner() {
             wait -n 2>/dev/null || true
             running_jobs=$((running_jobs - 1))
             if [ "$PROGRESS_UI" -eq 1 ]; then
-                render_progress_dashboard "$owner" "$repo_count" "$running_jobs" "$status_dir"
+                render_progress_bar "$owner" "$repo_count" "$running_jobs" "$status_dir"
             fi
         done
 
@@ -884,7 +888,7 @@ scan_github_owner() {
         running_jobs=$((running_jobs + 1))
 
         if [ "$PROGRESS_UI" -eq 1 ]; then
-            render_progress_dashboard "$owner" "$repo_count" "$running_jobs" "$status_dir"
+            render_progress_bar "$owner" "$repo_count" "$running_jobs" "$status_dir"
         fi
 
         sleep "$CLONE_DELAY"
@@ -898,7 +902,7 @@ GHREPOEOF
             running_jobs=$((running_jobs - 1))
         fi
         if [ "$PROGRESS_UI" -eq 1 ]; then
-            render_progress_dashboard "$owner" "$repo_count" "$running_jobs" "$status_dir"
+            render_progress_bar "$owner" "$repo_count" "$running_jobs" "$status_dir"
         fi
     done
 
@@ -915,7 +919,7 @@ GHREPOEOF
 
     if [ "$PROGRESS_UI" -eq 1 ]; then
         ui_emit_event "$status_dir" "[${owner}] Complete: ${repo_count} repos, ${gh_infected} infected, ${gh_clean} clean"
-        render_progress_dashboard "$owner" "$repo_count" 0 "$status_dir"
+        render_progress_bar "$owner" "$repo_count" 0 "$status_dir"
         clear_progress_line
     fi
 

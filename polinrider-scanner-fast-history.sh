@@ -109,6 +109,7 @@ fi
 TOTAL_REPOS=0
 INFECTED_REPOS=0
 PROGRESS_UI=0
+PROGRESS_LINES=0
 
 # ---------------------------------------------------------------------------
 # Utility functions
@@ -206,15 +207,38 @@ init_progress_ui() {
     fi
 }
 
-render_progress_line() {
+ui_emit_event() {
+    local status_dir="$1"
+    local msg="$2"
+    printf "%s\n" "$msg" > "${status_dir}/latest-event"
+}
+
+ui_mark_state() {
+    local status_dir="$1"
+    local repo_short="$2"
+    local state="$3"
+    : > "${status_dir}/${repo_short}.${state}"
+}
+
+render_progress_bar() {
     local owner="$1"
-    local done="$2"
-    local total="$3"
-    local infected="$4"
-    local running="$5"
+    local total="$2"
+    local running="$3"
+    local status_dir="$4"
 
     if [ "$PROGRESS_UI" -ne 1 ] || [ "$total" -le 0 ]; then
         return
+    fi
+
+    local cloned scanned infected clean done latest_event
+    cloned=$(find "$status_dir" -type f -name '*.cloned' 2>/dev/null | wc -l | tr -d ' ')
+    scanned=$(find "$status_dir" -type f -name '*.scanned' 2>/dev/null | wc -l | tr -d ' ')
+    infected=$(find "$status_dir" -type f -name '*.infected' 2>/dev/null | wc -l | tr -d ' ')
+    clean=$(find "$status_dir" -type f -name '*.clean' 2>/dev/null | wc -l | tr -d ' ')
+    done=$(find "$status_dir" -type f -name '*.done' 2>/dev/null | wc -l | tr -d ' ')
+    latest_event="$(cat "${status_dir}/latest-event" 2>/dev/null || true)"
+    if [ -z "$latest_event" ]; then
+        latest_event="Waiting for workers..."
     fi
 
     local percent=$((done * 100 / total))
@@ -225,12 +249,20 @@ render_progress_line() {
     bar_fill="$(printf "%${fill}s" "" | tr ' ' '#')"
     bar_empty="$(printf "%${empty}s" "" | tr ' ' '-')"
 
-    printf "\r${CYAN}[%s]${RESET} [%s%s] %3d%%  %d/%d  infected:%d  active:%d" \
+    if [ "$PROGRESS_LINES" -gt 0 ]; then
+        printf "\033[%sA" "$PROGRESS_LINES"
+    fi
+
+    printf "\033[2K${CYAN}[%s]${RESET} [%s%s] %3d%%  %d/%d  ${RED}infected:%d${RESET}  active:%d\n" \
         "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$infected" "$running"
+    printf "\033[2K  clone:%d  scan:%d  clean:%d  | %s\n" \
+        "$cloned" "$scanned" "$clean" "$latest_event"
+    PROGRESS_LINES=2
 }
 
 clear_progress_line() {
     if [ "$PROGRESS_UI" -eq 1 ]; then
+        PROGRESS_LINES=0
         printf "\n"
     fi
 }
@@ -695,15 +727,20 @@ scan_single_repo_worker() {
 
     local repo_short="${full_name#*/}"
     local bare_dir="${tmp_dir}/${repo_short}.git"
+    local worker_prefix="[${owner}] [${repo_idx}/${repo_count}]"
 
-    log_msg "[${owner}] [${repo_idx}/${repo_count}] Cloning (bare) ${full_name}..."
+    ui_emit_event "$status_dir" "${worker_prefix} Cloning ${full_name}..."
+    log_msg "${worker_prefix} Cloning (bare) ${full_name}..."
 
     if ! git clone --bare --quiet "${SSH_HOST}:${full_name}.git" "$bare_dir" 2>&1; then
-        log_msg "[${owner}] [${repo_idx}/${repo_count}] ERROR: Clone failed, skipping"
-        : > "${status_dir}/${repo_short}.done"
+        log_msg "${worker_prefix} ERROR: Clone failed, skipping"
+        ui_emit_event "$status_dir" "${worker_prefix} ERROR: Clone failed for ${full_name}"
+        ui_mark_state "$status_dir" "$repo_short" "done"
         rm -rf "$bare_dir" 2>/dev/null
         return 1
     fi
+    ui_mark_state "$status_dir" "$repo_short" "cloned"
+    ui_emit_event "$status_dir" "${worker_prefix} Scanning ${full_name}..."
 
     local scan_results
     scan_results=$(mktemp)
@@ -712,6 +749,7 @@ scan_single_repo_worker() {
 
     scan_bare_repo "$bare_dir" "$scan_results"
     local scan_exit=$?
+    ui_mark_state "$status_dir" "$repo_short" "scanned"
 
     scan_commit_history "$bare_dir" "$history_results"
     local history_exit=$?
@@ -731,11 +769,11 @@ scan_single_repo_worker() {
 
         local finding_count
         finding_count=$(wc -l < "$scan_results" | tr -d ' ')
-        log_msg "[${owner}] [${repo_idx}/${repo_count}] INFECTED (${finding_count} findings)"
-        : > "${status_dir}/${repo_short}.infected"
+        log_msg "${worker_prefix} INFECTED (${finding_count} findings)"
+        ui_emit_event "$status_dir" "${worker_prefix} INFECTED ${full_name} (${finding_count} findings)"
+        ui_mark_state "$status_dir" "$repo_short" "infected"
 
     elif [ "$has_history" -eq 1 ]; then
-        # Payload found in history but not in current branches — previously infected, now cleaned
         local result_file="${results_dir}/${repo_short}.history"
         {
             printf "repo=%s\n" "$full_name"
@@ -744,16 +782,19 @@ scan_single_repo_worker() {
 
         local history_count
         history_count=$(wc -l < "$history_results" | tr -d ' ')
-        log_msg "[${owner}] [${repo_idx}/${repo_count}] HISTORY (${history_count} past commit(s) — payload cleaned)"
-        : > "${status_dir}/${repo_short}.infected"
+        log_msg "${worker_prefix} HISTORY (${history_count} past commit(s) — payload cleaned)"
+        ui_emit_event "$status_dir" "${worker_prefix} HISTORY ${full_name} (${history_count} past commits — cleaned)"
+        ui_mark_state "$status_dir" "$repo_short" "infected"
 
     else
         local result_file="${results_dir}/${repo_short}.clean"
         printf "repo=%s\n" "$full_name" > "$result_file"
-        log_msg "[${owner}] [${repo_idx}/${repo_count}] clean"
+        log_msg "${worker_prefix} clean"
+        ui_emit_event "$status_dir" "${worker_prefix} CLEAN ${full_name}"
+        ui_mark_state "$status_dir" "$repo_short" "clean"
     fi
 
-    : > "${status_dir}/${repo_short}.done"
+    ui_mark_state "$status_dir" "$repo_short" "done"
     rm -f "$scan_results" "$history_results"
     rm -rf "$bare_dir"
 }
@@ -810,7 +851,8 @@ scan_github_owner() {
     mkdir -p "$status_dir"
 
     if [ "$PROGRESS_UI" -eq 1 ]; then
-        render_progress_line "$owner" 0 "$repo_count" 0 0
+        ui_emit_event "$status_dir" "[${owner}] Starting scan..."
+        render_progress_bar "$owner" "$repo_count" 0 "$status_dir"
     fi
 
     while IFS= read -r full_name; do
@@ -821,10 +863,7 @@ scan_github_owner() {
             wait -n 2>/dev/null || true
             running_jobs=$((running_jobs - 1))
             if [ "$PROGRESS_UI" -eq 1 ]; then
-                local done_count infected_count
-                done_count=$(find "$status_dir" -type f -name '*.done' 2>/dev/null | wc -l | tr -d ' ')
-                infected_count=$(find "$status_dir" -type f -name '*.infected' 2>/dev/null | wc -l | tr -d ' ')
-                render_progress_line "$owner" "$done_count" "$repo_count" "$infected_count" "$running_jobs"
+                render_progress_bar "$owner" "$repo_count" "$running_jobs" "$status_dir"
             fi
         done
 
@@ -833,10 +872,7 @@ scan_github_owner() {
         running_jobs=$((running_jobs + 1))
 
         if [ "$PROGRESS_UI" -eq 1 ]; then
-            local done_count infected_count
-            done_count=$(find "$status_dir" -type f -name '*.done' 2>/dev/null | wc -l | tr -d ' ')
-            infected_count=$(find "$status_dir" -type f -name '*.infected' 2>/dev/null | wc -l | tr -d ' ')
-            render_progress_line "$owner" "$done_count" "$repo_count" "$infected_count" "$running_jobs"
+            render_progress_bar "$owner" "$repo_count" "$running_jobs" "$status_dir"
         fi
 
         sleep "$CLONE_DELAY"
@@ -850,10 +886,7 @@ GHREPOEOF
             running_jobs=$((running_jobs - 1))
         fi
         if [ "$PROGRESS_UI" -eq 1 ]; then
-            local done_count infected_count
-            done_count=$(find "$status_dir" -type f -name '*.done' 2>/dev/null | wc -l | tr -d ' ')
-            infected_count=$(find "$status_dir" -type f -name '*.infected' 2>/dev/null | wc -l | tr -d ' ')
-            render_progress_line "$owner" "$done_count" "$repo_count" "$infected_count" "$running_jobs"
+            render_progress_bar "$owner" "$repo_count" "$running_jobs" "$status_dir"
         fi
     done
 
@@ -874,7 +907,7 @@ GHREPOEOF
     INFECTED_REPOS=$((INFECTED_REPOS + gh_infected))
 
     if [ "$PROGRESS_UI" -eq 1 ]; then
-        render_progress_line "$owner" "$repo_count" "$repo_count" "$gh_infected" 0
+        render_progress_bar "$owner" "$repo_count" 0 "$status_dir"
         clear_progress_line
     fi
 
