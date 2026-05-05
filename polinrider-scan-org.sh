@@ -452,6 +452,9 @@ scan_bare_repo() {
     local bare_dir="$1"
     local results_file="$2"
     local repo_name="$3"
+    local _sd="${4:-}"
+    local _wp="${5:-}"
+    _ep() { [ -n "$_sd" ] && ui_emit_event "$_sd" "${_wp} ${repo_name} — ${1}"; }
 
     : > "$results_file"
 
@@ -477,6 +480,7 @@ REFSEOF
     fi
 
     log_verbose "Scanning ${ref_count} branch(es) via git grep"
+    _ep "${ref_count} branches — signatures..."
 
     # --- Pass 1: Primary signatures (batched multi-pattern git grep) ---
     # Single git grep with all 6 patterns finds candidate files, then we
@@ -569,6 +573,7 @@ REFSEOF
     rm -f "$compound_file"
 
     # --- Pass 3: Malicious npm packages (single batched git grep) ---
+    _ep "npm packages..."
     local pkg_out
     pkg_out=$(mktemp)
     local pkg_grep_args=""
@@ -620,6 +625,7 @@ REFSEOF
     rm -f "$pkg_out"
 
     # --- Pass 4: C2 domains (single batched git grep) ---
+    _ep "C2 domains / blockchain..."
     local c2_out
     c2_out=$(mktemp)
     # shellcheck disable=SC2086
@@ -701,6 +707,7 @@ REFSEOF
     rm -f "$multi_out"
 
     # --- Passes 6-10: IDE config checks (run in parallel) ---
+    _ep "IDE configs..."
     local ide_results_8 ide_results_9 ide_results_10 ide_results_11 ide_results_12
     ide_results_8=$(mktemp)
     ide_results_9=$(mktemp)
@@ -940,7 +947,7 @@ scan_single_repo_worker() {
     local scan_results
     scan_results=$(mktemp)
 
-    scan_bare_repo "$bare_dir" "$scan_results" "$full_name"
+    scan_bare_repo "$bare_dir" "$scan_results" "$full_name" "$status_dir" "$worker_prefix"
     local scan_exit=$?
     ui_mark_state "$status_dir" "$repo_short" "scanned"
 

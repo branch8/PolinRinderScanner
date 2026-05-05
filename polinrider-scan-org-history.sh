@@ -399,6 +399,10 @@ clear_progress_line() {
 scan_bare_repo() {
     local bare_dir="$1"
     local results_file="$2"
+    local _sd="${3:-}"
+    local _wp="${4:-}"
+    local _rn="${5:-}"
+    _ep() { [ -n "$_sd" ] && ui_emit_event "$_sd" "${_wp} ${_rn} — ${1}"; }
 
     : > "$results_file"
 
@@ -420,6 +424,7 @@ REFSEOF
     fi
 
     log_verbose "Scanning ${ref_count} branch(es) via git grep"
+    _ep "${ref_count} branches — signatures..."
 
     # --- Pass 1: Primary signatures (high-confidence, single-pattern) ---
     # These alone confirm infection.
@@ -528,6 +533,7 @@ SIGSEOF
     rm -f "$compound_file"
 
     # --- Pass 3: Malicious npm packages (git grep for each) ---
+    _ep "npm packages..."
     local old_ifs="$IFS"
     IFS=' '
     for mal_pkg in $MALICIOUS_NPM_PKGS; do
@@ -552,6 +558,7 @@ SIGSEOF
     IFS="$old_ifs"
 
     # --- Pass 4: C2 domains in IDE configs ---
+    _ep "C2 domains..."
     old_ifs="$IFS"
     IFS=' '
     for domain in $C2_DOMAINS; do
@@ -638,6 +645,7 @@ SIGSEOF
     rm -f "$prop_out"
 
     # --- Pass 8: IDE config compound checks (curl|bash + folderOpen) ---
+    _ep "IDE configs..."
     local curl_out
     curl_out=$(mktemp)
     # shellcheck disable=SC2086
@@ -786,6 +794,10 @@ SIGSEOF
 scan_commit_history() {
     local bare_dir="$1"
     local results_file="$2"
+    local _sd="${3:-}"
+    local _wp="${4:-}"
+    local _rn="${5:-}"
+    _ep() { [ -n "$_sd" ] && ui_emit_event "$_sd" "${_wp} ${_rn} — ${1}"; }
 
     : > "$results_file"
 
@@ -794,9 +806,11 @@ scan_commit_history() {
 
     # --format="%h|%ai|%an|%ae|%s": short hash | ISO date | author name | author email | subject
     # -S searches commits where the string count changed (i.e. was added or removed).
+    _ep "commit history (V1)..."
     history_v1=$(git -C "$bare_dir" log --all \
         -S "$V1_MARKER" --format="%h|%ai|%an|%ae|%s" 2>/dev/null) || true
 
+    _ep "commit history (V2)..."
     history_v2=$(git -C "$bare_dir" log --all \
         -S "$V2_MARKER" --format="%h|%ai|%an|%ae|%s" 2>/dev/null) || true
 
@@ -907,11 +921,11 @@ scan_single_repo_worker() {
     local history_results
     history_results=$(mktemp)
 
-    scan_bare_repo "$bare_dir" "$scan_results"
+    scan_bare_repo "$bare_dir" "$scan_results" "$status_dir" "$worker_prefix" "$full_name"
     local scan_exit=$?
     ui_mark_state "$status_dir" "$repo_short" "scanned"
 
-    scan_commit_history "$bare_dir" "$history_results"
+    scan_commit_history "$bare_dir" "$history_results" "$status_dir" "$worker_prefix" "$full_name"
     local history_exit=$?
 
     local is_infected=0
