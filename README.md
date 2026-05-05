@@ -54,13 +54,19 @@ Bare-clones every repo in the org and runs `git grep` across all branches in one
 
 # Verbose output (shows every check per repo)
 ./polinrider-scan-org.sh --github branch8 --verbose
+
+# Force a full rescan, ignoring any previous scan state
+./polinrider-scan-org.sh --github branch8 --restart
 ```
+
+**Resume / Restart:** Scan state is saved in `scan-bare-clones/<owner>/.scan-state/` after each repo completes. On the next run you will be prompted to resume (skip already-done repos), restart from scratch, or cancel. Use `--restart` to skip the prompt and force a full rescan.
 
 **Output:**
 - `scan-logs/org/scan-<timestamp>.log` — human-readable summary
 - `scan-logs/org/result.json` — JSON report (with `--log-json`)
 - `infected-repos/<timestamp>/` — per-repo detail for every infected repo
 - `scan-bare-clones/<owner>/` — cached bare clones (reused on next run)
+- `scan-bare-clones/<owner>/.scan-state/` — persistent resume state
 
 ---
 
@@ -80,15 +86,21 @@ Same bare-clone approach, but scans **every commit** across the full git history
 
 # JSON report
 ./polinrider-scan-org-history.sh --github branch8 --log-json
+
+# Force a full rescan, ignoring any previous scan state
+./polinrider-scan-org-history.sh --github branch8 --restart
 ```
 
 > When the scan finishes you will be prompted whether to keep the cloned repos.
 > Default answer is **N (delete)** — press Y to keep them in `scan-bare-clones/`.
 
+**Resume / Restart:** Same as the org scanner — state is saved per repo. On the next run you will be prompted to resume or restart. Use `--restart` to force a full rescan without prompting.
+
 **Output:**
 - `scan-logs/org-history/scan-<timestamp>.log`
 - `scan-logs/org-history/result.json` (with `--log-json`)
 - `infected-repos/<timestamp>/`
+- `scan-bare-clones/<owner>/.scan-state/` — persistent resume state
 
 ---
 
