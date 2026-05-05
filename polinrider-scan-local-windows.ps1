@@ -473,13 +473,20 @@ function Scan-Repo ([string]$RepoDir) {
 
                 # Prompt injection (.claude / .cursor only)
                 if ($ideName -eq '.claude' -or $ideName -eq '.cursor') {
-                    if ($content -match '(ignore previous|ignore above|disregard|forget all|new instructions|you are now|act as|pretend)') {
-                        Add-RepoFinding $rel 'Prompt injection pattern detected' 'HIGH'
-                        $findingCount++
-                    }
-                    if ($content -match '(curl|wget|fetch|https?)://') {
-                        Add-RepoFinding $rel 'External URL in agent config' 'MEDIUM'
-                        $findingCount++
+                    # settings.local.json is Claude Code's own machine-local config — skip heuristics
+                    $isClaudeSettings = ($rel -eq '.claude\settings.local.json' -or $rel -eq '.claude/settings.local.json')
+                    # Cursor team workflow dirs legitimately contain Jira/Teams URLs — skip External URL check
+                    $isCursorWorkflow = ($rel -match '^\.cursor[/\\](rules|commands|skills)[/\\]')
+
+                    if (-not $isClaudeSettings) {
+                        if ($content -match '(ignore previous|ignore above|disregard|forget all|new instructions|you are now|act as|pretend)') {
+                            Add-RepoFinding $rel 'Prompt injection pattern detected' 'HIGH'
+                            $findingCount++
+                        }
+                        if (-not $isCursorWorkflow -and $content -match '(curl|wget|fetch|https?)://') {
+                            Add-RepoFinding $rel 'External URL in agent config' 'MEDIUM'
+                            $findingCount++
+                        }
                     }
                 }
             }

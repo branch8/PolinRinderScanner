@@ -618,6 +618,8 @@ SIGSEOF
             if [ "$ref" = "$hit_line" ] || [ -z "$filepath" ]; then continue; fi
             local branch="${ref#refs/heads/}"
             case "$branch" in origin/*|*/HEAD) continue ;; esac
+            # Skip Claude Code's own local config — legitimately contains token/credential terms
+            case "$filepath" in */.claude/settings.local.json) continue ;; esac
 
             local content
             content="$(git -C "$bare_dir" show "refs/heads/${branch}:${filepath}" 2>/dev/null)" || continue
@@ -643,6 +645,11 @@ SIGSEOF
             if [ "$ref" = "$hit_line" ] || [ -z "$filepath" ]; then continue; fi
             local branch="${ref#refs/heads/}"
             case "$branch" in origin/*|*/HEAD) continue ;; esac
+            # Skip known-legitimate paths: Claude Code local config and Cursor team workflow files
+            case "$filepath" in
+                */.claude/settings.local.json) continue ;;
+                */.cursor/rules/*|*/.cursor/commands/*|*/.cursor/skills/*) continue ;;
+            esac
             printf 'FINDING\t%s\t%s\t[SUSPICIOUS] External URL in agent config — possible data exfiltration\n' "$branch" "$filepath" >> "$results_file"
         done < "$url_out"
     fi

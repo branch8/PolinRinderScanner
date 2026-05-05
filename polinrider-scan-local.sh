@@ -543,37 +543,47 @@ JSEOF
 
             # Prompt injection checks (.claude and .cursor only)
             if [ "$ide_dir_name" = ".claude" ] || [ "$ide_dir_name" = ".cursor" ]; then
-                # Shell command injection via prompt instructions
-                if grep -qiE '(run|execute|shell|bash|system)\s*\(' "$ide_file" 2>/dev/null || \
-                   grep -qiE '(subprocess|os\.system|child_process|execSync)' "$ide_file" 2>/dev/null; then
-                    findings="${findings}  ${YELLOW}-${RESET} ${BOLD}${relpath}${RESET}: Shell/command execution reference in agent config — verify manually\n"
-                    ide_hit=1
-                fi
-                # Exfiltration patterns in agent instructions
-                if grep -qiE '(curl|wget|fetch|http|https)://' "$ide_file" 2>/dev/null; then
-                    findings="${findings}  ${YELLOW}-${RESET} ${BOLD}${relpath}${RESET}: External URL in agent config — potential exfiltration vector\n"
-                    ide_hit=1
-                fi
-                # Base64-encoded payloads hidden in agent config
-                if grep -qE '[A-Za-z0-9+/]{60,}={0,2}' "$ide_file" 2>/dev/null; then
-                    findings="${findings}  ${YELLOW}-${RESET} ${BOLD}${relpath}${RESET}: Long base64 string in agent config — verify manually\n"
-                    ide_hit=1
-                fi
-                # Instruction override / role hijacking
-                if grep -qiE '(ignore previous|ignore above|disregard|forget all|new instructions|you are now|act as|pretend)' "$ide_file" 2>/dev/null; then
-                    findings="${findings}  ${RED}-${RESET} ${BOLD}${relpath}${RESET}: Prompt injection pattern (instruction override) detected\n"
-                    ide_hit=1
-                fi
-                # Hidden unicode / zero-width characters used to hide malicious instructions
-                if grep -qP '[\x{200B}\x{200C}\x{200D}\x{2060}\x{FEFF}]' "$ide_file" 2>/dev/null; then
-                    findings="${findings}  ${RED}-${RESET} ${BOLD}${relpath}${RESET}: Hidden zero-width unicode characters — possible concealed instructions\n"
-                    ide_hit=1
-                fi
-                # SSH/credential/token/secret references
-                if grep -qiE '(ssh_key|private_key|api_key|secret|token|password|credential)' "$ide_file" 2>/dev/null; then
-                    if grep -qiE '(read|cat|send|upload|post|exfil|steal|extract)' "$ide_file" 2>/dev/null; then
-                        findings="${findings}  ${RED}-${RESET} ${BOLD}${relpath}${RESET}: Credential access + exfiltration pattern in agent config\n"
+                # settings.local.json is Claude Code's own machine-local config — skip heuristics
+                local _skip_heuristics=0
+                [ "$relpath" = ".claude/settings.local.json" ] && _skip_heuristics=1
+
+                if [ "$_skip_heuristics" -eq 0 ]; then
+                    # Shell command injection via prompt instructions
+                    if grep -qiE '(run|execute|shell|bash|system)\s*\(' "$ide_file" 2>/dev/null || \
+                       grep -qiE '(subprocess|os\.system|child_process|execSync)' "$ide_file" 2>/dev/null; then
+                        findings="${findings}  ${YELLOW}-${RESET} ${BOLD}${relpath}${RESET}: Shell/command execution reference in agent config — verify manually\n"
                         ide_hit=1
+                    fi
+                    # External URL — skip for .cursor/rules|commands|skills (legitimately contain Jira/Teams URLs)
+                    local _skip_url=0
+                    case "$relpath" in .cursor/rules/*|.cursor/commands/*|.cursor/skills/*) _skip_url=1 ;; esac
+                    if [ "$_skip_url" -eq 0 ]; then
+                        if grep -qiE '(curl|wget|fetch|http|https)://' "$ide_file" 2>/dev/null; then
+                            findings="${findings}  ${YELLOW}-${RESET} ${BOLD}${relpath}${RESET}: External URL in agent config — potential exfiltration vector\n"
+                            ide_hit=1
+                        fi
+                    fi
+                    # Base64-encoded payloads hidden in agent config
+                    if grep -qE '[A-Za-z0-9+/]{60,}={0,2}' "$ide_file" 2>/dev/null; then
+                        findings="${findings}  ${YELLOW}-${RESET} ${BOLD}${relpath}${RESET}: Long base64 string in agent config — verify manually\n"
+                        ide_hit=1
+                    fi
+                    # Instruction override / role hijacking
+                    if grep -qiE '(ignore previous|ignore above|disregard|forget all|new instructions|you are now|act as|pretend)' "$ide_file" 2>/dev/null; then
+                        findings="${findings}  ${RED}-${RESET} ${BOLD}${relpath}${RESET}: Prompt injection pattern (instruction override) detected\n"
+                        ide_hit=1
+                    fi
+                    # Hidden unicode / zero-width characters used to hide malicious instructions
+                    if grep -qP '[\x{200B}\x{200C}\x{200D}\x{2060}\x{FEFF}]' "$ide_file" 2>/dev/null; then
+                        findings="${findings}  ${RED}-${RESET} ${BOLD}${relpath}${RESET}: Hidden zero-width unicode characters — possible concealed instructions\n"
+                        ide_hit=1
+                    fi
+                    # SSH/credential/token/secret references
+                    if grep -qiE '(ssh_key|private_key|api_key|secret|token|password|credential)' "$ide_file" 2>/dev/null; then
+                        if grep -qiE '(read|cat|send|upload|post|exfil|steal|extract)' "$ide_file" 2>/dev/null; then
+                            findings="${findings}  ${RED}-${RESET} ${BOLD}${relpath}${RESET}: Credential access + exfiltration pattern in agent config\n"
+                            ide_hit=1
+                        fi
                     fi
                 fi
             fi
