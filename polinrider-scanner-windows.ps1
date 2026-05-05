@@ -143,6 +143,7 @@ $script:DnsExfil       = [System.Collections.ArrayList]::new()
 $script:ActiveC2Conns  = [System.Collections.ArrayList]::new()
 $script:SuspiciousProcs = [System.Collections.ArrayList]::new()
 $script:StealerArtifactsFound = $false
+$script:PropagationScriptFound = $false
 $script:RiskScore      = 0
 $script:RiskLevel      = 'NONE'
 $script:ModuleStatus   = [ordered]@{}
@@ -358,6 +359,7 @@ function Scan-Repo ([string]$RepoDir) {
     if (Test-Path $batFile) {
         Add-RepoFinding 'temp_auto_push.bat' 'PolinRider propagation script detected' 'HIGH'
         $null = $script:CleanupBatFiles.Add($batFile)
+        $script:PropagationScriptFound = $true
         $findingCount++
     }
 
@@ -365,6 +367,7 @@ function Scan-Repo ([string]$RepoDir) {
     if (Test-Path $cfgBat) {
         Add-RepoFinding 'config.bat' 'PolinRider hidden orchestrator detected' 'HIGH'
         $null = $script:CleanupBatFiles.Add($cfgBat)
+        $script:PropagationScriptFound = $true
         $findingCount++
     }
 
@@ -1172,6 +1175,7 @@ function Scan-PropagationScripts {
             foreach ($hit in $hits) {
                 Add-SystemFinding 'PROPAGATION' "Propagation script found: $($hit.FullName)"
                 $null = $script:CleanupBatFiles.Add($hit.FullName)
+                $script:PropagationScriptFound = $true
             }
         }
     }
@@ -1448,9 +1452,15 @@ function Write-RiskAssessment {
         $null = $factors.Add("  +$pts  Infected repository/repositories ($($script:InfectedRepos) repo(s))")
     }
 
-    # Other system findings (excluding DNS-* and STEALER categories already scored above)
+    # Propagation scripts (temp_auto_push.bat / config.bat) — presence alone is confirmed infection
+    if ($script:PropagationScriptFound) {
+        $score = 100
+        $null = $factors.Add("  =100 Propagation script(s) found on disk -- confirmed infection")
+    }
+
+    # Other system findings (excluding DNS-*, STEALER, PROPAGATION categories already scored above)
     $otherFindings = @($script:Findings | Where-Object {
-        $_ -notmatch '^\[(DNS-|STEALER)'
+        $_ -notmatch '^\[(DNS-|STEALER|PROPAGATION)'
     }).Count
     if ($otherFindings -gt 0) {
         $pts = [math]::Min($otherFindings * 3, 15)
