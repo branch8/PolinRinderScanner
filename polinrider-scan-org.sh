@@ -1,17 +1,17 @@
 #!/bin/bash
 #
-# PolinRider Malware Scanner v3.0 (Fast GitHub Scanner)
+# PolinRider Org Scanner v3.0
 # https://opensourcemalware.com
 #
-# Optimized GitHub-focused scanner using bare clone + git grep.
-# No branch checkout required — scans ALL branches in a single pass.
-# Compound-condition checks use `git show ref:path` for verification.
+# Scans all GitHub org/user repos for PolinRider/TasksJacker malware.
+# Uses bare clone + git grep — no checkout, scans ALL branches in one pass.
+# Caches clones in scan-bare-clones/ for faster incremental re-runs.
 #
 # Usage:
-#   ./polinrider-scanner-fast.sh --github <owner>              # Scan all repos of org
-#   ./polinrider-scanner-fast.sh --github org1 --github org2   # Multiple orgs
-#   ./polinrider-scanner-fast.sh --parallel 10 --github myorg  # 10 workers
-#   ./polinrider-scanner-fast.sh --log-json --github myorg     # JSON output
+#   ./polinrider-scan-org.sh --github <owner>              # Scan all repos of org
+#   ./polinrider-scan-org.sh --github org1 --github org2   # Multiple orgs
+#   ./polinrider-scan-org.sh --parallel 10 --github myorg  # 10 workers
+#   ./polinrider-scan-org.sh --log-json --github myorg     # JSON output
 #
 # Exit codes:
 #   0 - No infections found
@@ -114,9 +114,9 @@ JSON_RESULT_DIRS=""
 print_banner() {
     printf "\n"
     printf "${BOLD}================================================${RESET}\n"
-    printf "${BOLD}  PolinRider Fast Scanner v%s${RESET}\n" "$VERSION"
+    printf "${BOLD}  PolinRider Org Scanner v%s${RESET}\n" "$VERSION"
     printf "${BOLD}  https://opensourcemalware.com${RESET}\n"
-    printf "${BOLD}  Bare-clone + git-grep (all branches)${RESET}\n"
+    printf "${BOLD}  Bare-clone + git-grep | All branches | Cached${RESET}\n"
     printf "${BOLD}================================================${RESET}\n"
     printf "\n"
 }
@@ -163,8 +163,8 @@ log_msg() {
 init_log() {
     local timestamp
     timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-    mkdir -p scan-logs/fast-ui
-    LOG_FILE="scan-logs/fast-ui/scan-${timestamp}.log"
+    mkdir -p scan-logs/org
+    LOG_FILE="scan-logs/org/scan-${timestamp}.log"
     : > "$LOG_FILE"
     SCAN_START_TIME="$(date '+%s')"
     log_msg "PolinRider Fast Scanner v${VERSION} started"
@@ -965,8 +965,8 @@ generate_text_report() {
 
     local timestamp
     timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-    mkdir -p scan-logs/fast-ui
-    REPORT_FILE="scan-logs/fast-ui/report-${owner}-${timestamp}.txt"
+    mkdir -p scan-logs/org
+    REPORT_FILE="scan-logs/org/report-${owner}-${timestamp}.txt"
 
     local infected_count=0
     local infected_details=""
@@ -1153,8 +1153,8 @@ generate_json_report() {
     local results_dirs="$1"
 
     mkdir -p logs
-    mkdir -p scan-logs/fast-ui
-    JSON_FILE="scan-logs/fast-ui/result.json"
+    mkdir -p scan-logs/org
+    JSON_FILE="scan-logs/org/result.json"
 
     local first_repo=1
     printf '[\n' > "$JSON_FILE"

@@ -1,18 +1,19 @@
 #!/bin/bash
 #
-# PolinRider Malware Scanner v2.1
+# PolinRider Local Scanner v2.1
 # https://opensourcemalware.com
 #
-# Full-system macOS scanner for PolinRider / TasksJacker malware.
+# Scans local macOS/Linux machine for PolinRider / TasksJacker malware.
 # Detects both obfuscator variants (rmcej%otb% and Cot%3t=shtP),
 # malicious npm packages, weaponized .vscode/tasks.json, fake font
-# payloads, persistence mechanisms, and active C2 connections.
+# payloads, persistence mechanisms (macOS: LaunchAgents), and active C2 connections.
+# For GitHub org scanning use: polinrider-scan-org.sh / polinrider-scan-org-history.sh
 #
 # Usage:
-#   ./polinrider-scanner.sh                              # Scan current directory (repos only)
-#   ./polinrider-scanner.sh --full-system                # Full macOS device scan
-#   ./polinrider-scanner.sh --quick                      # Quick scan (processes + signatures)
-#   ./polinrider-scanner.sh --verbose /path/to/projects  # Verbose repo scan
+#   ./polinrider-scan-local.sh                              # Scan current directory (repos only)
+#   ./polinrider-scan-local.sh --full-system                # Full macOS/Linux device scan
+#   ./polinrider-scan-local.sh --quick                      # Quick scan (processes + signatures)
+#   ./polinrider-scan-local.sh --verbose /path/to/projects  # Verbose repo scan
 #
 # Exit codes:
 #   0 - No infections found
@@ -29,19 +30,9 @@ JS_ALL=0
 FULL_SYSTEM=0
 QUICK_SCAN=0
 SCAN_DIR=""
-GITHUB_OWNERS=""
-PRIORITY_BRANCHES="main master production staging uat"
-SSH_HOST="git@github.com"
 LOG_FILE=""
 SCAN_START_TIME=""
 SKIP_GIT_GREP=0
-GITHUB_TMP_DIRS=""
-MAX_PARALLEL=6
-CLONE_DELAY=0.5
-REPORT_FILE=""
-GITHUB_RESULTS_DIR=""
-LOG_JSON=0
-JSON_FILE=""
 
 # ---------------------------------------------------------------------------
 # Variant 1 signatures (original — rmcej%otb%)
@@ -134,7 +125,7 @@ CLEANUP_NODE_MODULES=()
 print_banner() {
     printf "\n"
     printf "${BOLD}================================================${RESET}\n"
-    printf "${BOLD}  PolinRider Malware Scanner v%s (macOS)${RESET}\n" "$VERSION"
+    printf "${BOLD}  PolinRider Local Scanner v%s (macOS/Linux)${RESET}\n" "$VERSION"
     printf "${BOLD}  https://opensourcemalware.com${RESET}\n"
     printf "${BOLD}  Detects variants: rmcej%%otb%% + Cot%%3t=shtP${RESET}\n"
     printf "${BOLD}================================================${RESET}\n"
@@ -144,29 +135,23 @@ print_banner() {
 print_usage() {
     printf "Usage: %s [OPTIONS] [directory]\n" "$0"
     printf "\n"
-    printf "Scans for PolinRider / TasksJacker malware on macOS.\n"
+    printf "Scans local machine for PolinRider / TasksJacker malware (macOS/Linux).\n"
+    printf "For GitHub org scanning use: polinrider-scan-org.sh\n"
     printf "\n"
     printf "Options:\n"
-    printf "  --full-system  Scan entire Mac (processes, persistence, repos, etc.)\n"
+    printf "  --full-system  Full local scan (processes, persistence, repos, browser, npm)\n"
     printf "  --quick        Quick scan (running processes + network only)\n"
     printf "  --verbose      Show detailed output for each check\n"
     printf "  --js-all       Scan all .js/.mjs/.cjs files (not just known configs)\n"
-    printf "  --github <owner>  Scan all GitHub repos of a user/org (repeatable)\n"
-    printf "  --ssh-host <host> SSH host alias for cloning (default: github.com-nhatitsforce)\n"
-    printf "  --parallel <n>    Max parallel clone workers (default: 6)\n"
-    printf "  --clone-delay <s> Seconds between clone starts (default: 0.5)\n"
-    printf "  --log-json     Output a single JSON log file with all repo results (GitHub mode)\n"
     printf "  --help         Show this help message\n"
     printf "\n"
     printf "Examples:\n"
     printf "  %s                              # Scan current directory repos\n" "$0"
-    printf "  %s --full-system                # Full macOS device scan\n" "$0"
+    printf "  %s --full-system                # Full macOS/Linux device scan\n" "$0"
     printf "  %s --full-system --verbose      # Full scan with details\n" "$0"
     printf "  %s --quick                      # Quick process/network check\n" "$0"
     printf "  %s /path/to/projects            # Scan specific directory repos\n" "$0"
     printf "  %s --js-all ~/projects          # Deep scan all JS files\n" "$0"
-    printf "  %s --github myorg              # Scan all repos of a GitHub org\n" "$0"
-    printf "  %s --github org1 --github org2 # Scan repos of multiple orgs\n" "$0"
 }
 
 log_verbose() {
@@ -190,24 +175,17 @@ init_log() {
     if [ "$QUICK_SCAN" -eq 1 ]; then
         mode_parts="${mode_parts:+${mode_parts}-}quick"
     fi
-    if [ -n "$GITHUB_OWNERS" ]; then
-        mode_parts="${mode_parts:+${mode_parts}-}github"
-    fi
     if [ -z "$mode_parts" ]; then
         mode_parts="repo"
     fi
 
     SCAN_START_TIME="$(date '+%s')"
 
-    if [ "$LOG_JSON" -eq 1 ]; then
-        LOG_FILE=""
-    else
-        local timestamp
-        timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-        mkdir -p scan-logs/local
-        LOG_FILE="scan-logs/local/scan-${mode_parts}-${timestamp}.log"
-        : > "$LOG_FILE"
-    fi
+    local timestamp
+    timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
+    mkdir -p scan-logs/local
+    LOG_FILE="scan-logs/local/scan-${mode_parts}-${timestamp}.log"
+    : > "$LOG_FILE"
 
     log_msg "PolinRider Scanner v${VERSION} started"
 }
@@ -835,483 +813,9 @@ REFSEOF
     fi
 }
 
-# ---------------------------------------------------------------------------
-# scan_single_repo_worker — worker function for parallel scanning
-# Runs in a subshell. Writes results to a temp file.
-# ---------------------------------------------------------------------------
-scan_single_repo_worker() {
-    local owner="$1"
-    local full_name="$2"
-    local repo_idx="$3"
-    local repo_count="$4"
-    local tmp_dir="$5"
-    local results_dir="$6"
-
-    local repo_short="${full_name#*/}"
-    local clone_dir="${tmp_dir}/${repo_short}"
-
-    log_msg "[${owner}] [${repo_idx}/${repo_count}] Cloning ${full_name}..."
-
-    if ! git clone --quiet "${SSH_HOST}:${full_name}.git" "$clone_dir" 2>&1; then
-        log_msg "[${owner}] [${repo_idx}/${repo_count}] ERROR: Clone failed, skipping"
-        rm -rf "$clone_dir" 2>/dev/null
-        return 1
-    fi
-
-    SKIP_GIT_GREP=0
-    local infected=0
-    local branch_details=""
-    local old_ifs="$IFS"
-    IFS=' '
-    for branch in $PRIORITY_BRANCHES; do
-        if git -C "$clone_dir" branch -r 2>/dev/null | grep -qw "origin/${branch}"; then
-            log_msg "[${owner}] [${repo_idx}/${repo_count}] Scanning branch: ${branch}"
-            git -C "$clone_dir" checkout "$branch" 2>/dev/null
-
-            local scan_output
-            scan_output="$(scan_repo "$clone_dir" 2>&1)"
-            if printf '%s' "$scan_output" | grep -q '\[INFECTED\]'; then
-                infected=1
-                local clean_output
-                clean_output="$(printf '%s' "$scan_output" | sed 's/\x1b\[[0-9;]*m//g')"
-                branch_details="${branch_details}BRANCH:${branch}\n${clean_output}\n"
-            fi
-            if [ -n "$scan_output" ]; then
-                printf '%s\n' "$scan_output"
-            fi
-
-            SKIP_GIT_GREP=1
-        fi
-    done
-    IFS="$old_ifs"
-
-    if [ "$infected" -gt 0 ]; then
-        local result_file="${results_dir}/${repo_short}.log"
-        {
-            printf "repo=%s\n" "$full_name"
-            printf '%b' "$branch_details"
-        } > "$result_file"
-        log_msg "[${owner}] [${repo_idx}/${repo_count}] Done — INFECTED"
-    else
-        local result_file="${results_dir}/${repo_short}.clean"
-        printf "repo=%s\n" "$full_name" > "$result_file"
-        log_msg "[${owner}] [${repo_idx}/${repo_count}] Done — clean"
-    fi
-
-    rm -rf "$clone_dir"
-
-    local done_count
-    done_count=$(find "$results_dir" -name "*.log" -o -name "*.clean" 2>/dev/null | wc -l | tr -d ' ')
-    printf "\r[${owner}] Progress: %s/%d repos scanned" "$done_count" "$repo_count" >&2
-}
-
-# ---------------------------------------------------------------------------
-# scan_github_owner — clone and scan all repos for a GitHub user/org
-# Uses parallel workers with rate-limiting delay.
-# ---------------------------------------------------------------------------
-scan_github_owner() {
-    local owner="$1"
-
-    log_msg "[${owner}] Listing repositories..."
-
-    local repo_json
-    repo_json="$(gh repo list "$owner" --limit 1000 --json nameWithOwner -q '.[].nameWithOwner' 2>&1)"
-    local gh_exit=$?
-    if [ "$gh_exit" -ne 0 ]; then
-        log_msg "[${owner}] ERROR: gh repo list failed: ${repo_json}"
-        return 1
-    fi
-
-    if [ -z "$repo_json" ]; then
-        log_msg "[${owner}] WARNING: No repositories found"
-        return 0
-    fi
-
-    local repo_count=0
-    local repo_list=""
-    while IFS= read -r repo_name; do
-        if [ -n "$repo_name" ]; then
-            repo_list="${repo_list}${repo_name}
-"
-            repo_count=$((repo_count + 1))
-        fi
-    done <<< "$repo_json"
-    repo_list="${repo_list%
-}"
-
-    log_msg "[${owner}] Found ${repo_count} repositories"
-    log_msg "[${owner}] Scanning with ${MAX_PARALLEL} parallel workers, ${CLONE_DELAY}s delay between clones"
-
-    local tmp_dir=".polinrider-tmp-$(date '+%s')"
-    mkdir -p "$tmp_dir"
-    GITHUB_TMP_DIRS="${GITHUB_TMP_DIRS:+${GITHUB_TMP_DIRS} }${tmp_dir}"
-
-    local scan_timestamp
-    scan_timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-    GITHUB_RESULTS_DIR="infected-repos/${scan_timestamp}"
-    mkdir -p "$GITHUB_RESULTS_DIR"
-
-    local repo_idx=0
-    local running_jobs=0
-    local pids=""
-
-    while IFS= read -r full_name; do
-        if [ -z "$full_name" ]; then continue; fi
-        repo_idx=$((repo_idx + 1))
-
-        while [ "$running_jobs" -ge "$MAX_PARALLEL" ]; do
-            wait -n 2>/dev/null || true
-            running_jobs=$((running_jobs - 1))
-        done
-
-        scan_single_repo_worker "$owner" "$full_name" "$repo_idx" "$repo_count" "$tmp_dir" "$GITHUB_RESULTS_DIR" &
-        pids="${pids} $!"
-        running_jobs=$((running_jobs + 1))
-
-        sleep "$CLONE_DELAY"
-    done <<GHREPOEOF
-$repo_list
-GHREPOEOF
-
-    # Wait for all remaining workers
-    for pid in $pids; do
-        wait "$pid" 2>/dev/null || true
-    done
-    printf "\n" >&2
-
-    # Aggregate results
-    local gh_infected=0
-    for result_file in "${GITHUB_RESULTS_DIR}"/*.log; do
-        [ -f "$result_file" ] || continue
-        gh_infected=$((gh_infected + 1))
-    done
-    local gh_clean=$((repo_count - gh_infected))
-
-    TOTAL_REPOS=$((TOTAL_REPOS + repo_count))
-    INFECTED_REPOS=$((INFECTED_REPOS + gh_infected))
-
-    log_msg "[${owner}] Complete: ${repo_count} repos scanned, ${gh_infected} infected, ${gh_clean} clean"
-
-    if [ "$LOG_JSON" -eq 1 ]; then
-        generate_github_json_report "$owner" "$repo_count" "$GITHUB_RESULTS_DIR"
-    else
-        generate_github_report "$owner" "$repo_count" "$GITHUB_RESULTS_DIR"
-    fi
-
-    # Clean up .clean marker files
-    rm -f "${GITHUB_RESULTS_DIR}"/*.clean 2>/dev/null
-
-    if [ "$gh_infected" -gt 0 ]; then
-        log_msg "[${owner}] Infected repo details saved to ${GITHUB_RESULTS_DIR}/"
-    fi
-    rm -rf "$tmp_dir"
-    GITHUB_TMP_DIRS="${GITHUB_TMP_DIRS% ${tmp_dir}}"
-    GITHUB_TMP_DIRS="${GITHUB_TMP_DIRS#${tmp_dir} }"
-    GITHUB_TMP_DIRS="${GITHUB_TMP_DIRS#${tmp_dir}}"
-}
-
-# ---------------------------------------------------------------------------
-# generate_github_report — create a clean summary report for sharing
-# ---------------------------------------------------------------------------
-generate_github_report() {
-    local owner="$1"
-    local repo_count="$2"
-    local results_dir="$3"
-
-    local timestamp
-    timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-    mkdir -p scan-logs/local
-    REPORT_FILE="scan-logs/local/report-github-${owner}-${timestamp}.txt"
-
-    local infected_count=0
-    local infected_details=""
-
-    for log_file in "${results_dir}"/*.log; do
-        [ -f "$log_file" ] || continue
-        infected_count=$((infected_count + 1))
-        local repo_name
-        repo_name="$(grep '^repo=' "$log_file" | head -1)"
-        repo_name="${repo_name#repo=}"
-        infected_details="${infected_details}${infected_count}. ${repo_name}\n"
-        local in_branch=0
-        while IFS= read -r line; do
-            case "$line" in
-                repo=*) continue ;;
-                BRANCH:*)
-                    local bname="${line#BRANCH:}"
-                    infected_details="${infected_details}   [${bname}]\n"
-                    in_branch=1
-                    ;;
-                "")
-                    continue
-                    ;;
-                *)
-                    if [ "$in_branch" -eq 1 ]; then
-                        infected_details="${infected_details}   ${line}\n"
-                    fi
-                    ;;
-            esac
-        done < "$log_file"
-        infected_details="${infected_details}\n"
-    done
-    local clean_count=$((repo_count - infected_count))
-
-    {
-        printf "PolinRider Scan Report\n"
-        printf "Generated: %s\n" "$(date '+%Y-%m-%d %H:%M:%S')"
-        printf "Scanner: v%s\n" "$VERSION"
-        printf "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-        printf "\n"
-        printf "Owner:          %s\n" "$owner"
-        printf "Total repos:    %d\n" "$repo_count"
-        printf "Infected:       %d\n" "$infected_count"
-        printf "Clean:          %d\n" "$clean_count"
-        printf "\n"
-
-        if [ "$infected_count" -gt 0 ]; then
-            printf "INFECTED REPOSITORIES:\n"
-            printf "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-            printf '%b' "$infected_details"
-        else
-            printf "No infections found.\n"
-        fi
-
-        printf "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-        printf "Report: %s\n" "$REPORT_FILE"
-        printf "Full log: %s\n" "$LOG_FILE"
-    } > "$REPORT_FILE"
-
-    log_msg "[${owner}] Report saved to ${REPORT_FILE}"
-    printf "\n"
-    cat "$REPORT_FILE"
-    printf "\n"
-}
-
-# ---------------------------------------------------------------------------
-# json_escape — escape a string for safe JSON embedding (POSIX-compatible)
-# ---------------------------------------------------------------------------
-json_escape() {
-    printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e 's/	/\\t/g' | tr -d '\n\r'
-}
-
-# ---------------------------------------------------------------------------
-# generate_github_json_report — produce a single JSON file with all repo results
-# ---------------------------------------------------------------------------
-generate_github_json_report() {
-    local owner="$1"
-    local repo_count="$2"
-    local results_dir="$3"
-
-    mkdir -p scan-logs/local
-    JSON_FILE="scan-logs/local/result.json"
-
-    local first_repo=1
-
-    printf '[\n' > "$JSON_FILE"
-
-    # Process infected repos
-    for log_file in "${results_dir}"/*.log; do
-        [ -f "$log_file" ] || continue
-
-        local repo_name
-        repo_name="$(grep '^repo=' "$log_file" | head -1)"
-        repo_name="${repo_name#repo=}"
-
-        if [ "$first_repo" -eq 0 ]; then
-            printf ',\n' >> "$JSON_FILE"
-        fi
-        first_repo=0
-
-        printf '  {\n' >> "$JSON_FILE"
-        printf '    "repository": "%s",\n' "$(json_escape "$repo_name")" >> "$JSON_FILE"
-        printf '    "infected": true,\n' >> "$JSON_FILE"
-
-        # Parse findings from the log file into a temp file:
-        # Format: WT|branch\tfile\tdescription (working tree findings)
-        #         BR|branch\tfile\tdescription (branch history findings)
-        local findings_file
-        findings_file=$(mktemp)
-        local current_branch=""
-        local section=""
-
-        while IFS= read -r line; do
-            case "$line" in
-                repo=*) continue ;;
-                BRANCH:*)
-                    current_branch="${line#BRANCH:}"
-                    section=""
-                    ;;
-                *"Working Tree"*)
-                    section="worktree"
-                    ;;
-                *"Branch History"*)
-                    section="history"
-                    ;;
-                "["*) continue ;;
-                *"[verbose]"*) continue ;;
-                "")  continue ;;
-                *"- "*)
-                    local detail="${line#*- }"
-                    detail="$(printf '%s' "$detail" | sed 's/\x1b\[[0-9;]*m//g')"
-
-                    if [ "$section" = "worktree" ] && [ -n "$current_branch" ]; then
-                        local wt_file="${detail%%:*}"
-                        local wt_desc="${detail#*: }"
-                        wt_file="$(printf '%s' "$wt_file" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')"
-                        wt_desc="$(printf '%s' "$wt_desc" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')"
-                        if [ -n "$wt_file" ] && [ -n "$wt_desc" ]; then
-                            printf 'WT\t%s\t%s\t%s\n' "$current_branch" "$wt_file" "$wt_desc" >> "$findings_file"
-                        fi
-                    elif [ "$section" = "history" ]; then
-                        if printf '%s' "$detail" | grep -q '^\[git:'; then
-                            local br_info="${detail#\[git:}"
-                            local br_name="${br_info%%]*}"
-                            local br_rest="${br_info#*] }"
-                            local br_file="${br_rest%%:*}"
-                            local br_desc="${br_rest#*: }"
-                            br_file="$(printf '%s' "$br_file" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')"
-                            br_desc="$(printf '%s' "$br_desc" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')"
-                            case "$br_name" in
-                                origin/*) continue ;;
-                                */HEAD) continue ;;
-                            esac
-                            if [ -n "$br_name" ] && [ -n "$br_file" ] && [ -n "$br_desc" ]; then
-                                printf 'BR\t%s\t%s\t%s\n' "$br_name" "$br_file" "$br_desc" >> "$findings_file"
-                            fi
-                        fi
-                    fi
-                    ;;
-            esac
-        done < "$log_file"
-
-        # Build infected_files: merge unique descriptions for the same file path
-        printf '    "infected_files": {' >> "$JSON_FILE"
-        if [ -s "$findings_file" ]; then
-            local wt_files
-            wt_files="$(grep '^WT' "$findings_file" | cut -f3 | sort -u)"
-            if [ -n "$wt_files" ]; then
-                local wt_entries_file
-                wt_entries_file=$(mktemp)
-                grep '^WT' "$findings_file" > "$wt_entries_file"
-                local wt_first=1
-                while IFS= read -r wt_file; do
-                    if [ -z "$wt_file" ]; then continue; fi
-                    local combined_desc=""
-                    local seen_descs=""
-                    while IFS='	' read -r _type _br _f _d; do
-                        if [ "$_f" = "$wt_file" ]; then
-                            case "$seen_descs" in
-                                *"|${_d}|"*) continue ;;
-                            esac
-                            seen_descs="${seen_descs}|${_d}|"
-                            if [ -n "$combined_desc" ]; then
-                                combined_desc="${combined_desc} | ${_d}"
-                            else
-                                combined_desc="$_d"
-                            fi
-                        fi
-                    done < "$wt_entries_file"
-                    if [ "$wt_first" -eq 0 ]; then
-                        printf ',' >> "$JSON_FILE"
-                    fi
-                    wt_first=0
-                    printf '\n      "%s": "%s"' "$(json_escape "$wt_file")" "$(json_escape "$combined_desc")" >> "$JSON_FILE"
-                done <<WTFILESEOF
-$wt_files
-WTFILESEOF
-                rm -f "$wt_entries_file"
-                printf '\n    },\n' >> "$JSON_FILE"
-            else
-                printf '},\n' >> "$JSON_FILE"
-            fi
-        else
-            printf '},\n' >> "$JSON_FILE"
-        fi
-
-        # Build infected_branches: group by branch, merge per-file descriptions
-        printf '    "infected_branches": {' >> "$JSON_FILE"
-        if [ -s "$findings_file" ]; then
-            local all_branches
-            all_branches="$(awk -F'\t' '{print $2}' "$findings_file" | sort -u)"
-            local br_first=1
-            while IFS= read -r br_name; do
-                if [ -z "$br_name" ]; then continue; fi
-                if [ "$br_first" -eq 0 ]; then
-                    printf ',' >> "$JSON_FILE"
-                fi
-                br_first=0
-                printf '\n      "%s": {' "$(json_escape "$br_name")" >> "$JSON_FILE"
-
-                local br_files
-                br_files="$(awk -F'\t' -v br="$br_name" '$2 == br {print $3}' "$findings_file" | sort -u)"
-                local file_first=1
-                while IFS= read -r br_file; do
-                    if [ -z "$br_file" ]; then continue; fi
-                    local combined_desc=""
-                    local seen_descs=""
-                    while IFS='	' read -r _type _br _f _d; do
-                        if [ "$_br" = "$br_name" ] && [ "$_f" = "$br_file" ]; then
-                            case "$seen_descs" in
-                                *"|${_d}|"*) continue ;;
-                            esac
-                            seen_descs="${seen_descs}|${_d}|"
-                            if [ -n "$combined_desc" ]; then
-                                combined_desc="${combined_desc} | ${_d}"
-                            else
-                                combined_desc="$_d"
-                            fi
-                        fi
-                    done < "$findings_file"
-                    if [ "$file_first" -eq 0 ]; then
-                        printf ',' >> "$JSON_FILE"
-                    fi
-                    file_first=0
-                    printf '\n        "%s": "%s"' "$(json_escape "$br_file")" "$(json_escape "$combined_desc")" >> "$JSON_FILE"
-                done <<BRFILESEOF
-$br_files
-BRFILESEOF
-                printf '\n      }' >> "$JSON_FILE"
-            done <<BRANCHESEOF
-$all_branches
-BRANCHESEOF
-            printf '\n    }\n' >> "$JSON_FILE"
-        else
-            printf '}\n' >> "$JSON_FILE"
-        fi
-
-        rm -f "$findings_file"
-        printf '  }' >> "$JSON_FILE"
-    done
-
-    # Process clean repos
-    for clean_file in "${results_dir}"/*.clean; do
-        [ -f "$clean_file" ] || continue
-
-        local repo_name
-        repo_name="$(grep '^repo=' "$clean_file" | head -1)"
-        repo_name="${repo_name#repo=}"
-
-        if [ "$first_repo" -eq 0 ]; then
-            printf ',\n' >> "$JSON_FILE"
-        fi
-        first_repo=0
-
-        printf '  {\n' >> "$JSON_FILE"
-        printf '    "repository": "%s",\n' "$(json_escape "$repo_name")" >> "$JSON_FILE"
-        printf '    "infected": false,\n' >> "$JSON_FILE"
-        printf '    "infected_files": {},\n' >> "$JSON_FILE"
-        printf '    "infected_branches": {}\n' >> "$JSON_FILE"
-        printf '  }' >> "$JSON_FILE"
-    done
-
-    printf '\n]\n' >> "$JSON_FILE"
-
-    log_msg "[${owner}] JSON report saved to ${JSON_FILE}"
-    printf "  JSON report: ${BOLD}%s${RESET}\n" "$JSON_FILE"
-}
 
 # ===================================================================
-#  FULL-SYSTEM SCAN FUNCTIONS (macOS)
+#  FULL-SYSTEM SCAN FUNCTIONS (macOS/Linux)
 # ===================================================================
 
 # ---------------------------------------------------------------------------
@@ -1786,11 +1290,17 @@ BEXTEOF
     }
 
     # Each path handled individually to avoid space-in-path splitting issues
+    # macOS paths
     _scan_one_browser_ext_dir "$HOME/Library/Application Support/Google/Chrome/Default/Extensions"
     _scan_one_browser_ext_dir "$HOME/Library/Application Support/BraveSoftware/Brave-Browser/Default/Extensions"
     _scan_one_browser_ext_dir "$HOME/Library/Application Support/Microsoft Edge/Default/Extensions"
     _scan_one_browser_ext_dir "$HOME/Library/Application Support/Arc/User Data/Default/Extensions"
     _scan_one_browser_ext_dir "$HOME/Library/Application Support/Firefox/Profiles"
+    # Linux paths
+    _scan_one_browser_ext_dir "$HOME/.config/google-chrome/Default/Extensions"
+    _scan_one_browser_ext_dir "$HOME/.config/BraveSoftware/Brave-Browser/Default/Extensions"
+    _scan_one_browser_ext_dir "$HOME/.config/microsoft-edge/Default/Extensions"
+    _scan_one_browser_ext_dir "$HOME/.mozilla/firefox"
 
     if [ "$found_any" -eq 0 ]; then
         log_verbose "No browser extension directories found"
@@ -1920,7 +1430,7 @@ print_remediation() {
     printf "  6. Remove malicious .vscode/tasks.json entries\n"
     printf "  7. Force-push clean versions to GitHub\n"
     printf "\n"
-    printf "${BOLD}macOS system cleanup:${RESET}\n"
+    printf "${BOLD}System cleanup (macOS: LaunchAgents/Daemons):${RESET}\n"
     printf "  8.  Kill suspicious node processes:\n"
     printf "      kill -9 <PID>   (use PIDs from scan results above)\n"
     printf "  9.  Remove malicious LaunchAgents/LaunchDaemons:\n"
@@ -1965,46 +1475,6 @@ while [ $# -gt 0 ]; do
             QUICK_SCAN=1
             shift
             ;;
-        --github)
-            if [ $# -lt 2 ]; then
-                printf "Error: --github requires an owner argument\n" >&2
-                print_usage >&2
-                exit 2
-            fi
-            GITHUB_OWNERS="${GITHUB_OWNERS:+${GITHUB_OWNERS} }$2"
-            shift 2
-            ;;
-        --ssh-host)
-            if [ $# -lt 2 ]; then
-                printf "Error: --ssh-host requires a host argument\n" >&2
-                print_usage >&2
-                exit 2
-            fi
-            SSH_HOST="$2"
-            shift 2
-            ;;
-        --parallel)
-            if [ $# -lt 2 ]; then
-                printf "Error: --parallel requires a number\n" >&2
-                print_usage >&2
-                exit 2
-            fi
-            MAX_PARALLEL="$2"
-            shift 2
-            ;;
-        --clone-delay)
-            if [ $# -lt 2 ]; then
-                printf "Error: --clone-delay requires a number\n" >&2
-                print_usage >&2
-                exit 2
-            fi
-            CLONE_DELAY="$2"
-            shift 2
-            ;;
-        --log-json)
-            LOG_JSON=1
-            shift
-            ;;
         --help|-h)
             print_usage
             exit 0
@@ -2026,11 +1496,6 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-if [ "$QUICK_SCAN" -eq 1 ] && [ -n "$GITHUB_OWNERS" ]; then
-    printf "Error: --quick and --github cannot be used together\n" >&2
-    print_usage >&2
-    exit 2
-fi
 
 # ===================================================================
 #  MAIN EXECUTION
@@ -2138,36 +1603,6 @@ else
     done <<REPOEOF
 $REPO_LIST
 REPOEOF
-fi
-
-# --- GitHub remote scan mode ---
-if [ -n "$GITHUB_OWNERS" ]; then
-    if ! command -v gh >/dev/null 2>&1; then
-        printf "Error: 'gh' CLI is required for --github scanning. Install: https://cli.github.com\n" >&2
-        exit 2
-    fi
-    if ! gh auth status >/dev/null 2>&1; then
-        printf "Error: 'gh' is not authenticated. Run: gh auth login\n" >&2
-        exit 2
-    fi
-
-    print_section "GITHUB" "Scanning GitHub repositories..."
-
-    old_ifs="$IFS"
-    IFS=' '
-    owner_list=""
-    for owner in $GITHUB_OWNERS; do
-        owner_list="${owner_list:+${owner_list}, }${owner}"
-    done
-    IFS="$old_ifs"
-    log_msg "GitHub owners: ${owner_list}"
-
-    old_ifs="$IFS"
-    IFS=' '
-    for owner in $GITHUB_OWNERS; do
-        scan_github_owner "$owner"
-    done
-    IFS="$old_ifs"
 fi
 
 # ===================================================================

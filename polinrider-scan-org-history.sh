@@ -1,22 +1,22 @@
 #!/bin/bash
 #
-# PolinRider Malware Scanner v3.0 (Fast GitHub Scanner + Commit History)
+# PolinRider Org History Scanner v3.0
 # https://opensourcemalware.com
 #
-# Extends polinrider-scanner-fast-progress.sh with git commit history scanning.
-# In addition to scanning all branch heads via git grep, also runs
-# `git log --all -S` to detect payloads that existed in past commits
-# but have since been removed — critical for audit and incident response.
+# Deep audit scanner for GitHub org/user repos.
+# Scans all branch heads via git grep AND scans git commit history
+# to detect payloads that existed in past commits but have since been removed.
+# Use this for incident response and one-time audits.
 #
 # Results are categorised:
 #   INFECTED      — payload currently present in at least one branch
 #   HISTORY       — payload found in commit history but no longer in any branch
 #
 # Usage:
-#   ./polinrider-scanner-fast-history.sh --github <owner>
-#   ./polinrider-scanner-fast-history.sh --github org1 --github org2
-#   ./polinrider-scanner-fast-history.sh --parallel 10 --github myorg
-#   ./polinrider-scanner-fast-history.sh --log-json --github myorg
+#   ./polinrider-scan-org-history.sh --github <owner>
+#   ./polinrider-scan-org-history.sh --github org1 --github org2
+#   ./polinrider-scan-org-history.sh --parallel 10 --github myorg
+#   ./polinrider-scan-org-history.sh --log-json --github myorg
 #
 # Exit codes:
 #   0 - No infections or history hits found
@@ -118,9 +118,9 @@ PROGRESS_LINES=0
 print_banner() {
     printf "\n"
     printf "${BOLD}================================================${RESET}\n"
-    printf "${BOLD}  PolinRider Fast Scanner v%s${RESET}\n" "$VERSION"
+    printf "${BOLD}  PolinRider Org History Scanner v%s${RESET}\n" "$VERSION"
     printf "${BOLD}  https://opensourcemalware.com${RESET}\n"
-    printf "${BOLD}  Bare-clone + git-grep (all branches)${RESET}\n"
+    printf "${BOLD}  Bare-clone + git-grep + commit history audit${RESET}\n"
     printf "${BOLD}================================================${RESET}\n"
     printf "\n"
 }
@@ -166,8 +166,8 @@ log_msg() {
 init_log() {
     local timestamp
     timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-    mkdir -p scan-logs/fast-history
-    LOG_FILE="scan-logs/fast-history/scan-${timestamp}.log"
+    mkdir -p scan-logs/org-history
+    LOG_FILE="scan-logs/org-history/scan-${timestamp}.log"
     : > "$LOG_FILE"
     SCAN_START_TIME="$(date '+%s')"
     log_msg "PolinRider Fast Scanner v${VERSION} started"
@@ -959,8 +959,8 @@ generate_text_report() {
 
     local timestamp
     timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-    mkdir -p scan-logs/fast-history
-    REPORT_FILE="scan-logs/fast-history/report-${owner}-${timestamp}.txt"
+    mkdir -p scan-logs/org-history
+    REPORT_FILE="scan-logs/org-history/report-${owner}-${timestamp}.txt"
 
     local infected_count=0
     local infected_details=""
@@ -1076,8 +1076,8 @@ generate_json_report() {
     local repo_count="$2"
     local results_dir="$3"
 
-    mkdir -p scan-logs/fast-history
-    JSON_FILE="scan-logs/fast-history/result.json"
+    mkdir -p scan-logs/org-history
+    JSON_FILE="scan-logs/org-history/result.json"
 
     local first_repo=1
     printf '[\n' > "$JSON_FILE"

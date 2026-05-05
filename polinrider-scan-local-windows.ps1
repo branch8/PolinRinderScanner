@@ -1948,7 +1948,7 @@ function Export-ScanReport ([int]$ExitCode, [timespan]$Duration) {
     $ts = (Get-Date).ToString('yyyyMMdd-HHmmss')
     $fileName = "report-${hostname}-${ts}.json"
     $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
-    $logDir = Join-Path $scriptDir 'scan-logs\windows'
+    $logDir = Join-Path $scriptDir 'scan-logs\local-windows'
     $null = New-Item -ItemType Directory -Force -Path $logDir -ErrorAction SilentlyContinue
     $filePath = Join-Path $logDir $fileName
     $savedPath = $null
