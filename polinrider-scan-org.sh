@@ -238,16 +238,14 @@ render_progress_bar() {
         return
     fi
 
-    local cloned scanned infected clean done latest_event
-    cloned=$(find "$status_dir" -type f -name '*.cloned' 2>/dev/null | wc -l | tr -d ' ')
-    scanned=$(find "$status_dir" -type f -name '*.scanned' 2>/dev/null | wc -l | tr -d ' ')
+    local infected done latest_event active_repos
     infected=$(find "$status_dir" -type f -name '*.infected' 2>/dev/null | wc -l | tr -d ' ')
-    clean=$(find "$status_dir" -type f -name '*.clean' 2>/dev/null | wc -l | tr -d ' ')
     done=$(find "$status_dir" -type f -name '*.done' 2>/dev/null | wc -l | tr -d ' ')
     latest_event="$(cat "${status_dir}/latest-event" 2>/dev/null || true)"
-    if [ -z "$latest_event" ]; then
-        latest_event="Waiting for workers..."
-    fi
+    [ -z "$latest_event" ] && latest_event="Waiting for workers..."
+    active_repos=$(find "$status_dir" -type f -name 'active-*' 2>/dev/null \
+        | xargs -I{} cat {} 2>/dev/null | tr '\n' ' ' | sed 's/ $//')
+    [ -z "$active_repos" ] && active_repos="(idle)"
 
     local percent=$((done * 100 / total))
     local width=30
@@ -261,10 +259,9 @@ render_progress_bar() {
         printf "\033[%sA" "$PROGRESS_LINES"
     fi
 
-    printf "\033[2K${CYAN}[%s]${RESET} [%s%s] %3d%%  %d/%d  ${RED}infected:%d${RESET}  active:%d\n" \
+    printf "\033[2K${CYAN}[%s]${RESET} [%s%s] %3d%%  done:%d/%d  ${RED}infected:%d${RESET}  active:%d\n" \
         "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$infected" "$running"
-    printf "\033[2K  clone:%d  scan:%d  clean:%d  | %s\n" \
-        "$cloned" "$scanned" "$clean" "$latest_event"
+    printf "\033[2K  處理中: %-60s | %s\n" "$active_repos" "$latest_event"
     PROGRESS_LINES=2
 }
 
@@ -777,9 +774,10 @@ scan_single_repo_worker() {
 
     local repo_short="${full_name#*/}"
     local bare_dir="scan-bare-clones/${owner}/${repo_short}.git"
-    local worker_prefix="[${owner}] [${repo_idx}/${repo_count}]"
+    local worker_prefix="[${owner}] #${repo_idx}"
 
     mkdir -p "scan-bare-clones/${owner}"
+    printf "%s\n" "$repo_short" > "${status_dir}/active-${repo_short}"
 
     local clone_url
     if [ "$USE_HTTPS" -eq 1 ]; then
@@ -838,6 +836,7 @@ scan_single_repo_worker() {
         ui_mark_state "$status_dir" "$repo_short" "clean"
     fi
 
+    rm -f "${status_dir}/active-${repo_short}"
     ui_mark_state "$status_dir" "$repo_short" "done"
     rm -f "$scan_results"
 

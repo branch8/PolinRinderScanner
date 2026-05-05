@@ -245,16 +245,14 @@ render_progress_bar() {
         return
     fi
 
-    local cloned scanned infected clean done latest_event
-    cloned=$(find "$status_dir" -type f -name '*.cloned' 2>/dev/null | wc -l | tr -d ' ')
-    scanned=$(find "$status_dir" -type f -name '*.scanned' 2>/dev/null | wc -l | tr -d ' ')
+    local infected done latest_event active_repos
     infected=$(find "$status_dir" -type f -name '*.infected' 2>/dev/null | wc -l | tr -d ' ')
-    clean=$(find "$status_dir" -type f -name '*.clean' 2>/dev/null | wc -l | tr -d ' ')
     done=$(find "$status_dir" -type f -name '*.done' 2>/dev/null | wc -l | tr -d ' ')
     latest_event="$(cat "${status_dir}/latest-event" 2>/dev/null || true)"
-    if [ -z "$latest_event" ]; then
-        latest_event="Waiting for workers..."
-    fi
+    [ -z "$latest_event" ] && latest_event="Waiting for workers..."
+    active_repos=$(find "$status_dir" -type f -name 'active-*' 2>/dev/null \
+        | xargs -I{} cat {} 2>/dev/null | tr '\n' ' ' | sed 's/ $//')
+    [ -z "$active_repos" ] && active_repos="(idle)"
 
     local percent=$((done * 100 / total))
     local width=30
@@ -268,10 +266,9 @@ render_progress_bar() {
         printf "\033[%sA" "$PROGRESS_LINES"
     fi
 
-    printf "\033[2K${CYAN}[%s]${RESET} [%s%s] %3d%%  %d/%d  ${RED}infected:%d${RESET}  active:%d\n" \
+    printf "\033[2K${CYAN}[%s]${RESET} [%s%s] %3d%%  done:%d/%d  ${RED}infected:%d${RESET}  active:%d\n" \
         "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$infected" "$running"
-    printf "\033[2K  clone:%d  scan:%d  clean:%d  | %s\n" \
-        "$cloned" "$scanned" "$clean" "$latest_event"
+    printf "\033[2K  處理中: %-60s | %s\n" "$active_repos" "$latest_event"
     PROGRESS_LINES=2
 }
 
@@ -751,10 +748,11 @@ scan_single_repo_worker() {
     else
         bare_dir="${tmp_dir}/${repo_short}.git"
     fi
-    local worker_prefix="[${owner}] [${repo_idx}/${repo_count}]"
+    local worker_prefix="[${owner}] #${repo_idx}"
 
+    printf "%s\n" "$repo_short" > "${status_dir}/active-${repo_short}"
     ui_emit_event "$status_dir" "${worker_prefix} Cloning ${full_name}..."
-    log_msg "${worker_prefix} Cloning (bare) ${full_name}..."
+    log_msg "${worker_prefix} ${full_name} — cloning..."
 
     local clone_url
     if [ "$USE_HTTPS" -eq 1 ]; then
@@ -763,7 +761,8 @@ scan_single_repo_worker() {
         clone_url="${SSH_HOST}:${full_name}.git"
     fi
     if ! git clone --bare --quiet "$clone_url" "$bare_dir" 2>&1; then
-        log_msg "${worker_prefix} ERROR: Clone failed, skipping"
+        rm -f "${status_dir}/active-${repo_short}"
+        log_msg "${worker_prefix} ${full_name} — ERROR: clone failed, skipping"
         ui_emit_event "$status_dir" "${worker_prefix} ERROR: Clone failed for ${full_name}"
         ui_mark_state "$status_dir" "$repo_short" "done"
         rm -rf "$bare_dir" 2>/dev/null
@@ -799,7 +798,7 @@ scan_single_repo_worker() {
 
         local finding_count
         finding_count=$(wc -l < "$scan_results" | tr -d ' ')
-        log_msg "${worker_prefix} INFECTED (${finding_count} findings)"
+        log_msg "${worker_prefix} ${full_name} — INFECTED (${finding_count} findings)"
         ui_emit_event "$status_dir" "${worker_prefix} INFECTED ${full_name} (${finding_count} findings)"
         ui_mark_state "$status_dir" "$repo_short" "infected"
 
@@ -812,18 +811,19 @@ scan_single_repo_worker() {
 
         local history_count
         history_count=$(wc -l < "$history_results" | tr -d ' ')
-        log_msg "${worker_prefix} HISTORY (${history_count} past commit(s) — payload cleaned)"
+        log_msg "${worker_prefix} ${full_name} — HISTORY (${history_count} past commit(s) — payload cleaned)"
         ui_emit_event "$status_dir" "${worker_prefix} HISTORY ${full_name} (${history_count} past commits — cleaned)"
         ui_mark_state "$status_dir" "$repo_short" "infected"
 
     else
         local result_file="${results_dir}/${repo_short}.clean"
         printf "repo=%s\n" "$full_name" > "$result_file"
-        log_msg "${worker_prefix} clean"
+        log_msg "${worker_prefix} ${full_name} — clean"
         ui_emit_event "$status_dir" "${worker_prefix} CLEAN ${full_name}"
         ui_mark_state "$status_dir" "$repo_short" "clean"
     fi
 
+    rm -f "${status_dir}/active-${repo_short}"
     ui_mark_state "$status_dir" "$repo_short" "done"
     rm -f "$scan_results" "$history_results"
     if [ "$KEEP_REPO" -ne 1 ]; then
