@@ -356,26 +356,15 @@ function Scan-Repo ([string]$RepoDir) {
     # --- Propagation scripts: temp_auto_push.bat / config.bat ---
     $batFile = Join-Path $RepoDir 'temp_auto_push.bat'
     if (Test-Path $batFile) {
-        $content = Get-FileContent $batFile
-        if ($content -and ($content.Contains('LAST_COMMIT_DATE') -or $content.Contains('--no-verify') -or $content.Contains('git push -uf'))) {
-            Add-RepoFinding 'temp_auto_push.bat' 'PolinRider propagation script (confirmed)' 'HIGH'
-            $null = $script:CleanupBatFiles.Add($batFile)
-        } else {
-            Add-RepoFinding 'temp_auto_push.bat' 'Propagation script found (verify manually)' 'MEDIUM'
-        }
+        Add-RepoFinding 'temp_auto_push.bat' 'PolinRider propagation script detected' 'HIGH'
+        $null = $script:CleanupBatFiles.Add($batFile)
         $findingCount++
     }
 
     $cfgBat = Join-Path $RepoDir 'config.bat'
     if (Test-Path $cfgBat) {
-        $content = Get-FileContent $cfgBat
-        if ($content -and ($content.Contains('LAST_COMMIT_DATE') -or $content.Contains('--no-verify') -or
-            $content.Contains('git push -uf') -or $content.Contains('temp_auto_push'))) {
-            Add-RepoFinding 'config.bat' 'PolinRider hidden orchestrator (confirmed)' 'HIGH'
-            $null = $script:CleanupBatFiles.Add($cfgBat)
-        } else {
-            Add-RepoFinding 'config.bat' 'Hidden orchestrator found (verify manually)' 'MEDIUM'
-        }
+        Add-RepoFinding 'config.bat' 'PolinRider hidden orchestrator detected' 'HIGH'
+        $null = $script:CleanupBatFiles.Add($cfgBat)
         $findingCount++
     }
 
