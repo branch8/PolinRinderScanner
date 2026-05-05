@@ -1263,11 +1263,11 @@ function Scan-DnsInvestigation {
 
     $suspiciousConnProcs = @{}
     foreach ($conn in $externalConns) {
-        $pid = $conn.OwningProcess
-        if ($suspiciousConnProcs.ContainsKey($pid)) { continue }
+        $procId = $conn.OwningProcess
+        if ($suspiciousConnProcs.ContainsKey($procId)) { continue }
 
         try {
-            $procInfo = Get-CimInstance Win32_Process -Filter "ProcessId=$pid" -ErrorAction Stop
+            $procInfo = Get-CimInstance Win32_Process -Filter "ProcessId=$procId" -ErrorAction Stop
         } catch { continue }
 
         $cmdLine = $procInfo.CommandLine
@@ -1291,11 +1291,11 @@ function Scan-DnsInvestigation {
         }
 
         if ($isSuspicious) {
-            $suspiciousConnProcs[$pid] = $true
+            $suspiciousConnProcs[$procId] = $true
             $procName = $procInfo.Name
             $truncCmd = if ($cmdLine.Length -gt 150) { $cmdLine.Substring(0, 150) + '...' } else { $cmdLine }
-            $null = $script:SuspiciousProcs.Add("PID $pid ($procName): $reason -- $truncCmd")
-            Add-SystemFinding 'DNS-PROC' "Suspicious connected process PID $pid ($procName): $reason"
+            $null = $script:SuspiciousProcs.Add("PID $procId ($procName): $reason -- $truncCmd")
+            Add-SystemFinding 'DNS-PROC' "Suspicious connected process PID $procId ($procName): $reason"
         }
     }
 
@@ -1311,7 +1311,7 @@ function Scan-DnsInvestigation {
     # If Scan-StealerArtifacts already ran (full scan), reuse its results to avoid double-counting.
     # If it hasn't run (quick scan), do a lightweight check here.
     $stealerFindings = @($script:Findings | Where-Object { $_ -match '^\[STEALER\]' })
-    $stealerModuleRan = $script:ModuleStatus.ContainsKey('StealerArtifacts')
+    $stealerModuleRan = $script:ModuleStatus.Contains('StealerArtifacts')
 
     if ($stealerModuleRan) {
         if ($stealerFindings.Count -gt 0) {
@@ -1569,7 +1569,7 @@ function Write-ScanCoverage {
         Write-Host '  WARNING: Failed modules may have missed infections. Fix permissions and re-scan.' -ForegroundColor Yellow
     }
 
-    $userProfiles = Get-AllUserProfiles
+    $userProfiles = @(Get-AllUserProfiles)
     Write-Host "  User profiles scanned: $($userProfiles.Count) ($($userProfiles | ForEach-Object { Split-Path $_ -Leaf }))" -ForegroundColor White
     Write-Host ''
 }
