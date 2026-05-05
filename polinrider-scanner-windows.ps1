@@ -130,6 +130,11 @@ $script:TotalRepos     = 0
 $script:InfectedRepos  = 0
 $script:SystemFindings = 0
 $script:Findings       = [System.Collections.ArrayList]::new()
+
+# Auto-cleanup tracking (populated during local repo scan only)
+$script:CleanupBatFiles       = [System.Collections.ArrayList]::new()
+$script:CleanupGitignoreRepos = [System.Collections.ArrayList]::new()
+$script:CleanupNodeModules    = [System.Collections.ArrayList]::new()
 $script:DnsC2Hits      = [System.Collections.ArrayList]::new()
 $script:DnsBlockchain  = [System.Collections.ArrayList]::new()
 $script:DnsExfil       = [System.Collections.ArrayList]::new()
@@ -352,6 +357,7 @@ function Scan-Repo ([string]$RepoDir) {
         $content = Get-FileContent $batFile
         if ($content -and ($content.Contains('LAST_COMMIT_DATE') -or $content.Contains('--no-verify') -or $content.Contains('git push -uf'))) {
             Add-RepoFinding 'temp_auto_push.bat' 'PolinRider propagation script (confirmed)' 'HIGH'
+            $null = $script:CleanupBatFiles.Add($batFile)
         } else {
             Add-RepoFinding 'temp_auto_push.bat' 'Propagation script found (verify manually)' 'MEDIUM'
         }
@@ -364,6 +370,7 @@ function Scan-Repo ([string]$RepoDir) {
         if ($content -and ($content.Contains('LAST_COMMIT_DATE') -or $content.Contains('--no-verify') -or
             $content.Contains('git push -uf') -or $content.Contains('temp_auto_push'))) {
             Add-RepoFinding 'config.bat' 'PolinRider hidden orchestrator (confirmed)' 'HIGH'
+            $null = $script:CleanupBatFiles.Add($cfgBat)
         } else {
             Add-RepoFinding 'config.bat' 'Hidden orchestrator found (verify manually)' 'MEDIUM'
         }
@@ -374,9 +381,19 @@ function Scan-Repo ([string]$RepoDir) {
     $gitignore = Join-Path $RepoDir '.gitignore'
     if (Test-Path $gitignore) {
         $lines = Get-Content $gitignore -ErrorAction SilentlyContinue
+        $giHit = $false
         if ($lines -contains 'config.bat') {
             Add-RepoFinding '.gitignore' 'config.bat entry injected' 'HIGH'
             $findingCount++
+            $giHit = $true
+        }
+        if ($lines -contains 'temp_auto_push.bat') {
+            Add-RepoFinding '.gitignore' 'temp_auto_push.bat entry injected' 'HIGH'
+            $findingCount++
+            $giHit = $true
+        }
+        if ($giHit -and -not $script:CleanupGitignoreRepos.Contains($RepoDir)) {
+            $null = $script:CleanupGitignoreRepos.Add($RepoDir)
         }
     }
 
@@ -548,6 +565,10 @@ function Scan-Repo ([string]$RepoDir) {
                 }
             Add-RepoFinding $rel "Malicious package installed: $pkg$payloadNote" 'HIGH'
             $findingCount++
+            $nmParent = Split-Path $nmDir -Parent
+            if (-not $script:CleanupNodeModules.Contains($nmParent)) {
+                $null = $script:CleanupNodeModules.Add($nmParent)
+            }
         }
     }
 
@@ -1553,6 +1574,105 @@ function Write-ScanCoverage {
     Write-Host ''
 }
 
+function Invoke-Cleanup {
+    $totalItems = $script:CleanupBatFiles.Count + $script:CleanupGitignoreRepos.Count + $script:CleanupNodeModules.Count
+    if ($totalItems -eq 0) { return }
+    if (-not [Environment]::UserInteractive) { return }
+
+    Write-Host ''
+    Write-Host '================================================' -ForegroundColor White
+    Write-Host '  AUTO-CLEANABLE ITEMS FOUND' -ForegroundColor Cyan
+    Write-Host '================================================' -ForegroundColor White
+    Write-Host ''
+
+    if ($script:CleanupBatFiles.Count -gt 0) {
+        Write-Host 'Propagation scripts (will be deleted):' -ForegroundColor White
+        foreach ($f in $script:CleanupBatFiles) { Write-Host "  - $f" -ForegroundColor Red }
+        Write-Host ''
+    }
+
+    if ($script:CleanupGitignoreRepos.Count -gt 0) {
+        Write-Host '.gitignore entries to remove (config.bat / temp_auto_push.bat):' -ForegroundColor White
+        foreach ($d in $script:CleanupGitignoreRepos) { Write-Host "  - $d\.gitignore" -ForegroundColor Red }
+        Write-Host ''
+    }
+
+    if ($script:CleanupNodeModules.Count -gt 0) {
+        Write-Host 'node_modules directories (entire folder deleted, re-run npm install after):' -ForegroundColor White
+        foreach ($d in $script:CleanupNodeModules) { Write-Host "  - $d" -ForegroundColor Red }
+        Write-Host ''
+    }
+
+    $answer = Read-Host 'Auto-clean the above items? [y/N]'
+    Write-Host ''
+
+    if ($answer -match '^[yY]') {
+        if ($script:CleanupBatFiles.Count -gt 0) {
+            Write-Host 'Removing propagation scripts...' -ForegroundColor White
+            foreach ($f in $script:CleanupBatFiles) {
+                if (Test-Path $f) {
+                    try {
+                        Remove-Item $f -Force
+                        Write-Host "  [OK]  Deleted: $f" -ForegroundColor Green
+                    } catch {
+                        Write-Host "  [FAIL] Failed:  $f" -ForegroundColor Red
+                    }
+                }
+            }
+            Write-Host ''
+        }
+
+        if ($script:CleanupGitignoreRepos.Count -gt 0) {
+            Write-Host 'Cleaning .gitignore entries...' -ForegroundColor White
+            foreach ($d in $script:CleanupGitignoreRepos) {
+                $giFile = Join-Path $d '.gitignore'
+                if (Test-Path $giFile) {
+                    try {
+                        $cleaned = Get-Content $giFile -ErrorAction Stop |
+                            Where-Object { $_ -ne 'config.bat' -and $_ -ne 'temp_auto_push.bat' }
+                        Set-Content $giFile -Value $cleaned -ErrorAction Stop
+                        Write-Host "  [OK]  Cleaned: $giFile" -ForegroundColor Green
+                    } catch {
+                        Write-Host "  [FAIL] Failed:  $giFile" -ForegroundColor Red
+                    }
+                }
+            }
+            Write-Host ''
+        }
+
+        if ($script:CleanupNodeModules.Count -gt 0) {
+            Write-Host 'Removing node_modules directories...' -ForegroundColor White
+            foreach ($d in $script:CleanupNodeModules) {
+                # Safety: path must end in node_modules
+                if ($d -match '[/\\]node_modules$') {
+                    if (Test-Path $d) {
+                        try {
+                            Remove-Item $d -Recurse -Force
+                            Write-Host "  [OK]  Deleted: $d" -ForegroundColor Green
+                        } catch {
+                            Write-Host "  [FAIL] Failed:  $d" -ForegroundColor Red
+                        }
+                    }
+                } else {
+                    Write-Host "  [SKIP] Unexpected path (not deleted): $d" -ForegroundColor Yellow
+                }
+            }
+            Write-Host ''
+            Write-Host '  -> Re-run npm install in each affected project directory' -ForegroundColor Cyan
+            Write-Host ''
+        }
+    } else {
+        Write-Host 'Skipped. To clean manually:' -ForegroundColor White
+        foreach ($f in $script:CleanupBatFiles) {
+            Write-Host "  Remove-Item '$f' -Force"
+        }
+        foreach ($d in $script:CleanupNodeModules) {
+            Write-Host "  Remove-Item '$d' -Recurse -Force; npm install"
+        }
+        Write-Host ''
+    }
+}
+
 function Write-Remediation {
     Write-Host ''
     Write-Host 'REMEDIATION STEPS:' -ForegroundColor White
@@ -2021,6 +2141,7 @@ if ($totalIssues -gt 0) {
 
     Write-RiskAssessment
     Write-Remediation
+    Invoke-Cleanup
     Write-ScanCoverage
     Write-Host "Scan complete in $([math]::Floor($duration.TotalMinutes))m$($duration.Seconds)s"
     Export-ScanReport -ExitCode 1 -Duration $duration
