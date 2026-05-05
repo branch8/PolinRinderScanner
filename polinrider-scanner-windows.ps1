@@ -538,7 +538,7 @@ function Scan-Repo ([string]$RepoDir) {
     }
 
     # --- node_modules installed package scan ---
-    # Finds malicious packages actually installed on disk — catches transitive deps,
+    # Finds malicious packages actually installed on disk --catches transitive deps,
     # packages removed from package.json but still present, and monorepo layouts.
     foreach ($pkg in $MALICIOUS_NPM_PKGS) {
         $nmPkgFiles = Get-ChildItem $RepoDir -Recurse -Filter 'package.json' -File -ErrorAction SilentlyContinue |
@@ -554,10 +554,10 @@ function Scan-Repo ([string]$RepoDir) {
                         $jsContent = Get-FileContent $_.FullName
                         if ($jsContent) {
                             if ($jsContent.Contains($V1_MARKER)) {
-                                $payloadNote = ' (payload confirmed — V1)'
+                                $payloadNote = ' (payload confirmed --V1)'
                                 $payloadFound = $true
                             } elseif ($jsContent.Contains($V2_MARKER)) {
-                                $payloadNote = ' (payload confirmed — V2)'
+                                $payloadNote = ' (payload confirmed --V2)'
                                 $payloadFound = $true
                             }
                         }
@@ -1100,7 +1100,7 @@ function Scan-NpmGlobal {
 
     $npmRoot = npm root -g 2>$null
     if ($npmRoot -and (Test-Path $npmRoot)) {
-        Get-ChildItem $npmRoot -Filter 'package.json' -File -Depth 2 -ErrorAction SilentlyContinue |
+        Get-ChildItem $npmRoot -Recurse -Filter 'package.json' -File -Depth 2 -ErrorAction SilentlyContinue |
             ForEach-Object {
                 $content = Get-FileContent $_.FullName
                 if ($content -match '"postinstall".*:\s*"(curl|wget|node -e|Invoke-WebRequest)') {
@@ -1129,7 +1129,7 @@ function Scan-TempDirs {
     foreach ($tmpDir in $tempDirs) {
         Write-Verbose "Scanning $tmpDir"
 
-        $tmpFiles = @(Get-ChildItem $tmpDir -Include '*.js','*.bat','*.sh','*.mjs','*.ps1' -File -Depth 3 -ErrorAction SilentlyContinue)
+        $tmpFiles = @(Get-ChildItem $tmpDir -Recurse -Include '*.js','*.bat','*.sh','*.mjs','*.ps1' -File -Depth 3 -ErrorAction SilentlyContinue)
         if ($tmpFiles.Count -ge 500) {
             Write-Verbose "WARNING: $tmpDir has $($tmpFiles.Count) script files -- scanning all"
         }
@@ -1263,11 +1263,11 @@ function Scan-DnsInvestigation {
 
     $suspiciousConnProcs = @{}
     foreach ($conn in $externalConns) {
-        $pid = $conn.OwningProcess
-        if ($suspiciousConnProcs.ContainsKey($pid)) { continue }
+        $procId = $conn.OwningProcess
+        if ($suspiciousConnProcs.ContainsKey($procId)) { continue }
 
         try {
-            $procInfo = Get-CimInstance Win32_Process -Filter "ProcessId=$pid" -ErrorAction Stop
+            $procInfo = Get-CimInstance Win32_Process -Filter "ProcessId=$procId" -ErrorAction Stop
         } catch { continue }
 
         $cmdLine = $procInfo.CommandLine
@@ -1291,11 +1291,11 @@ function Scan-DnsInvestigation {
         }
 
         if ($isSuspicious) {
-            $suspiciousConnProcs[$pid] = $true
+            $suspiciousConnProcs[$procId] = $true
             $procName = $procInfo.Name
             $truncCmd = if ($cmdLine.Length -gt 150) { $cmdLine.Substring(0, 150) + '...' } else { $cmdLine }
-            $null = $script:SuspiciousProcs.Add("PID $pid ($procName): $reason -- $truncCmd")
-            Add-SystemFinding 'DNS-PROC' "Suspicious connected process PID $pid ($procName): $reason"
+            $null = $script:SuspiciousProcs.Add("PID $procId ($procName): $reason -- $truncCmd")
+            Add-SystemFinding 'DNS-PROC' "Suspicious connected process PID $procId ($procName): $reason"
         }
     }
 
@@ -1311,7 +1311,7 @@ function Scan-DnsInvestigation {
     # If Scan-StealerArtifacts already ran (full scan), reuse its results to avoid double-counting.
     # If it hasn't run (quick scan), do a lightweight check here.
     $stealerFindings = @($script:Findings | Where-Object { $_ -match '^\[STEALER\]' })
-    $stealerModuleRan = $script:ModuleStatus.ContainsKey('StealerArtifacts')
+    $stealerModuleRan = $script:ModuleStatus.Contains('StealerArtifacts')
 
     if ($stealerModuleRan) {
         if ($stealerFindings.Count -gt 0) {
@@ -1569,7 +1569,7 @@ function Write-ScanCoverage {
         Write-Host '  WARNING: Failed modules may have missed infections. Fix permissions and re-scan.' -ForegroundColor Yellow
     }
 
-    $userProfiles = Get-AllUserProfiles
+    $userProfiles = @(Get-AllUserProfiles)
     Write-Host "  User profiles scanned: $($userProfiles.Count) ($($userProfiles | ForEach-Object { Split-Path $_ -Leaf }))" -ForegroundColor White
     Write-Host ''
 }
@@ -1578,6 +1578,7 @@ function Invoke-Cleanup {
     $totalItems = $script:CleanupBatFiles.Count + $script:CleanupGitignoreRepos.Count + $script:CleanupNodeModules.Count
     if ($totalItems -eq 0) { return }
     if (-not [Environment]::UserInteractive) { return }
+    if ([Environment]::GetCommandLineArgs() -contains '-NonInteractive') { return }
 
     Write-Host ''
     Write-Host '================================================' -ForegroundColor White
@@ -1801,6 +1802,10 @@ $TG_API_BASE  = "https://api.telegram.org/bot$TG_BOT_TOKEN"
 $TG_MAX_RETRIES = 3
 $TG_RETRY_DELAY = 5
 
+try {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+} catch {}
+
 function Send-TelegramMessage ([string]$Text) {
     $uri = "$TG_API_BASE/sendMessage"
     $body = @{
@@ -1866,20 +1871,28 @@ function Send-TelegramDocument ([string]$FilePath, [string]$Caption) {
 
 function Send-TelegramReport ([hashtable]$Report, [string]$ReportFilePath) {
     if (-not $TG_BOT_TOKEN -or -not $TG_CHAT_ID) { return }
-    Write-Host ''
-    Write-Host '  Sending report to Telegram...' -ForegroundColor Cyan
 
     $si = $Report.system_info
     $ss = $Report.scan_summary
     $rm = $Report.report_metadata
     $rl = $ss.risk_level
 
-    $emoji = switch ($rl) {
-        'CRITICAL' { [char]0x1F534 }
-        'HIGH'     { [char]0x1F7E0 }
-        'MEDIUM'   { [char]0x1F7E1 }
-        'LOW'      { [char]0x1F7E2 }
-        default    { [char]0x2705  }
+    $emoji = try {
+        switch ($rl) {
+            'CRITICAL' { [char]::ConvertFromUtf32(0x1F534) }
+            'HIGH'     { [char]::ConvertFromUtf32(0x1F7E0) }
+            'MEDIUM'   { [char]::ConvertFromUtf32(0x1F7E1) }
+            'LOW'      { [char]::ConvertFromUtf32(0x1F7E2) }
+            default    { [char]::ConvertFromUtf32(0x2705)  }
+        }
+    } catch {
+        switch ($rl) {
+            'CRITICAL' { '[!!]' }
+            'HIGH'     { '[!]'  }
+            'MEDIUM'   { '[?]'  }
+            'LOW'      { '[OK]' }
+            default    { '[OK]' }
+        }
     }
 
     $statusLine = if ($ss.infected_repos -gt 0 -or $ss.system_findings_count -gt 0) {
@@ -1890,7 +1903,7 @@ function Send-TelegramReport ([hashtable]$Report, [string]$ReportFilePath) {
 
     $summaryText = @(
         "<b>PolinRider Scan Report</b> (v$($rm.scanner_version))",
-        "━━━━━━━━━━━━━━━━━━━━",
+        "--------------------",
         $statusLine,
         "",
         "<b>System:</b>",
@@ -1913,18 +1926,14 @@ function Send-TelegramReport ([hashtable]$Report, [string]$ReportFilePath) {
     ) -join "`n"
 
     $msgOk = Send-TelegramMessage -Text $summaryText
-    if ($msgOk) {
-        Write-Host '  Summary sent to Telegram.' -ForegroundColor Green
-    } else {
+    if (-not $msgOk) {
         Write-Host '  Failed to send summary to Telegram after retries.' -ForegroundColor Red
     }
 
     if ($ReportFilePath -and (Test-Path $ReportFilePath)) {
         $caption = "$emoji Report: $($si.hostname) | $rl | $($rm.scan_timestamp_utc)"
         $fileOk = Send-TelegramDocument -FilePath $ReportFilePath -Caption $caption
-        if ($fileOk) {
-            Write-Host '  Report file sent to Telegram.' -ForegroundColor Green
-        } else {
+        if (-not $fileOk) {
             Write-Host '  Failed to send report file to Telegram after retries.' -ForegroundColor Red
         }
     }
@@ -1943,7 +1952,7 @@ function Export-ScanReport ([int]$ExitCode, [timespan]$Duration) {
     $savedPath = $null
 
     try {
-        $json = $report | ConvertTo-Json -Depth 10 -Compress:$false
+        $json = $report | ConvertTo-Json -Depth 10
         [System.IO.File]::WriteAllText($filePath, $json, [System.Text.Encoding]::UTF8)
         $savedPath = $filePath
         Write-Host ''
