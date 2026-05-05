@@ -123,6 +123,11 @@ INFECTED_REPO_PATHS=""
 SYSTEM_FINDINGS=0
 SYSTEM_FINDINGS_DETAIL=""
 
+# Auto-cleanup tracking (populated during local repo scan only)
+CLEANUP_BAT_FILES=()
+CLEANUP_GITIGNORE_REPOS=()
+CLEANUP_NODE_MODULES=()
+
 # ---------------------------------------------------------------------------
 # Utility functions
 # ---------------------------------------------------------------------------
@@ -447,6 +452,7 @@ JSEOF
            grep -qF "--no-verify" "${repo_dir}/temp_auto_push.bat" 2>/dev/null || \
            grep -qF "git push -uf" "${repo_dir}/temp_auto_push.bat" 2>/dev/null; then
             findings="${findings}  ${RED}-${RESET} ${BOLD}temp_auto_push.bat${RESET}: PolinRider propagation script (confirmed by content)\n"
+            CLEANUP_BAT_FILES+=("${repo_dir}/temp_auto_push.bat")
         else
             findings="${findings}  ${YELLOW}-${RESET} ${BOLD}temp_auto_push.bat${RESET}: Propagation script found (verify manually)\n"
         fi
@@ -458,6 +464,7 @@ JSEOF
            grep -qF "git push -uf" "${repo_dir}/config.bat" 2>/dev/null || \
            grep -qF "temp_auto_push" "${repo_dir}/config.bat" 2>/dev/null; then
             findings="${findings}  ${RED}-${RESET} ${BOLD}config.bat${RESET}: PolinRider hidden orchestrator (confirmed by content)\n"
+            CLEANUP_BAT_FILES+=("${repo_dir}/config.bat")
         else
             findings="${findings}  ${YELLOW}-${RESET} ${BOLD}config.bat${RESET}: Hidden orchestrator found (verify manually)\n"
         fi
@@ -466,9 +473,19 @@ JSEOF
 
     # --- .gitignore injection ---
     if [ -f "${repo_dir}/.gitignore" ]; then
+        local gi_hit=0
         if grep -qxF "config.bat" "${repo_dir}/.gitignore" 2>/dev/null; then
             findings="${findings}  ${RED}-${RESET} ${BOLD}.gitignore${RESET}: config.bat entry injected\n"
             finding_count=$((finding_count + 1))
+            gi_hit=1
+        fi
+        if grep -qxF "temp_auto_push.bat" "${repo_dir}/.gitignore" 2>/dev/null; then
+            findings="${findings}  ${RED}-${RESET} ${BOLD}.gitignore${RESET}: temp_auto_push.bat entry injected\n"
+            finding_count=$((finding_count + 1))
+            gi_hit=1
+        fi
+        if [ "$gi_hit" -eq 1 ]; then
+            CLEANUP_GITIGNORE_REPOS+=("$repo_dir")
         fi
     fi
 
@@ -687,6 +704,13 @@ PKGEOF
                 fi
                 findings="${findings}  ${RED}-${RESET} ${BOLD}${relpath}${RESET}: Malicious package installed: ${mal_pkg}${payload_confirmed}\n"
                 finding_count=$((finding_count + 1))
+                local nm_parent
+                nm_parent="$(dirname "$nm_dir")"
+                local nm_already=0
+                for _existing_nm in "${CLEANUP_NODE_MODULES[@]}"; do
+                    [ "$_existing_nm" = "$nm_parent" ] && nm_already=1 && break
+                done
+                [ "$nm_already" -eq 0 ] && CLEANUP_NODE_MODULES+=("$nm_parent")
             fi
         done <<NMEOF
 $(find "$repo_dir" -path "*/node_modules/${mal_pkg}/package.json" -not -path "*/.git/*" -maxdepth 6 2>/dev/null)
@@ -1776,6 +1800,109 @@ BEXTEOF
 }
 
 # ===================================================================
+#  INTERACTIVE CLEANUP
+# ===================================================================
+perform_cleanup() {
+    local total_items=$(( ${#CLEANUP_BAT_FILES[@]} + ${#CLEANUP_GITIGNORE_REPOS[@]} + ${#CLEANUP_NODE_MODULES[@]} ))
+    [ "$total_items" -eq 0 ] && return 0
+    [ ! -t 0 ] && return 0  # non-interactive (piped/CI): skip prompt
+
+    printf "\n${BOLD}================================================${RESET}\n"
+    printf "  ${CYAN}${BOLD}AUTO-CLEANABLE ITEMS FOUND${RESET}\n"
+    printf "${BOLD}================================================${RESET}\n\n"
+
+    if [ "${#CLEANUP_BAT_FILES[@]}" -gt 0 ]; then
+        printf "${BOLD}Propagation scripts (will be deleted):${RESET}\n"
+        for f in "${CLEANUP_BAT_FILES[@]}"; do
+            printf "  ${RED}-${RESET} %s\n" "$f"
+        done
+        printf "\n"
+    fi
+
+    if [ "${#CLEANUP_GITIGNORE_REPOS[@]}" -gt 0 ]; then
+        printf "${BOLD}.gitignore entries to remove (config.bat / temp_auto_push.bat):${RESET}\n"
+        for repo_d in "${CLEANUP_GITIGNORE_REPOS[@]}"; do
+            printf "  ${RED}-${RESET} %s/.gitignore\n" "$repo_d"
+        done
+        printf "\n"
+    fi
+
+    if [ "${#CLEANUP_NODE_MODULES[@]}" -gt 0 ]; then
+        printf "${BOLD}node_modules directories (entire folder deleted, re-run npm install after):${RESET}\n"
+        for nm_d in "${CLEANUP_NODE_MODULES[@]}"; do
+            printf "  ${RED}-${RESET} %s\n" "$nm_d"
+        done
+        printf "\n"
+    fi
+
+    printf "${YELLOW}${BOLD}Auto-clean the above items? [y/N]${RESET} "
+    local answer=""
+    read -r answer </dev/tty
+    printf "\n"
+
+    case "$answer" in
+        [yY]|[yY][eE][sS])
+            if [ "${#CLEANUP_BAT_FILES[@]}" -gt 0 ]; then
+                printf "${BOLD}Removing propagation scripts...${RESET}\n"
+                for f in "${CLEANUP_BAT_FILES[@]}"; do
+                    if [ -n "$f" ] && [ -f "$f" ]; then
+                        rm -f "$f" \
+                            && printf "  [OK]  Deleted: %s\n" "$f" \
+                            || printf "  [FAIL] Failed:  %s\n" "$f"
+                    fi
+                done
+                printf "\n"
+            fi
+
+            if [ "${#CLEANUP_GITIGNORE_REPOS[@]}" -gt 0 ]; then
+                printf "${BOLD}Cleaning .gitignore entries...${RESET}\n"
+                for repo_d in "${CLEANUP_GITIGNORE_REPOS[@]}"; do
+                    local gi_file="${repo_d}/.gitignore"
+                    if [ -n "$repo_d" ] && [ -f "$gi_file" ]; then
+                        local tmp_gi
+                        tmp_gi=$(mktemp) || continue
+                        grep -vxF "config.bat" "$gi_file" | grep -vxF "temp_auto_push.bat" > "$tmp_gi" 2>/dev/null
+                        mv "$tmp_gi" "$gi_file" \
+                            && printf "  [OK]  Cleaned: %s\n" "$gi_file" \
+                            || printf "  [FAIL] Failed:  %s\n" "$gi_file"
+                    fi
+                done
+                printf "\n"
+            fi
+
+            if [ "${#CLEANUP_NODE_MODULES[@]}" -gt 0 ]; then
+                printf "${BOLD}Removing node_modules directories...${RESET}\n"
+                for nm_d in "${CLEANUP_NODE_MODULES[@]}"; do
+                    case "$nm_d" in
+                        */node_modules)
+                            if [ -n "$nm_d" ] && [ -d "$nm_d" ]; then
+                                rm -rf "$nm_d" \
+                                    && printf "  [OK]  Deleted: %s\n" "$nm_d" \
+                                    || printf "  [FAIL] Failed:  %s\n" "$nm_d"
+                            fi
+                            ;;
+                        *)
+                            printf "  [SKIP] Unexpected path (not deleted): %s\n" "$nm_d"
+                            ;;
+                    esac
+                done
+                printf "\n  -> Re-run npm install in each affected project directory\n\n"
+            fi
+            ;;
+        *)
+            printf "Skipped. To clean manually:\n"
+            for f in "${CLEANUP_BAT_FILES[@]}"; do
+                [ -n "$f" ] && printf "  rm -f '%s'\n" "$f"
+            done
+            for nm_d in "${CLEANUP_NODE_MODULES[@]}"; do
+                [ -n "$nm_d" ] && printf "  rm -rf '%s' && npm install\n" "$nm_d"
+            done
+            printf "\n"
+            ;;
+    esac
+}
+
+# ===================================================================
 #  REMEDIATION OUTPUT
 # ===================================================================
 print_remediation() {
@@ -2069,6 +2196,7 @@ if [ "$TOTAL_ISSUES" -gt 0 ]; then
         printf "${BOLD}================================================${RESET}\n"
     fi
     print_remediation
+    perform_cleanup
     log_scan_complete
     exit 1
 else
