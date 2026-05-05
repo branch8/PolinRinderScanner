@@ -26,6 +26,7 @@ VERSION="3.0"
 VERBOSE=0
 GITHUB_OWNERS=""
 SSH_HOST="git@github.com"
+USE_HTTPS=0
 LOG_FILE=""
 SCAN_START_TIME=""
 MAX_PARALLEL=6
@@ -129,7 +130,8 @@ print_usage() {
     printf "\n"
     printf "Options:\n"
     printf "  --github <owner>    Scan all repos of a user/org (repeatable)\n"
-    printf "  --ssh-host <host>   SSH host alias for cloning (default: git@github.com)\n"
+    printf "  --ssh-host <host>   SSH host alias for cloning (default: git@github.com)
+  --https             Clone via HTTPS instead of SSH (use if SSH key not set up)\n"
     printf "  --parallel <n>      Max parallel clone workers (default: 6)\n"
     printf "  --clone-delay <s>   Seconds between clone starts (default: 0.5)\n"
     printf "  --clean-repo        Remove cloned repos after scan (default: keep in repos/)\n"
@@ -772,6 +774,13 @@ scan_single_repo_worker() {
 
     mkdir -p "scan-bare-clones/${owner}"
 
+    local clone_url
+    if [ "$USE_HTTPS" -eq 1 ]; then
+        clone_url="https://github.com/${full_name}.git"
+    else
+        clone_url="${SSH_HOST}:${full_name}.git"
+    fi
+
     if [ -d "$bare_dir" ]; then
         ui_emit_event "$status_dir" "${worker_prefix} Fetching updates for ${full_name}..."
         # Fetch branch refs explicitly to avoid "remote ref HEAD" issues.
@@ -779,7 +788,7 @@ scan_single_repo_worker() {
         if ! _git_network_timeout git -C "$bare_dir" fetch --prune --quiet origin '+refs/heads/*:refs/heads/*' >/dev/null 2>&1; then
             ui_emit_event "$status_dir" "${worker_prefix} WARN: fetch failed, re-cloning ${full_name}..."
             rm -rf "$bare_dir" 2>/dev/null
-            if ! _git_network_timeout git clone --bare --quiet "${SSH_HOST}:${full_name}.git" "$bare_dir" >/dev/null 2>&1; then
+            if ! _git_network_timeout git clone --bare --quiet "$clone_url" "$bare_dir" >/dev/null 2>&1; then
                 ui_emit_event "$status_dir" "${worker_prefix} ERROR: Re-clone failed for ${full_name}"
                 ui_mark_state "$status_dir" "$repo_short" "done"
                 return 1
@@ -787,7 +796,7 @@ scan_single_repo_worker() {
         fi
     else
         ui_emit_event "$status_dir" "${worker_prefix} Cloning ${full_name}..."
-        if ! _git_network_timeout git clone --bare --quiet "${SSH_HOST}:${full_name}.git" "$bare_dir" >/dev/null 2>&1; then
+        if ! _git_network_timeout git clone --bare --quiet "$clone_url" "$bare_dir" >/dev/null 2>&1; then
             ui_emit_event "$status_dir" "${worker_prefix} ERROR: Clone failed for ${full_name}"
             ui_mark_state "$status_dir" "$repo_short" "done"
             rm -rf "$bare_dir" 2>/dev/null
@@ -1215,6 +1224,10 @@ while [ $# -gt 0 ]; do
             fi
             SSH_HOST="$2"
             shift 2
+            ;;
+        --https)
+            USE_HTTPS=1
+            shift
             ;;
         --parallel)
             if [ $# -lt 2 ]; then

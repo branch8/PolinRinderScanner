@@ -31,6 +31,7 @@ VERSION="3.0"
 VERBOSE=0
 GITHUB_OWNERS=""
 SSH_HOST="git@github.com"
+USE_HTTPS=0
 LOG_FILE=""
 SCAN_START_TIME=""
 GITHUB_TMP_DIRS=""
@@ -133,7 +134,8 @@ print_usage() {
     printf "\n"
     printf "Options:\n"
     printf "  --github <owner>    Scan all repos of a user/org (repeatable)\n"
-    printf "  --ssh-host <host>   SSH host alias for cloning (default: git@github.com)\n"
+    printf "  --ssh-host <host>   SSH host alias for cloning (default: git@github.com)
+  --https             Clone via HTTPS instead of SSH (use if SSH key not set up)\n"
     printf "  --parallel <n>      Max parallel clone workers (default: 6)\n"
     printf "  --clone-delay <s>   Seconds between clone starts (default: 0.5)\n"
     printf "  --log-json          Output a single JSON log with all repo results\n"
@@ -747,7 +749,13 @@ scan_single_repo_worker() {
     ui_emit_event "$status_dir" "${worker_prefix} Cloning ${full_name}..."
     log_msg "${worker_prefix} Cloning (bare) ${full_name}..."
 
-    if ! git clone --bare --quiet "${SSH_HOST}:${full_name}.git" "$bare_dir" 2>&1; then
+    local clone_url
+    if [ "$USE_HTTPS" -eq 1 ]; then
+        clone_url="https://github.com/${full_name}.git"
+    else
+        clone_url="${SSH_HOST}:${full_name}.git"
+    fi
+    if ! git clone --bare --quiet "$clone_url" "$bare_dir" 2>&1; then
         log_msg "${worker_prefix} ERROR: Clone failed, skipping"
         ui_emit_event "$status_dir" "${worker_prefix} ERROR: Clone failed for ${full_name}"
         ui_mark_state "$status_dir" "$repo_short" "done"
@@ -1231,6 +1239,10 @@ while [ $# -gt 0 ]; do
             fi
             SSH_HOST="$2"
             shift 2
+            ;;
+        --https)
+            USE_HTTPS=1
+            shift
             ;;
         --parallel)
             if [ $# -lt 2 ]; then
