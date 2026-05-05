@@ -1005,7 +1005,11 @@ scan_github_owner() {
             fi
         done
 
-        scan_single_repo_worker "$owner" "$full_name" "$repo_idx" "$repo_count" "$GITHUB_RESULTS_DIR" "$status_dir" &
+        if [ "$PROGRESS_UI" -eq 1 ]; then
+            scan_single_repo_worker "$owner" "$full_name" "$repo_idx" "$repo_count" "$GITHUB_RESULTS_DIR" "$status_dir" >/dev/null &
+        else
+            scan_single_repo_worker "$owner" "$full_name" "$repo_idx" "$repo_count" "$GITHUB_RESULTS_DIR" "$status_dir" &
+        fi
         pids="${pids} $!"
         running_jobs=$((running_jobs + 1))
 
