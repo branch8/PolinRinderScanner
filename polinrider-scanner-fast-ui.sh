@@ -767,10 +767,10 @@ scan_single_repo_worker() {
     local status_dir="$6"
 
     local repo_short="${full_name#*/}"
-    local bare_dir="repos/${owner}/${repo_short}.git"
+    local bare_dir="scan-bare-clones/${owner}/${repo_short}.git"
     local worker_prefix="[${owner}] [${repo_idx}/${repo_count}]"
 
-    mkdir -p "repos/${owner}"
+    mkdir -p "scan-bare-clones/${owner}"
 
     if [ -d "$bare_dir" ]; then
         ui_emit_event "$status_dir" "${worker_prefix} Fetching updates for ${full_name}..."

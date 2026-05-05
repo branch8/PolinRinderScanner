@@ -741,8 +741,8 @@ scan_single_repo_worker() {
     local repo_short="${full_name#*/}"
     local bare_dir
     if [ "$KEEP_REPO" -eq 1 ]; then
-        mkdir -p "repos/${owner}"
-        bare_dir="repos/${owner}/${repo_short}.git"
+        mkdir -p "scan-bare-clones/${owner}"
+        bare_dir="scan-bare-clones/${owner}/${repo_short}.git"
     else
         bare_dir="${tmp_dir}/${repo_short}.git"
     fi
