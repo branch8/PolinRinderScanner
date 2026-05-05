@@ -166,8 +166,8 @@ log_msg() {
 init_log() {
     local timestamp
     timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-    mkdir -p logs
-    LOG_FILE="logs/scan-fast-github-${timestamp}.log"
+    mkdir -p scan-logs/fast-history
+    LOG_FILE="scan-logs/fast-history/scan-${timestamp}.log"
     : > "$LOG_FILE"
     SCAN_START_TIME="$(date '+%s')"
     log_msg "PolinRider Fast Scanner v${VERSION} started"
@@ -315,12 +315,12 @@ REFSEOF
     # --- Pass 1: Primary signatures (high-confidence, single-pattern) ---
     # These alone confirm infection.
     local primary_sigs=""
-    primary_sigs="V1 marker|$V1_MARKER
-V2 marker|$V2_MARKER
-V1 decoder|$V1_DECODER
-V1 global|$V1_GLOBAL
-V2 global|$V2_GLOBAL
-global r marker|$COMMON_GLOBAL_R"
+    primary_sigs="[V1] Obfuscated payload detected — decoder marker \"rmcej%otb%\" found|$V1_MARKER
+[V2] Obfuscated payload detected — decoder marker \"Cot%3t=shtP\" found|$V2_MARKER
+[V1] Payload decoder function detected: \"_\$_1e42\"|$V1_DECODER
+[V1] Runtime global hook detected: \"global['!']\"|$V1_GLOBAL
+[V2] Runtime global hook detected: \"global['_V']\"|$V2_GLOBAL
+[SUSPICIOUS] Malware runtime require hook: global['r']=require|$COMMON_GLOBAL_R"
 
     while IFS= read -r sig_entry; do
         if [ -z "$sig_entry" ]; then continue; fi
@@ -390,7 +390,7 @@ SIGSEOF
         content="$(git -C "$bare_dir" show "refs/heads/${branch}:${filepath}" 2>/dev/null)" || continue
         if printf '%s' "$content" | grep -qF "$V1_SEED" || \
            printf '%s' "$content" | grep -qF "$V1_SEED2"; then
-            printf 'FINDING\t%s\t%s\tV1 payload confirmed (global + seed)\n' "$branch" "$filepath" >> "$compound_file"
+            printf 'FINDING\t%s\t%s\t[V1 CONFIRMED] Active payload — global hook + seed both present\n' "$branch" "$filepath" >> "$compound_file"
         fi
     done
     grep 'V2 global' "$results_file" 2>/dev/null | while IFS='	' read -r _type branch filepath _desc; do
@@ -399,7 +399,7 @@ SIGSEOF
         if printf '%s' "$content" | grep -qF "$V2_SEED" || \
            printf '%s' "$content" | grep -qF "$V2_SEED2" || \
            printf '%s' "$content" | grep -qF "$V2_DECODER"; then
-            printf 'FINDING\t%s\t%s\tV2 payload confirmed (global + seed/decoder)\n' "$branch" "$filepath" >> "$compound_file"
+            printf 'FINDING\t%s\t%s\t[V2 CONFIRMED] Active payload — global hook + seed/decoder both present\n' "$branch" "$filepath" >> "$compound_file"
         fi
     done
     grep 'global r marker' "$results_file" 2>/dev/null | while IFS='	' read -r _type branch filepath _desc; do
@@ -408,7 +408,7 @@ SIGSEOF
         if printf '%s' "$content" | grep -qF "$COMMON_GLOBAL_M"; then
             if printf '%s' "$content" | grep -qF "$V1_SEED" || \
                printf '%s' "$content" | grep -qF "$V2_SEED"; then
-                printf 'FINDING\t%s\t%s\tSuspicious global r/m with known seed\n' "$branch" "$filepath" >> "$compound_file"
+                printf 'FINDING\t%s\t%s\t[SUSPICIOUS] Require/module hooks + known seed — likely infected\n' "$branch" "$filepath" >> "$compound_file"
             fi
         fi
     done
@@ -435,7 +435,7 @@ SIGSEOF
                 if [ "$ref" = "$hit_line" ] || [ -z "$filepath" ]; then continue; fi
                 local branch="${ref#refs/heads/}"
                 case "$branch" in origin/*|*/HEAD) continue ;; esac
-                printf 'FINDING\t%s\t%s\tMalicious npm package: %s\n' "$branch" "$filepath" "$mal_pkg" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[SUPPLY CHAIN] Malicious npm package in dependencies: %s\n' "$branch" "$filepath" "$mal_pkg" >> "$results_file"
             done < "$pkg_out"
         fi
         rm -f "$pkg_out"
@@ -462,7 +462,7 @@ SIGSEOF
                 if [ "$ref" = "$hit_line" ] || [ -z "$filepath" ]; then continue; fi
                 local branch="${ref#refs/heads/}"
                 case "$branch" in origin/*|*/HEAD) continue ;; esac
-                printf 'FINDING\t%s\t%s\tC2 domain: %s\n' "$branch" "$filepath" "$domain" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[C2] Command & control domain in config: %s\n' "$branch" "$filepath" "$domain" >> "$results_file"
             done < "$c2_out"
         fi
         rm -f "$c2_out"
@@ -484,7 +484,7 @@ SIGSEOF
                 if [ "$ref" = "$hit_line" ] || [ -z "$filepath" ]; then continue; fi
                 local branch="${ref#refs/heads/}"
                 case "$branch" in origin/*|*/HEAD) continue ;; esac
-                printf 'FINDING\t%s\t%s\tBlockchain C2 address: %s\n' "$branch" "$filepath" "$addr" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[C2] Blockchain exfiltration address: %s\n' "$branch" "$filepath" "$addr" >> "$results_file"
             done < "$addr_out"
         fi
         rm -f "$addr_out"
@@ -503,7 +503,7 @@ SIGSEOF
             if [ "$ref" = "$hit_line" ] || [ -z "$filepath" ]; then continue; fi
             local branch="${ref#refs/heads/}"
             case "$branch" in origin/*|*/HEAD) continue ;; esac
-            printf 'FINDING\t%s\t%s\tStakingGame weaponized template UUID\n' "$branch" "$filepath" >> "$results_file"
+            printf 'FINDING\t%s\t%s\t[IOC] StakingGame UUID found — confirms PolinRider infection origin\n' "$branch" "$filepath" >> "$results_file"
         done < "$uuid_out"
     fi
     rm -f "$uuid_out"
@@ -523,7 +523,7 @@ SIGSEOF
             if [ "$ref" = "$hit_line" ] || [ -z "$filepath" ]; then continue; fi
             local branch="${ref#refs/heads/}"
             case "$branch" in origin/*|*/HEAD) continue ;; esac
-            printf 'FINDING\t%s\t%s\tPolinRider propagation script\n' "$branch" "$filepath" >> "$results_file"
+            printf 'FINDING\t%s\t%s\t[PROPAGATION] Auto-push script detected — spreads infection to other repos via git\n' "$branch" "$filepath" >> "$results_file"
         done < "$prop_out"
     fi
     rm -f "$prop_out"
@@ -547,9 +547,9 @@ SIGSEOF
             local content
             content="$(git -C "$bare_dir" show "refs/heads/${branch}:${filepath}" 2>/dev/null)" || continue
             if printf '%s' "$content" | grep -qF "folderOpen"; then
-                printf 'FINDING\t%s\t%s\tcurl|bash with runOn:folderOpen auto-execution\n' "$branch" "$filepath" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[RCE] curl|bash auto-executes on folder open — TasksJacker attack vector\n' "$branch" "$filepath" >> "$results_file"
             else
-                printf 'FINDING\t%s\t%s\tcurl|bash in IDE config\n' "$branch" "$filepath" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[SUSPICIOUS] curl|bash command in IDE task config\n' "$branch" "$filepath" >> "$results_file"
             fi
         done < "$curl_out"
     fi
@@ -575,7 +575,7 @@ SIGSEOF
             content="$(git -C "$bare_dir" show "refs/heads/${branch}:${filepath}" 2>/dev/null)" || continue
             if printf '%s' "$content" | grep -qF "detached" || \
                printf '%s' "$content" | grep -qF "windowsHide"; then
-                printf 'FINDING\t%s\t%s\tchild_process.spawn with detached/hidden execution\n' "$branch" "$filepath" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[SUSPICIOUS] Hidden background process spawned from config file\n' "$branch" "$filepath" >> "$results_file"
             fi
         done < "$cp_out"
     fi
@@ -596,7 +596,7 @@ SIGSEOF
             if [ "$ref" = "$hit_line" ] || [ -z "$filepath" ]; then continue; fi
             local branch="${ref#refs/heads/}"
             case "$branch" in origin/*|*/HEAD) continue ;; esac
-            printf 'FINDING\t%s\t%s\tPrompt injection pattern (instruction override)\n' "$branch" "$filepath" >> "$results_file"
+            printf 'FINDING\t%s\t%s\t[PROMPT INJECTION] AI agent config contains instruction override pattern\n' "$branch" "$filepath" >> "$results_file"
         done < "$pi_out"
     fi
     rm -f "$pi_out"
@@ -620,7 +620,7 @@ SIGSEOF
             local content
             content="$(git -C "$bare_dir" show "refs/heads/${branch}:${filepath}" 2>/dev/null)" || continue
             if printf '%s' "$content" | grep -qiE '(read|cat|send|upload|post|exfil|steal|extract)'; then
-                printf 'FINDING\t%s\t%s\tCredential access + exfiltration pattern in agent config\n' "$branch" "$filepath" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[EXFILTRATION] Agent config reads credentials and appears to exfiltrate them\n' "$branch" "$filepath" >> "$results_file"
             fi
         done < "$cred_out"
     fi
@@ -641,7 +641,7 @@ SIGSEOF
             if [ "$ref" = "$hit_line" ] || [ -z "$filepath" ]; then continue; fi
             local branch="${ref#refs/heads/}"
             case "$branch" in origin/*|*/HEAD) continue ;; esac
-            printf 'FINDING\t%s\t%s\tExternal URL in agent config — potential exfiltration vector\n' "$branch" "$filepath" >> "$results_file"
+            printf 'FINDING\t%s\t%s\t[SUSPICIOUS] External URL in agent config — possible data exfiltration\n' "$branch" "$filepath" >> "$results_file"
         done < "$url_out"
     fi
     rm -f "$url_out"
@@ -959,7 +959,8 @@ generate_text_report() {
 
     local timestamp
     timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-    REPORT_FILE="logs/report-fast-github-${owner}-${timestamp}.txt"
+    mkdir -p scan-logs/fast-history
+    REPORT_FILE="scan-logs/fast-history/report-${owner}-${timestamp}.txt"
 
     local infected_count=0
     local infected_details=""
@@ -1075,8 +1076,8 @@ generate_json_report() {
     local repo_count="$2"
     local results_dir="$3"
 
-    mkdir -p logs
-    JSON_FILE="logs/result.json"
+    mkdir -p scan-logs/fast-history
+    JSON_FILE="scan-logs/fast-history/result.json"
 
     local first_repo=1
     printf '[\n' > "$JSON_FILE"

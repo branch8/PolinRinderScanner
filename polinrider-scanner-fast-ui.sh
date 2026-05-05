@@ -163,8 +163,8 @@ log_msg() {
 init_log() {
     local timestamp
     timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-    mkdir -p logs
-    LOG_FILE="logs/scan-fast-github-${timestamp}.log"
+    mkdir -p scan-logs/fast-ui
+    LOG_FILE="scan-logs/fast-ui/scan-${timestamp}.log"
     : > "$LOG_FILE"
     SCAN_START_TIME="$(date '+%s')"
     log_msg "PolinRider Fast Scanner v${VERSION} started"
@@ -402,22 +402,22 @@ REFSEOF
 
             # Classify which signature(s) this file matches
             if grep -qF "$V1_MARKER" <<<"$content"; then
-                printf 'FINDING\t%s\t%s\tV1 marker ("%s")\n' "$branch" "$filepath" "$V1_MARKER" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[V1] Obfuscated payload detected — decoder marker "%s" found\n' "$branch" "$filepath" "$V1_MARKER" >> "$results_file"
             fi
             if grep -qF "$V2_MARKER" <<<"$content"; then
-                printf 'FINDING\t%s\t%s\tV2 marker\n' "$branch" "$filepath" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[V2] Obfuscated payload detected — decoder marker "%s" found\n' "$branch" "$filepath" "$V2_MARKER" >> "$results_file"
             fi
             if grep -qF "$V1_DECODER" <<<"$content"; then
-                printf 'FINDING\t%s\t%s\tV1 decoder ("%s")\n' "$branch" "$filepath" "$V1_DECODER" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[V1] Payload decoder function detected: "%s"\n' "$branch" "$filepath" "$V1_DECODER" >> "$results_file"
             fi
             if grep -qF "$V1_GLOBAL" <<<"$content"; then
-                printf 'FINDING\t%s\t%s\tV1 global ("%s")\n' "$branch" "$filepath" "$V1_GLOBAL" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[V1] Runtime global hook detected: "%s"\n' "$branch" "$filepath" "$V1_GLOBAL" >> "$results_file"
             fi
             if grep -qF "$V2_GLOBAL" <<<"$content"; then
-                printf 'FINDING\t%s\t%s\tV2 global\n' "$branch" "$filepath" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[V2] Runtime global hook detected: "%s"\n' "$branch" "$filepath" "$V2_GLOBAL" >> "$results_file"
             fi
             if grep -qF "$COMMON_GLOBAL_R" <<<"$content"; then
-                printf 'FINDING\t%s\t%s\tglobal r marker\n' "$branch" "$filepath" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[SUSPICIOUS] Malware runtime require hook: global['"'"'r'"'"']=require\n' "$branch" "$filepath" >> "$results_file"
             fi
         done < "$pass1_out"
     fi
@@ -431,7 +431,7 @@ REFSEOF
         content="$(git -C "$bare_dir" show "refs/heads/${branch}:${filepath}" 2>/dev/null)" || continue
         if grep -qF "$V1_SEED" <<<"$content" || \
            grep -qF "$V1_SEED2" <<<"$content"; then
-            printf 'FINDING\t%s\t%s\tV1 payload confirmed ("%s" + seed "%s|%s")\n' "$branch" "$filepath" "$V1_GLOBAL" "$V1_SEED" "$V1_SEED2" >> "$compound_file"
+            printf 'FINDING\t%s\t%s\t[V1 CONFIRMED] Active payload — global hook "%s" + seed "%s|%s" both present\n' "$branch" "$filepath" "$V1_GLOBAL" "$V1_SEED" "$V1_SEED2" >> "$compound_file"
         fi
     done
     grep 'V2 global' "$results_file" 2>/dev/null | while IFS='	' read -r _type branch filepath _desc; do
@@ -440,7 +440,7 @@ REFSEOF
         if grep -qF "$V2_SEED" <<<"$content" || \
            grep -qF "$V2_SEED2" <<<"$content" || \
            grep -qF "$V2_DECODER" <<<"$content"; then
-            printf 'FINDING\t%s\t%s\tV2 payload confirmed (global + seed/decoder)\n' "$branch" "$filepath" >> "$compound_file"
+            printf 'FINDING\t%s\t%s\t[V2 CONFIRMED] Active payload — global hook + seed/decoder both present\n' "$branch" "$filepath" >> "$compound_file"
         fi
     done
     grep 'global r marker' "$results_file" 2>/dev/null | while IFS='	' read -r _type branch filepath _desc; do
@@ -449,7 +449,7 @@ REFSEOF
         if grep -qF "$COMMON_GLOBAL_M" <<<"$content"; then
             if grep -qF "$V1_SEED" <<<"$content" || \
                grep -qF "$V2_SEED" <<<"$content"; then
-                printf 'FINDING\t%s\t%s\tSuspicious global r/m with known seed\n' "$branch" "$filepath" >> "$compound_file"
+                printf 'FINDING\t%s\t%s\t[SUSPICIOUS] Require/module hooks + known seed — likely infected\n' "$branch" "$filepath" >> "$compound_file"
             fi
         fi
     done
@@ -502,7 +502,7 @@ REFSEOF
             IFS=' '
             for mal_pkg in $MALICIOUS_NPM_PKGS; do
                 if grep -qF "\"${mal_pkg}\"" <<<"$content"; then
-                    printf 'FINDING\t%s\t%s\tMalicious npm package: %s\n' "$branch" "$filepath" "$mal_pkg" >> "$results_file"
+                    printf 'FINDING\t%s\t%s\t[SUPPLY CHAIN] Malicious npm package in dependencies: %s\n' "$branch" "$filepath" "$mal_pkg" >> "$results_file"
                 fi
             done
             IFS="$old_ifs"
@@ -541,7 +541,7 @@ REFSEOF
             IFS=' '
             for domain in $C2_DOMAINS; do
                 if grep -qF "$domain" <<<"$content"; then
-                    printf 'FINDING\t%s\t%s\tC2 domain: %s\n' "$branch" "$filepath" "$domain" >> "$results_file"
+                    printf 'FINDING\t%s\t%s\t[C2] Command & control domain in config: %s\n' "$branch" "$filepath" "$domain" >> "$results_file"
                 fi
             done
             IFS="$old_ifs"
@@ -573,17 +573,17 @@ REFSEOF
 
             for addr in "$TRON_ADDR_1" "$TRON_ADDR_2" "$APTOS_HASH_1" "$APTOS_HASH_2"; do
                 if grep -qF "$addr" <<<"$content"; then
-                    printf 'FINDING\t%s\t%s\tBlockchain C2 address: %s\n' "$branch" "$filepath" "$addr" >> "$results_file"
+                    printf 'FINDING\t%s\t%s\t[C2] Blockchain exfiltration address: %s\n' "$branch" "$filepath" "$addr" >> "$results_file"
                 fi
             done
             if grep -qF "$STAKING_UUID" <<<"$content"; then
-                printf 'FINDING\t%s\t%s\tStakingGame weaponized template UUID\n' "$branch" "$filepath" >> "$results_file"
+                printf 'FINDING\t%s\t%s\t[IOC] StakingGame UUID found — confirms PolinRider infection origin\n' "$branch" "$filepath" >> "$results_file"
             fi
             # Propagation script check (only for .bat files)
             case "$filepath" in
                 *temp_auto_push.bat|*config.bat)
                     if grep -qF "LAST_COMMIT_DATE" <<<"$content"; then
-                        printf 'FINDING\t%s\t%s\tPolinRider propagation script\n' "$branch" "$filepath" >> "$results_file"
+                        printf 'FINDING\t%s\t%s\t[PROPAGATION] Auto-push script detected — spreads infection to other repos via git\n' "$branch" "$filepath" >> "$results_file"
                     fi
                     ;;
             esac
@@ -618,9 +618,9 @@ REFSEOF
                 local content
                 content="$(git -C "$bare_dir" show "refs/heads/${branch}:${filepath}" 2>/dev/null)" || continue
                 if grep -qF "folderOpen" <<<"$content"; then
-                    printf 'FINDING\t%s\t%s\tcurl|bash with runOn:folderOpen auto-execution\n' "$branch" "$filepath"
+                    printf 'FINDING\t%s\t%s\t[RCE] curl|bash auto-executes on folder open — TasksJacker attack vector\n' "$branch" "$filepath"
                 else
-                    printf 'FINDING\t%s\t%s\tcurl|bash in IDE config\n' "$branch" "$filepath"
+                    printf 'FINDING\t%s\t%s\t[SUSPICIOUS] curl|bash command in IDE task config\n' "$branch" "$filepath"
                 fi
             done < "$curl_out"
         fi
@@ -648,7 +648,7 @@ REFSEOF
                 content="$(git -C "$bare_dir" show "refs/heads/${branch}:${filepath}" 2>/dev/null)" || continue
                 if grep -qF "detached" <<<"$content" || \
                    grep -qF "windowsHide" <<<"$content"; then
-                    printf 'FINDING\t%s\t%s\tchild_process.spawn with detached/hidden execution\n' "$branch" "$filepath"
+                    printf 'FINDING\t%s\t%s\t[SUSPICIOUS] Hidden background process spawned from config file\n' "$branch" "$filepath"
                 fi
             done < "$cp_out"
         fi
@@ -672,7 +672,7 @@ REFSEOF
                 if [ "$ref" = "$hit_line" ] || [ -z "$filepath" ]; then continue; fi
                 local branch="${ref#refs/heads/}"
                 case "$branch" in origin/*|*/HEAD) continue ;; esac
-                printf 'FINDING\t%s\t%s\tPrompt injection pattern (instruction override)\n' "$branch" "$filepath"
+                printf 'FINDING\t%s\t%s\t[PROMPT INJECTION] AI agent config contains instruction override pattern\n' "$branch" "$filepath"
             done < "$pi_out"
         fi
         rm -f "$pi_out"
@@ -698,7 +698,7 @@ REFSEOF
                 local content
                 content="$(git -C "$bare_dir" show "refs/heads/${branch}:${filepath}" 2>/dev/null)" || continue
                 if printf '%s' "$content" | grep -qiE '(read|cat|send|upload|post|exfil|steal|extract)'; then
-                    printf 'FINDING\t%s\t%s\tCredential access + exfiltration pattern in agent config\n' "$branch" "$filepath"
+                    printf 'FINDING\t%s\t%s\t[EXFILTRATION] Agent config reads credentials and appears to exfiltrate them\n' "$branch" "$filepath"
                 fi
             done < "$cred_out"
         fi
@@ -722,7 +722,7 @@ REFSEOF
                 if [ "$ref" = "$hit_line" ] || [ -z "$filepath" ]; then continue; fi
                 local branch="${ref#refs/heads/}"
                 case "$branch" in origin/*|*/HEAD) continue ;; esac
-                printf 'FINDING\t%s\t%s\tExternal URL in agent config — potential exfiltration vector\n' "$branch" "$filepath"
+                printf 'FINDING\t%s\t%s\t[SUSPICIOUS] External URL in agent config — possible data exfiltration\n' "$branch" "$filepath"
             done < "$url_out"
         fi
         rm -f "$url_out"
@@ -965,7 +965,8 @@ generate_text_report() {
 
     local timestamp
     timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-    REPORT_FILE="logs/report-fast-github-${owner}-${timestamp}.txt"
+    mkdir -p scan-logs/fast-ui
+    REPORT_FILE="scan-logs/fast-ui/report-${owner}-${timestamp}.txt"
 
     local infected_count=0
     local infected_details=""
@@ -1152,7 +1153,8 @@ generate_json_report() {
     local results_dirs="$1"
 
     mkdir -p logs
-    JSON_FILE="logs/result.json"
+    mkdir -p scan-logs/fast-ui
+    JSON_FILE="scan-logs/fast-ui/result.json"
 
     local first_repo=1
     printf '[\n' > "$JSON_FILE"

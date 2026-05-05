@@ -204,8 +204,8 @@ init_log() {
     else
         local timestamp
         timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-        mkdir -p logs
-        LOG_FILE="logs/scan-${mode_parts}-${timestamp}.log"
+        mkdir -p scan-logs/local
+        LOG_FILE="scan-logs/local/scan-${mode_parts}-${timestamp}.log"
         : > "$LOG_FILE"
     fi
 
@@ -1020,7 +1020,8 @@ generate_github_report() {
 
     local timestamp
     timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
-    REPORT_FILE="logs/report-github-${owner}-${timestamp}.txt"
+    mkdir -p scan-logs/local
+    REPORT_FILE="scan-logs/local/report-github-${owner}-${timestamp}.txt"
 
     local infected_count=0
     local infected_details=""
@@ -1101,8 +1102,8 @@ generate_github_json_report() {
     local repo_count="$2"
     local results_dir="$3"
 
-    mkdir -p logs
-    JSON_FILE="logs/result.json"
+    mkdir -p scan-logs/local
+    JSON_FILE="scan-logs/local/result.json"
 
     local first_repo=1
 
