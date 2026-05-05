@@ -1338,10 +1338,10 @@ perform_cleanup() {
         printf "\n"
     fi
 
-    printf "${YELLOW}${BOLD}Auto-clean the above items? [y/N]${RESET} "
+    printf "${YELLOW}${BOLD}Auto-clean the above items? [y/N]${RESET} " >/dev/tty
     local answer=""
     read -r answer </dev/tty
-    printf "\n"
+    printf "\n" >/dev/tty
 
     case "$answer" in
         [yY]|[yY][eE][sS])
