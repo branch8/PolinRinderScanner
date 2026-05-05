@@ -667,6 +667,33 @@ tailwindcss-react-aria-components|tw-animate-css) ;;
 $(find "$repo_dir" -name "package.json" -type f -not -path "*/node_modules/*" -not -path "*/.git/*" -maxdepth 4 2>/dev/null)
 PKGEOF
 
+    # --- node_modules installed package scan ---
+    # Finds malicious packages actually installed on disk — catches transitive deps,
+    # packages removed from package.json but still present, and monorepo layouts.
+    # Bare clones are naturally skipped (no node_modules directory exists).
+    local old_ifs="$IFS"
+    IFS=' '
+    for mal_pkg in $MALICIOUS_NPM_PKGS; do
+        while IFS= read -r nm_pkg_json; do
+            if [ -n "$nm_pkg_json" ] && [ -f "$nm_pkg_json" ]; then
+                local nm_dir
+                nm_dir="$(dirname "$nm_pkg_json")"
+                local relpath="${nm_pkg_json#${repo_dir}/}"
+                local payload_confirmed=""
+                if grep -rqF "$V1_MARKER" "$nm_dir" --include="*.js" 2>/dev/null; then
+                    payload_confirmed=" (payload confirmed — V1)"
+                elif grep -rqF "$V2_MARKER" "$nm_dir" --include="*.js" 2>/dev/null; then
+                    payload_confirmed=" (payload confirmed — V2)"
+                fi
+                findings="${findings}  ${RED}-${RESET} ${BOLD}${relpath}${RESET}: Malicious package installed: ${mal_pkg}${payload_confirmed}\n"
+                finding_count=$((finding_count + 1))
+            fi
+        done <<NMEOF
+$(find "$repo_dir" -path "*/node_modules/${mal_pkg}/package.json" -not -path "*/.git/*" -maxdepth 6 2>/dev/null)
+NMEOF
+    done
+    IFS="$old_ifs"
+
     # --- git grep across all branches for signatures ---
     # For each signature, run git grep -lF against all branches.
     # Each hit already knows which signature matched — no second-pass needed.

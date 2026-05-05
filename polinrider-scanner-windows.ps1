@@ -520,6 +520,37 @@ function Scan-Repo ([string]$RepoDir) {
         }
     }
 
+    # --- node_modules installed package scan ---
+    # Finds malicious packages actually installed on disk — catches transitive deps,
+    # packages removed from package.json but still present, and monorepo layouts.
+    foreach ($pkg in $MALICIOUS_NPM_PKGS) {
+        $nmPkgFiles = Get-ChildItem $RepoDir -Recurse -Filter 'package.json' -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.DirectoryName -match "(\\|/)node_modules(\\|/)$([regex]::Escape($pkg))$" }
+        foreach ($nmPkg in $nmPkgFiles) {
+            $nmDir = $nmPkg.DirectoryName
+            $rel = $nmPkg.FullName.Replace("$RepoDir\", '').Replace("$RepoDir/", '')
+            $payloadNote = ''
+            $payloadFound = $false
+            Get-ChildItem $nmDir -Recurse -Filter '*.js' -File -Depth 2 -ErrorAction SilentlyContinue |
+                ForEach-Object {
+                    if (-not $payloadFound) {
+                        $jsContent = Get-FileContent $_.FullName
+                        if ($jsContent) {
+                            if ($jsContent.Contains($V1_MARKER)) {
+                                $payloadNote = ' (payload confirmed — V1)'
+                                $payloadFound = $true
+                            } elseif ($jsContent.Contains($V2_MARKER)) {
+                                $payloadNote = ' (payload confirmed — V2)'
+                                $payloadFound = $true
+                            }
+                        }
+                    }
+                }
+            Add-RepoFinding $rel "Malicious package installed: $pkg$payloadNote" 'HIGH'
+            $findingCount++
+        }
+    }
+
     # --- git grep across all branches (15s timeout) ---
     $gitCmd = Get-Command git -ErrorAction SilentlyContinue
     if ($gitCmd -and (Test-Path (Join-Path $RepoDir '.git'))) {
