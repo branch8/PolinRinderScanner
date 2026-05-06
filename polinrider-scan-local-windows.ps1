@@ -1,6 +1,6 @@
 #Requires -Version 5.1
 <#
-    PolinRider Malware Scanner v1.3 (Windows)
+    PolinRider Malware Scanner v1.4 (Windows)
 
     Scans a Windows system for PolinRider / TasksJacker malware indicators.
     Detects both obfuscator variants (rmcej%otb% and Cot%3t=shtP),
@@ -10,15 +10,35 @@
     agent config directories, and git history across all branches.
 
     Usage:
-      .\polinrider-scanner-windows.ps1                          # Scan repos under current directory
-      .\polinrider-scanner-windows.ps1 -FullSystem              # Full Windows system scan
-      .\polinrider-scanner-windows.ps1 -Quick                   # Quick scan (processes + network + DNS investigation)
-      .\polinrider-scanner-windows.ps1 -Verbose -Path C:\repos  # Verbose repo scan
+      .\polinrider-scan-local-windows.ps1                          # Scan repos under current directory
+      .\polinrider-scan-local-windows.ps1 -FullSystem              # Full Windows system scan
+      .\polinrider-scan-local-windows.ps1 -Quick                   # Quick scan (processes + network + DNS investigation)
+      .\polinrider-scan-local-windows.ps1 -Verbose -Path C:\repos  # Verbose repo scan
 
     Exit codes:
       0 - No infections found
       1 - Infections found
       2 - Error
+
+    Changelog:
+      v1.4 (2026-05-06)
+        - Add Scan-PropagationScripts module: full recursive search across all
+          user directories for temp_auto_push.bat and config.bat
+        - config.bat content-validated before flagging (checks LAST_COMMIT_DATE,
+          --no-verify, git push -uf, temp_auto_push) to avoid false positives
+        - PropagationScriptFound flag: finding a confirmed propagation script
+          overrides risk score to 100 (CRITICAL)
+        - Self-exclusion: Scan-TempDirs skips the scanner's own script file
+        - Write-Progress added to Quick scan, Full system scan, and repo scan
+          for module-level progress display
+
+      v1.3
+        - Initial Branch8 fork from official PolinRider scanner
+        - Added Scan-StealerArtifacts, Scan-WindowsServices, Scan-PSProfiles
+        - Risk scoring and DNS investigation modules
+        - JSON report with Telegram reporting support
+        - IDE config prompt-injection detection (.vscode, .cursor, .claude)
+        - Automated cleanup (Invoke-Cleanup)
 #>
 
 [CmdletBinding()]
@@ -180,7 +200,7 @@ function Get-AllUserProfiles {
 function Write-Banner {
     Write-Host ''
     Write-Host '================================================' -ForegroundColor White
-    Write-Host '  PolinRider Malware Scanner v1.3 (Windows)'     -ForegroundColor White
+    Write-Host '  PolinRider Malware Scanner v1.4 (Windows)'     -ForegroundColor White
     Write-Host '  https://opensourcemalware.com'                  -ForegroundColor White
     Write-Host '  Detects variants: rmcej%otb% + Cot%3t=shtP'    -ForegroundColor White
     Write-Host '================================================' -ForegroundColor White
@@ -1820,7 +1840,7 @@ function New-JsonReport ([int]$ExitCode, [timespan]$Duration) {
     $report = [ordered]@{
         report_metadata = [ordered]@{
             report_id            = [guid]::NewGuid().ToString()
-            scanner_version      = '1.3'
+            scanner_version      = '1.4'
             scan_mode            = $scanMode
             scan_timestamp_utc   = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
             scan_duration_seconds = [math]::Round($Duration.TotalSeconds, 1)
