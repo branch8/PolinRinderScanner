@@ -200,8 +200,9 @@ function Get-AllUserProfiles {
 function Write-Banner {
     Write-Host ''
     Write-Host '================================================' -ForegroundColor White
-    Write-Host '  PolinRider Malware Scanner v1.4 (Windows)'     -ForegroundColor White
-    Write-Host '  https://opensourcemalware.com'                  -ForegroundColor White
+    Write-Host '  PolinRider Malware Scanner v1.4 — Branch8 Edition' -ForegroundColor White
+    Write-Host '  Customized by Glenn Cheng'                      -ForegroundColor White
+    Write-Host '  https://github.com/branch8/PolinRiderScanner'   -ForegroundColor White
     Write-Host '  Detects variants: rmcej%otb% + Cot%3t=shtP'    -ForegroundColor White
     Write-Host '================================================' -ForegroundColor White
     Write-Host ''

@@ -3,7 +3,8 @@ title PolinRider Malware Scanner
 
 echo ================================================
 echo   PolinRider Malware Scanner - Windows Quick Start
-echo   https://opensourcemalware.com
+echo   Branch8 Edition - Customized by Glenn Cheng
+echo   https://github.com/branch8/PolinRiderScanner
 echo ================================================
 echo.
 

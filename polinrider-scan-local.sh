@@ -109,19 +109,20 @@ IDE_CONFIG_DIRS=".vscode .cursor .claude"
 # ---------------------------------------------------------------------------
 # Colors (disabled if not a terminal)
 # ---------------------------------------------------------------------------
-RED="" GREEN="" YELLOW="" CYAN="" MAGENTA="" BOLD="" RESET=""
-if [ -t 1 ]; then
+RED="" GREEN="" YELLOW="" CYAN="" MAGENTA="" BOLD="" DIM="" RESET=""
+# Enable colors when connected to a terminal, OR when re-exec'd through the logging
+# pipe (stdout is a pipe but /dev/tty still points to the user's terminal — the outer
+# process passes our output straight through, so ANSI codes reach the screen).
+if [ -t 1 ] || { [ -w /dev/tty ]; } 2>/dev/null; then
     RED='\033[0;31m'
     GREEN='\033[0;32m'
     YELLOW='\033[1;33m'
     CYAN='\033[0;36m'
     MAGENTA='\033[0;35m'
     BOLD='\033[1m'
+    DIM='\033[0;90m'
     RESET='\033[0m'
 fi
-
-# Enable spinner when /dev/tty is writable (works even through the logging re-exec pipe)
-{ [ -w /dev/tty ] && PROGRESS_UI=1; } 2>/dev/null || true
 
 # ---------------------------------------------------------------------------
 # Counters
@@ -132,10 +133,13 @@ INFECTED_REPO_PATHS=""
 SYSTEM_FINDINGS=0
 SYSTEM_FINDINGS_DETAIL=""
 
-# Progress UI
+# Progress UI (set by init_progress_ui)
 PROGRESS_UI=0
 SPINNER_PID=0
 REPO_DONE=0
+TERM_LINES=24
+BAR_HEIGHT=4
+_PROGRESS_STATE=""
 
 # Auto-cleanup tracking (populated during local repo scan only)
 CLEANUP_BAT_FILES=()
@@ -148,8 +152,9 @@ CLEANUP_NODE_MODULES=()
 print_banner() {
     printf "\n"
     printf "${BOLD}================================================${RESET}\n"
-    printf "${BOLD}  PolinRider Local Scanner v%s (macOS/Linux)${RESET}\n" "$VERSION"
-    printf "${BOLD}  https://opensourcemalware.com${RESET}\n"
+    printf "${BOLD}  PolinRider Local Scanner v%s — Branch8 Edition${RESET}\n" "$VERSION"
+    printf "${BOLD}  Customized by Glenn Cheng${RESET}\n"
+    printf "${BOLD}  https://github.com/branch8/PolinRiderScanner${RESET}\n"
     printf "${BOLD}  Detects variants: rmcej%%otb%% + Cot%%3t=shtP${RESET}\n"
     printf "${BOLD}================================================${RESET}\n"
     printf "\n"
@@ -218,34 +223,159 @@ init_log() {
 cleanup() {
     local exit_code=$?
     _spinner_stop 2>/dev/null
+    cleanup_progress_ui 2>/dev/null
     wait 2>/dev/null
     exit $exit_code
 }
 trap cleanup EXIT
 
 # ---------------------------------------------------------------------------
-# Spinner helpers — write to /dev/tty so they bypass the logging re-exec pipe
+# Progress UI helpers — all terminal output via /dev/tty (bypasses logging pipe)
 # ---------------------------------------------------------------------------
-_spinner_start() {
-    [ "$PROGRESS_UI" -eq 1 ] || return 0
-    local msg="$1"
-    ( local _sp='|/-\'
-      local _i=0
+
+init_progress_ui() {
+    { [ -w /dev/tty ]; } 2>/dev/null || return 0
+    PROGRESS_UI=1
+    TERM_LINES=$(tput lines 2>/dev/null || printf '24')
+    local scroll_end=$((TERM_LINES - BAR_HEIGHT))
+    printf "\033[1;%dr" "$scroll_end" >/dev/tty
+    local _r=$((scroll_end + 1))
+    while [ "$_r" -le "$TERM_LINES" ]; do
+        printf "\033[%d;1H\033[2K" "$_r" >/dev/tty
+        _r=$((_r + 1))
+    done
+    printf "\033[%d;1H" "$scroll_end" >/dev/tty
+    _PROGRESS_STATE=$(mktemp)
+    printf "msg=Starting...\nfsmod=0\nfsmod_total=0\nfsmod_name=\ndone=0\ntotal=0\ninfected=0\n" \
+        > "$_PROGRESS_STATE"
+
+    # Persistent renderer — 4 fixed rows, reads state file every 0.1s
+    ( local _i=0
       while true; do
-          printf "\r  %s  %s   " "${_sp:$((_i % 4)):1}" "$msg" >/dev/tty 2>/dev/null
+          local _sp
+          case $((_i % 10)) in
+              0) _sp="⠋" ;; 1) _sp="⠙" ;; 2) _sp="⠹" ;; 3) _sp="⠸" ;;
+              4) _sp="⠼" ;; 5) _sp="⠴" ;; 6) _sp="⠦" ;; 7) _sp="⠧" ;;
+              8) _sp="⠇" ;; *) _sp="⠏" ;;
+          esac
+          local _sc
+          case $((_i % 4)) in
+              0) _sc="$CYAN" ;; 1) _sc="$GREEN" ;; 2) _sc="$YELLOW" ;; *) _sc="$MAGENTA" ;;
+          esac
+
+          local _lmsg="" _lfsmod=0 _lfsmod_total=0 _lfsmod_name=""
+          local _ldone=0 _ltotal=0 _linfected=0
+          if [ -f "$_PROGRESS_STATE" ]; then
+              while IFS='=' read -r _k _v; do
+                  case "$_k" in
+                      msg) _lmsg="$_v" ;;
+                      fsmod) _lfsmod="$_v" ;; fsmod_total) _lfsmod_total="$_v" ;;
+                      fsmod_name) _lfsmod_name="$_v" ;;
+                      done) _ldone="$_v" ;; total) _ltotal="$_v" ;;
+                      infected) _linfected="$_v" ;;
+                  esac
+              done < "$_PROGRESS_STATE"
+          fi
+
+          local _bar_row=$((TERM_LINES - BAR_HEIGHT + 1))
+          {
+              printf "\033[s"
+
+              # Row 1: separator
+              printf "\033[%d;1H\033[2K" "$_bar_row"
+              printf "${DIM}──────────────────── scan log ───────────────────────${RESET}"
+
+              # Row 2: module progress
+              printf "\033[%d;1H\033[2K" "$((_bar_row + 1))"
+              if [ "$_lfsmod_total" -gt 0 ]; then
+                  if [ "$_lfsmod" -ge "$_lfsmod_total" ]; then
+                      printf "${GREEN}✓${RESET} ${BOLD}${CYAN}[modules]${RESET}  ${GREEN}all %d modules complete${RESET}" \
+                          "$_lfsmod_total"
+                  else
+                      printf "${_sc}%s${RESET} ${BOLD}${CYAN}[modules]${RESET}  ${DIM}[%d/%d]${RESET}  %s" \
+                          "$_sp" "$_lfsmod" "$_lfsmod_total" "$_lfsmod_name"
+                  fi
+              fi
+
+              # Row 3: repo progress
+              printf "\033[%d;1H\033[2K" "$((_bar_row + 2))"
+              if [ "$_ltotal" -gt 0 ]; then
+                  local _pct=$((_ldone * 100 / _ltotal))
+                  local _fill=$((_ldone * 30 / _ltotal))
+                  local _empty=$((30 - _fill))
+                  local _bf="" _be="" _bi=0
+                  while [ "$_bi" -lt "$_fill" ]; do _bf="${_bf}█"; _bi=$((_bi+1)); done
+                  _bi=0
+                  while [ "$_bi" -lt "$_empty" ]; do _be="${_be}─"; _bi=$((_bi+1)); done
+                  if [ "$_linfected" -gt 0 ]; then
+                      printf "${_sc}%s${RESET} ${BOLD}${CYAN}[repos]${RESET}    [${GREEN}%s${RESET}${DIM}%s${RESET}] %3d%%  ${CYAN}done: %d/%d${RESET}  ${RED}infected: %d${RESET}" \
+                          "$_sp" "$_bf" "$_be" "$_pct" "$_ldone" "$_ltotal" "$_linfected"
+                  else
+                      printf "${_sc}%s${RESET} ${BOLD}${CYAN}[repos]${RESET}    [${GREEN}%s${RESET}${DIM}%s${RESET}] %3d%%  ${CYAN}done: %d/%d${RESET}" \
+                          "$_sp" "$_bf" "$_be" "$_pct" "$_ldone" "$_ltotal"
+                  fi
+              else
+                  printf "${DIM}%s${RESET} ${BOLD}${CYAN}[repos]${RESET}    ${DIM}%s${RESET}" "$_sp" "$_lmsg"
+              fi
+
+              # Row 4: status
+              printf "\033[%d;1H\033[2K" "$((_bar_row + 3))"
+              printf "  ${DIM}status:${RESET}   %s" "$_lmsg"
+
+              printf "\033[u"
+          } >/dev/tty 2>/dev/null
+
           _i=$((_i + 1))
-          sleep 0.3 2>/dev/null || sleep 1
+          sleep 0.1 2>/dev/null || sleep 1
       done ) &
     SPINNER_PID=$!
 }
 
-_spinner_stop() {
+cleanup_progress_ui() {
+    [ "$PROGRESS_UI" -eq 1 ] || return 0
     if [ "${SPINNER_PID:-0}" -ne 0 ]; then
         kill "$SPINNER_PID" 2>/dev/null
         wait "$SPINNER_PID" 2>/dev/null || true
-        printf "\r\033[2K" >/dev/tty 2>/dev/null
         SPINNER_PID=0
     fi
+    rm -f "$_PROGRESS_STATE"
+    printf "\033[r" >/dev/tty
+    printf "\033[%d;1H\n" "$TERM_LINES" >/dev/tty
+    PROGRESS_UI=0
+}
+
+# _ps_module fsmod fsmod_total fsmod_name
+# Update module-phase state; preserves repo counters.
+_ps_module() {
+    [ -n "$_PROGRESS_STATE" ] || return 0
+    local _fsmod="$1" _fsmod_total="$2" _fsmod_name="$3"
+    local _done=0 _total=0 _infected=0
+    while IFS='=' read -r _k _v; do
+        case "$_k" in done) _done="$_v" ;; total) _total="$_v" ;; infected) _infected="$_v" ;; esac
+    done < "$_PROGRESS_STATE"
+    printf "msg=%s\nfsmod=%s\nfsmod_total=%s\nfsmod_name=%s\ndone=%s\ntotal=%s\ninfected=%s\n" \
+        "$_fsmod_name" "$_fsmod" "$_fsmod_total" "$_fsmod_name" \
+        "$_done" "$_total" "$_infected" > "$_PROGRESS_STATE"
+}
+
+# _ps_repo msg done total infected
+# Update repo-phase state; preserves module info.
+_ps_repo() {
+    [ -n "$_PROGRESS_STATE" ] || return 0
+    local _msg="$1" _done="$2" _total="$3" _infected="$4"
+    local _fsmod=0 _fsmod_total=0 _fsmod_name=""
+    while IFS='=' read -r _k _v; do
+        case "$_k" in
+            fsmod) _fsmod="$_v" ;; fsmod_total) _fsmod_total="$_v" ;; fsmod_name) _fsmod_name="$_v" ;;
+        esac
+    done < "$_PROGRESS_STATE"
+    printf "msg=%s\nfsmod=%s\nfsmod_total=%s\nfsmod_name=%s\ndone=%s\ntotal=%s\ninfected=%s\n" \
+        "$_msg" "$_fsmod" "$_fsmod_total" "$_fsmod_name" \
+        "$_done" "$_total" "$_infected" > "$_PROGRESS_STATE"
+}
+
+_spinner_stop() {
+    : # no-op — renderer keeps running; cleanup_progress_ui stops it at the end
 }
 
 log_scan_complete() {
@@ -1567,6 +1697,11 @@ fi
 
 print_banner
 
+# Initialise scroll-region UI for non-quick modes (quick scan exits before repo scan)
+if [ "$QUICK_SCAN" -ne 1 ]; then
+    init_progress_ui
+fi
+
 # --- Quick scan mode ---
 if [ "$QUICK_SCAN" -eq 1 ]; then
     printf "Mode: ${BOLD}Quick Scan${RESET} (processes + network only)\n"
@@ -1601,9 +1736,8 @@ if [ "$FULL_SYSTEM" -eq 1 ]; then
     _run_fs_module() {
         _fs_mod=$((_fs_mod + 1))
         local _label="$1"; local _fn="$2"
-        _spinner_start "[${_fs_mod}/${_fs_mod_total}] ${_label}..."
+        _ps_module "$_fs_mod" "$_fs_mod_total" "$_label"
         "$_fn"
-        _spinner_stop
     }
 
     _run_fs_module "Processes"          scan_processes
@@ -1636,6 +1770,7 @@ fi
 SCAN_DIR="$SCAN_DIR_RESOLVED"
 
 print_section "REPOS" "Scanning git repositories under ${SCAN_DIR}..."
+_ps_repo "Finding repositories..." "0" "0" "0"
 
 # Find all git repositories
 REPO_LIST=""
@@ -1663,27 +1798,21 @@ else
             REPO_DONE=$((REPO_DONE + 1))
             _prev_infected=$INFECTED_REPOS
             _rname="$(basename "$repo")"
-            _spinner_start "[${REPO_DONE}/${TOTAL_REPOS}] ${_rname}..."
+            _ps_repo "Scanning ${_rname}..." "$REPO_DONE" "$TOTAL_REPOS" "$INFECTED_REPOS"
             scan_repo "$repo"
-            _spinner_stop
-            # Progress bar line after each repo
+            # Print per-repo result into scroll region (bar stays fixed at bottom)
             if [ "$INFECTED_REPOS" -gt "$_prev_infected" ]; then
-                _rstatus="${RED}INFECTED${RESET}"
+                printf "  ${RED}[INFECTED]${RESET} %s\n" "$_rname"
             else
-                _rstatus="${GREEN}clean${RESET}"
+                printf "  ${GREEN}[clean]${RESET} %s\n" "$_rname"
             fi
-            _pct=$(( (REPO_DONE * 100) / TOTAL_REPOS ))
-            _bfill=$(( (REPO_DONE * 20) / TOTAL_REPOS ))
-            _bempty=$(( 20 - _bfill ))
-            _bfill_s=""; _bi=0; while [ "$_bi" -lt "$_bfill" ]; do _bfill_s="${_bfill_s}="; _bi=$((_bi+1)); done
-            _bempty_s=""; _bi=0; while [ "$_bi" -lt "$_bempty" ]; do _bempty_s="${_bempty_s} "; _bi=$((_bi+1)); done
-            printf "  [%s%s] %3d%%  done:%d/%d  ${RED}infected:%d${RESET}  %b\n" \
-                "$_bfill_s" "$_bempty_s" "$_pct" "$REPO_DONE" "$TOTAL_REPOS" "$INFECTED_REPOS" "$_rstatus"
         fi
     done <<REPOEOF
 $REPO_LIST
 REPOEOF
 fi
+
+cleanup_progress_ui
 
 # ===================================================================
 #  SUMMARY

@@ -130,9 +130,10 @@ fi
 TOTAL_REPOS=0
 INFECTED_REPOS=0
 PROGRESS_UI=0
-PROGRESS_LINES=0
 LAST_QUEUE_LINE=0
 SPINNER_IDX=0
+TERM_LINES=24
+BAR_HEIGHT=4
 JSON_RESULT_DIRS=""
 
 # ---------------------------------------------------------------------------
@@ -267,21 +268,43 @@ ui_log_result() {
 }
 
 _colorize_log_line() {
+    # No trailing newline — caller manages scrolling
     local _line="$1"
     case "$_line" in
         *"CONFIRMED"*|*" INFECTED"*|*"[INFECTED]"*|*"[V1"*|*"[V2"*)
-            printf "${RED}%s${RESET}\n" "$_line" ;;
+            printf "${RED}%s${RESET}" "$_line" ;;
         *"HISTORY"*)
-            printf "${YELLOW}%s${RESET}\n" "$_line" ;;
+            printf "${YELLOW}%s${RESET}" "$_line" ;;
         *" — clean"*|*": clean"*)
-            printf "${GREEN}%s${RESET}\n" "$_line" ;;
+            printf "${GREEN}%s${RESET}" "$_line" ;;
         *"Complete:"*|*"complete:"*)
-            printf "${CYAN}%s${RESET}\n" "$_line" ;;
+            printf "${CYAN}%s${RESET}" "$_line" ;;
         *"Starting"*|*"Cloning"*|*"Fetching"*|*"Scanning"*)
-            printf "${DIM}%s${RESET}\n" "$_line" ;;
+            printf "${DIM}%s${RESET}" "$_line" ;;
         *)
-            printf "%s\n" "$_line" ;;
+            printf "%s" "$_line" ;;
     esac
+}
+
+init_progress_ui() {
+    TERM_LINES=$(tput lines 2>/dev/null || printf '24')
+    local scroll_end=$((TERM_LINES - BAR_HEIGHT))
+    # Restrict scrolling to upper portion; bottom BAR_HEIGHT rows are fixed
+    printf "\033[1;%dr" "$scroll_end"
+    # Clear fixed bar area
+    local _r=$((scroll_end + 1))
+    while [ "$_r" -le "$TERM_LINES" ]; do
+        printf "\033[%d;1H\033[2K" "$_r"
+        _r=$((_r + 1))
+    done
+    # Park cursor at bottom of scroll region
+    printf "\033[%d;1H" "$scroll_end"
+}
+
+cleanup_progress_ui() {
+    # Reset scroll region, move cursor past bar so summary prints cleanly
+    printf "\033[r"
+    printf "\033[%d;1H\n" "$TERM_LINES"
 }
 
 ui_mark_state() {
@@ -368,29 +391,25 @@ render_progress_bar() {
     local _verbose_mode=0
     { [ "$VERBOSE" -eq 1 ] || [ "$VERBOSE_DETAIL" -eq 1 ]; } && _verbose_mode=1
 
-    # Flush new log events: erase sticky area, print lines, reset counter.
-    # Only erases when there is actually new content — avoids flicker on normal ticks.
+    local scroll_end=$((TERM_LINES - BAR_HEIGHT))
+
+    # Flush new log lines into scroll region — no erase/redraw, no flicker
     if [ "$_verbose_mode" -eq 1 ]; then
         local queue_file="${status_dir}/event-log"
         if [ -f "$queue_file" ]; then
             local current_lines
             current_lines=$(wc -l < "$queue_file" 2>/dev/null | tr -d ' ')
             if [ "$current_lines" -gt "$LAST_QUEUE_LINE" ]; then
-                if [ "$PROGRESS_LINES" -gt 0 ]; then
-                    printf "\033[%sA\033[J" "$PROGRESS_LINES"
-                fi
+                printf "\033[s"
+                printf "\033[%d;1H" "$scroll_end"
                 while IFS= read -r _line; do
+                    printf "\n\033[2K"
                     _colorize_log_line "$_line"
                 done < <(tail -n +"$((LAST_QUEUE_LINE + 1))" "$queue_file")
                 LAST_QUEUE_LINE=$current_lines
-                PROGRESS_LINES=0
+                printf "\033[u"
             fi
         fi
-    fi
-
-    # Reposition cursor for in-place redraw; no-op on first draw or after log flush
-    if [ "$PROGRESS_LINES" -gt 0 ]; then
-        printf "\033[%sA" "$PROGRESS_LINES"
     fi
 
     # Braille spinner with 4-color cycling
@@ -412,38 +431,18 @@ render_progress_bar() {
     done=$(find "$status_dir" -type f -name '*.done' 2>/dev/null | wc -l | tr -d ' ')
     latest_event="$(cat "${status_dir}/latest-event" 2>/dev/null || true)"
     [ -z "$latest_event" ] && latest_event="Waiting for workers..."
-    active_repos=$(find "$status_dir" -type f -name 'active-*' 2>/dev/null \
-        | xargs -I{} cat {} 2>/dev/null | tr '\n' ' ' | sed 's/ $//')
+    active_repos=$(cat "${status_dir}"/active-* 2>/dev/null | tr '\n' ' ' | sed 's/ $//')
 
-    # Bar: use bash loop (tr does not handle multi-byte UTF-8 on Linux)
+    # Bar: bash loop avoids tr multi-byte UTF-8 issues on Linux
     local percent=$((done * 100 / total))
-    local width=30
-    local fill=$((done * width / total))
-    local empty=$((width - fill))
+    local fill=$((done * 30 / total))
+    local empty=$((30 - fill))
     local bar_fill="" bar_empty="" _bi=0
     while [ "$_bi" -lt "$fill" ];  do bar_fill="${bar_fill}█";  _bi=$((_bi+1)); done
     _bi=0
     while [ "$_bi" -lt "$empty" ]; do bar_empty="${bar_empty}─"; _bi=$((_bi+1)); done
 
-    # Verbose separator (always top of sticky area in verbose mode)
-    local _plines=3
-    if [ "$_verbose_mode" -eq 1 ]; then
-        printf "\033[2K${DIM}──────────────────── scan log ───────────────────────${RESET}\n"
-        printf "\033[2K\n"
-        printf "\033[2K\n"
-        _plines=6
-    fi
-
-    # Line 1: spinner + [org: owner] + bar + stats
-    if [ "$infected" -gt 0 ]; then
-        printf "\033[2K${_sc}%s${RESET} ${BOLD}${CYAN}[org: %s]${RESET} [${GREEN}%s${RESET}${DIM}%s${RESET}] %3d%%  ${CYAN}done: %d/%d${RESET}  ${RED}infected: %d${RESET}  ${YELLOW}workers: %d${RESET}\n" \
-            "$spinner" "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$infected" "$running"
-    else
-        printf "\033[2K${_sc}%s${RESET} ${BOLD}${CYAN}[org: %s]${RESET} [${GREEN}%s${RESET}${DIM}%s${RESET}] %3d%%  ${CYAN}done: %d/%d${RESET}  ${YELLOW}workers: %d${RESET}\n" \
-            "$spinner" "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$running"
-    fi
-
-    # Line 2: active repos with per-repo color cycling
+    # Colored repo list
     local _colored="" _ri=0 _rc
     for _repo in $active_repos; do
         case $((_ri % 4)) in
@@ -453,18 +452,41 @@ render_progress_bar() {
         _ri=$((_ri + 1))
     done
     [ "$_ri" -eq 0 ] && _colored="(idle)"
-    printf "\033[2K  ${DIM}scanning:${RESET} %b\n" "$_colored"
 
-    # Line 3: latest pipeline status
-    printf "\033[2K  ${DIM}status:${RESET}   %s\n" "$latest_event"
+    # Draw bar in fixed region via absolute positioning — truly fixed, no flicker
+    local bar_row=$((TERM_LINES - BAR_HEIGHT + 1))
+    printf "\033[s"
 
-    PROGRESS_LINES=$_plines
+    # Row 1: separator (verbose) or blank
+    printf "\033[%d;1H\033[2K" "$bar_row"
+    if [ "$_verbose_mode" -eq 1 ]; then
+        printf "${DIM}──────────────────── scan log ───────────────────────${RESET}"
+    fi
+
+    # Row 2: spinner + bar + stats
+    printf "\033[%d;1H\033[2K" "$((bar_row + 1))"
+    if [ "$infected" -gt 0 ]; then
+        printf "${_sc}%s${RESET} ${BOLD}${CYAN}[org: %s]${RESET} [${GREEN}%s${RESET}${DIM}%s${RESET}] %3d%%  ${CYAN}done: %d/%d${RESET}  ${RED}infected: %d${RESET}  ${YELLOW}workers: %d${RESET}" \
+            "$spinner" "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$infected" "$running"
+    else
+        printf "${_sc}%s${RESET} ${BOLD}${CYAN}[org: %s]${RESET} [${GREEN}%s${RESET}${DIM}%s${RESET}] %3d%%  ${CYAN}done: %d/%d${RESET}  ${YELLOW}workers: %d${RESET}" \
+            "$spinner" "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$running"
+    fi
+
+    # Row 3: scanning repos
+    printf "\033[%d;1H\033[2K" "$((bar_row + 2))"
+    printf "  ${DIM}scanning:${RESET} %b" "$_colored"
+
+    # Row 4: status
+    printf "\033[%d;1H\033[2K" "$((bar_row + 3))"
+    printf "  ${DIM}status:${RESET}   %s" "$latest_event"
+
+    printf "\033[u"
 }
 
 clear_progress_line() {
     if [ "$PROGRESS_UI" -eq 1 ]; then
-        PROGRESS_LINES=0
-        printf "\n"
+        cleanup_progress_ui
     fi
 }
 
@@ -1028,7 +1050,6 @@ scan_single_repo_worker() {
             return 1
         fi
     fi
-    ui_mark_state "$status_dir" "$repo_short" "cloned"
     ui_emit_event "$status_dir" "${worker_prefix} Scanning ${full_name}..."
 
     local scan_results
@@ -1036,7 +1057,6 @@ scan_single_repo_worker() {
 
     scan_bare_repo "$bare_dir" "$scan_results" "$full_name" "$status_dir" "$worker_prefix"
     local scan_exit=$?
-    ui_mark_state "$status_dir" "$repo_short" "scanned"
 
     if [ "$scan_exit" -ne 0 ] && [ -s "$scan_results" ]; then
         local result_file="${results_dir}/${repo_short}.log"
@@ -1127,6 +1147,7 @@ scan_github_owner() {
     mkdir -p "$status_dir"
 
     if [ "$PROGRESS_UI" -eq 1 ]; then
+        init_progress_ui
         ui_emit_event "$status_dir" "[${owner}] Starting scan..."
         render_progress_bar "$owner" "$repo_count" 0 "$status_dir"
     fi
@@ -1136,7 +1157,7 @@ scan_github_owner() {
         repo_idx=$((repo_idx + 1))
 
         while [ "$running_jobs" -ge "$MAX_PARALLEL" ]; do
-            sleep 0.3
+            sleep 0.1
             _np="" _nc=0
             for _p in $pids; do
                 if kill -0 "$_p" 2>/dev/null; then
@@ -1163,13 +1184,20 @@ scan_github_owner() {
             render_progress_bar "$owner" "$repo_count" "$running_jobs" "$status_dir"
         fi
 
-        sleep "$CLONE_DELAY"
+        # Animate during clone delay instead of blocking
+        _delay_steps=$(awk "BEGIN{printf \"%d\", $CLONE_DELAY / 0.1 + 0.5}")
+        _ds=0
+        while [ "$_ds" -lt "$_delay_steps" ]; do
+            sleep 0.1
+            [ "$PROGRESS_UI" -eq 1 ] && render_progress_bar "$owner" "$repo_count" "$running_jobs" "$status_dir"
+            _ds=$((_ds + 1))
+        done
     done <<GHREPOEOF
 $repo_list
 GHREPOEOF
 
     while [ "$running_jobs" -gt 0 ]; do
-        sleep 0.3
+        sleep 0.1
         _np="" _nc=0
         for _p in $pids; do
             if kill -0 "$_p" 2>/dev/null; then

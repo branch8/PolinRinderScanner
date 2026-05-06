@@ -16,7 +16,8 @@ SCANNER_DST="$(dirname "$0")/polinrider-scan-local.sh"
 clear
 echo "================================================"
 echo "  PolinRider Malware Scanner — macOS Quick Start"
-echo "  https://opensourcemalware.com"
+echo "  Branch8 Edition — Customized by Glenn Cheng"
+echo "  https://github.com/branch8/PolinRiderScanner"
 echo "================================================"
 echo ""
 
