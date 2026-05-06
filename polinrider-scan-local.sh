@@ -315,7 +315,18 @@ init_progress_ui() {
                           "$_sp" "$_bf" "$_be" "$_pct" "$_ldone" "$_ltotal"
                   fi
               else
-                  printf "${DIM}%s${RESET} ${BOLD}${CYAN}[repos]${RESET}    ${DIM}%s${RESET}" "$_sp" "$_lmsg"
+                  # Streaming mode (total unknown): show spinner + live count
+                  if [ "$_ldone" -gt 0 ]; then
+                      if [ "$_linfected" -gt 0 ]; then
+                          printf "${_sc}%s${RESET} ${BOLD}${CYAN}[repos]${RESET}    ${CYAN}done: %d${RESET}  ${RED}infected: %d${RESET}" \
+                              "$_sp" "$_ldone" "$_linfected"
+                      else
+                          printf "${_sc}%s${RESET} ${BOLD}${CYAN}[repos]${RESET}    ${CYAN}done: %d${RESET}  ${DIM}all clean${RESET}" \
+                              "$_sp" "$_ldone"
+                      fi
+                  else
+                      printf "${_sc}%s${RESET} ${BOLD}${CYAN}[repos]${RESET}    ${DIM}searching...${RESET}" "$_sp"
+                  fi
               fi
 
               # Row 4: status
@@ -1770,46 +1781,33 @@ fi
 SCAN_DIR="$SCAN_DIR_RESOLVED"
 
 print_section "REPOS" "Scanning git repositories under ${SCAN_DIR}..."
-_ps_repo "Finding repositories..." "0" "0" "0"
+_ps_repo "Searching for repositories..." "0" "0" "0"
 
-# Find all git repositories
-REPO_LIST=""
+# Streaming one-pass: find repos and scan immediately — no "collect then scan" delay.
+# Prune large directories so find returns in seconds, not minutes.
 while IFS= read -r git_dir; do
-    if [ -n "$git_dir" ]; then
-        repo_dir="$(dirname "$git_dir")"
-        REPO_LIST="${REPO_LIST}${repo_dir}
-"
-        TOTAL_REPOS=$((TOTAL_REPOS + 1))
+    [ -n "$git_dir" ] || continue
+    repo_dir="$(dirname "$git_dir")"
+    TOTAL_REPOS=$((TOTAL_REPOS + 1))
+    REPO_DONE=$((REPO_DONE + 1))
+    _prev_infected=$INFECTED_REPOS
+    _rname="$(basename "$repo_dir")"
+    _ps_repo "Scanning ${_rname}..." "$REPO_DONE" "0" "$INFECTED_REPOS"
+    scan_repo "$repo_dir"
+    if [ "$INFECTED_REPOS" -gt "$_prev_infected" ]; then
+        printf "  ${RED}[INFECTED]${RESET} %s\n" "$_rname"
+    else
+        printf "  ${GREEN}[clean]${RESET} %s\n" "$_rname"
     fi
-done <<EOF
-$(find "$SCAN_DIR" -name .git -type d -not -path "*/node_modules/*" 2>/dev/null | sort)
-EOF
-
-REPO_LIST="${REPO_LIST%
-}"
+done < <(find "$SCAN_DIR" \
+    \( -name node_modules -o -name .cache -o -name .npm -o -name .nvm \
+       -o -name scan-bare-clones -o -name '.polinrider-fast-tmp-*' \) -prune -o \
+    -name .git -type d -print 2>/dev/null)
 
 if [ "$TOTAL_REPOS" -eq 0 ]; then
     printf "  No git repositories found under %s\n" "$SCAN_DIR"
 else
-    printf "  Found ${BOLD}%d${RESET} git repositories...\n" "$TOTAL_REPOS"
-
-    while IFS= read -r repo; do
-        if [ -n "$repo" ]; then
-            REPO_DONE=$((REPO_DONE + 1))
-            _prev_infected=$INFECTED_REPOS
-            _rname="$(basename "$repo")"
-            _ps_repo "Scanning ${_rname}..." "$REPO_DONE" "$TOTAL_REPOS" "$INFECTED_REPOS"
-            scan_repo "$repo"
-            # Print per-repo result into scroll region (bar stays fixed at bottom)
-            if [ "$INFECTED_REPOS" -gt "$_prev_infected" ]; then
-                printf "  ${RED}[INFECTED]${RESET} %s\n" "$_rname"
-            else
-                printf "  ${GREEN}[clean]${RESET} %s\n" "$_rname"
-            fi
-        fi
-    done <<REPOEOF
-$REPO_LIST
-REPOEOF
+    printf "  Scanned ${BOLD}%d${RESET} git repositories\n" "$TOTAL_REPOS"
 fi
 
 cleanup_progress_ui
