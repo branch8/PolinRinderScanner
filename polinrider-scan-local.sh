@@ -1783,31 +1783,36 @@ SCAN_DIR="$SCAN_DIR_RESOLVED"
 print_section "REPOS" "Scanning git repositories under ${SCAN_DIR}..."
 _ps_repo "Searching for repositories..." "0" "0" "0"
 
-# Streaming one-pass: find repos and scan immediately — no "collect then scan" delay.
-# Prune large directories so find returns in seconds, not minutes.
-while IFS= read -r git_dir; do
-    [ -n "$git_dir" ] || continue
-    repo_dir="$(dirname "$git_dir")"
-    TOTAL_REPOS=$((TOTAL_REPOS + 1))
-    REPO_DONE=$((REPO_DONE + 1))
-    _prev_infected=$INFECTED_REPOS
-    _rname="$(basename "$repo_dir")"
-    _ps_repo "Scanning ${_rname}..." "$REPO_DONE" "0" "$INFECTED_REPOS"
-    scan_repo "$repo_dir"
-    if [ "$INFECTED_REPOS" -gt "$_prev_infected" ]; then
-        printf "  ${RED}[INFECTED]${RESET} %s\n" "$_rname"
-    else
-        printf "  ${GREEN}[clean]${RESET} %s\n" "$_rname"
-    fi
-done < <(find "$SCAN_DIR" \
+# Two-phase: find (with pruning, fast) → write to tmpfile → count total → scan with %.
+# Pruning large dirs (node_modules, .cache, .nvm, …) makes find finish in seconds.
+_find_tmp=$(mktemp)
+find "$SCAN_DIR" \
     \( -name node_modules -o -name .cache -o -name .npm -o -name .nvm \
        -o -name scan-bare-clones -o -name '.polinrider-fast-tmp-*' \) -prune -o \
-    -name .git -type d -print 2>/dev/null)
+    -name .git -type d -print 2>/dev/null > "$_find_tmp"
+
+TOTAL_REPOS=$(grep -c . "$_find_tmp" 2>/dev/null || printf '0')
 
 if [ "$TOTAL_REPOS" -eq 0 ]; then
+    rm -f "$_find_tmp"
     printf "  No git repositories found under %s\n" "$SCAN_DIR"
 else
-    printf "  Scanned ${BOLD}%d${RESET} git repositories\n" "$TOTAL_REPOS"
+    printf "  Found ${BOLD}%d${RESET} git repositories...\n" "$TOTAL_REPOS"
+    while IFS= read -r git_dir; do
+        [ -n "$git_dir" ] || continue
+        repo_dir="$(dirname "$git_dir")"
+        REPO_DONE=$((REPO_DONE + 1))
+        _prev_infected=$INFECTED_REPOS
+        _rname="$(basename "$repo_dir")"
+        _ps_repo "Scanning ${_rname}..." "$REPO_DONE" "$TOTAL_REPOS" "$INFECTED_REPOS"
+        scan_repo "$repo_dir"
+        if [ "$INFECTED_REPOS" -gt "$_prev_infected" ]; then
+            printf "  ${RED}[INFECTED]${RESET} %s\n" "$_rname"
+        else
+            printf "  ${GREEN}[clean]${RESET} %s\n" "$_rname"
+        fi
+    done < "$_find_tmp"
+    rm -f "$_find_tmp"
 fi
 
 cleanup_progress_ui
