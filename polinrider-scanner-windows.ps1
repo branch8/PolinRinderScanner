@@ -1160,12 +1160,12 @@ function Scan-TempDirs {
 # 9. Propagation scripts (filesystem-wide)
 # -------------------------------------------------------------------------
 function Scan-PropagationScripts {
-    Write-Section 'PROPAGATION' 'Searching for propagation scripts across user directories...'
+    Write-Section 'PROPAGATION' 'Searching for propagation scripts across all drives...'
 
     $searchDirs = @()
-    foreach ($userProfile in (Get-AllUserProfiles)) {
-        if (Test-Path $userProfile) { $searchDirs += $userProfile }
-    }
+    Get-PSDrive -PSProvider FileSystem -ErrorAction SilentlyContinue |
+        Where-Object { $_.Root -and (Test-Path $_.Root) } |
+        ForEach-Object { $searchDirs += $_.Root }
 
     $batNames = @('temp_auto_push.bat', 'config.bat')
     foreach ($dir in $searchDirs) {
@@ -2178,10 +2178,10 @@ if ($totalIssues -gt 0) {
 
     Write-RiskAssessment
     Write-Remediation
-    Invoke-Cleanup
     Write-ScanCoverage
     Write-Host "Scan complete in $([math]::Floor($duration.TotalMinutes))m$($duration.Seconds)s"
     Export-ScanReport -ExitCode 1 -Duration $duration
+    Invoke-Cleanup
     exit 1
 } else {
     Write-Host '  RESULTS: No infections found' -ForegroundColor Green
