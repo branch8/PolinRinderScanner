@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# PolinRider Local Scanner v2.1
+# PolinRider Local Scanner v2.2
 # https://opensourcemalware.com
 #
 # Scans local macOS/Linux machine for PolinRider / TasksJacker malware.
@@ -19,6 +19,21 @@
 #   0 - No infections found
 #   1 - Infections found
 #   2 - Error (invalid path, etc.)
+#
+# Changelog:
+#   v2.2 (2026-05-06)
+#     - Spinner animation written to /dev/tty (bypasses logging re-exec pipe,
+#       visible even when stdout is piped to the log formatter)
+#     - --full-system: each module wrapped with [N/9] label and spinner so
+#       the user knows which module is running and that it hasn't stalled
+#     - Repo scan: per-repo progress bar printed after each repo completes
+#       ([=====>   ] pct%  done:X/Y  infected:N  clean/INFECTED)
+#
+#   v2.1
+#     - Branch8 fork: extended config file list, IDE config dir scanning
+#       (.vscode, .cursor, .claude), expanded C2 domain and npm package lists
+#     - Auto-cleanup prompt for bat propagation scripts and node_modules
+#     - Linux persistence (systemd units) alongside macOS LaunchAgents
 
 set -u
 
