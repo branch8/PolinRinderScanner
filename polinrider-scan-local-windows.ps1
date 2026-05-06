@@ -34,6 +34,9 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Continue'
 
+# Resolve own script path so Scan-TempDirs can exclude it
+$ScannerScriptPath = if ($PSCommandPath) { (Resolve-Path $PSCommandPath -ErrorAction SilentlyContinue).Path } else { $null }
+
 # -------------------------------------------------------------------------
 # Variant 1 signatures (original)
 # -------------------------------------------------------------------------
@@ -139,7 +142,8 @@ $script:DnsBlockchain  = [System.Collections.ArrayList]::new()
 $script:DnsExfil       = [System.Collections.ArrayList]::new()
 $script:ActiveC2Conns  = [System.Collections.ArrayList]::new()
 $script:SuspiciousProcs = [System.Collections.ArrayList]::new()
-$script:StealerArtifactsFound = $false
+$script:StealerArtifactsFound    = $false
+$script:PropagationScriptFound   = $false
 $script:RiskScore      = 0
 $script:RiskLevel      = 'NONE'
 $script:ModuleStatus   = [ordered]@{}
@@ -1140,6 +1144,7 @@ function Scan-TempDirs {
             Write-Verbose "WARNING: $tmpDir has $($tmpFiles.Count) script files -- scanning all"
         }
         $tmpFiles | ForEach-Object {
+                if ($ScannerScriptPath -and $_.FullName -eq $ScannerScriptPath) { return }
                 $content = Get-FileContent $_.FullName
                 if (-not $content) { return }
 
@@ -1162,6 +1167,49 @@ function Scan-TempDirs {
         $propagation = Join-Path $tmpDir 'temp_auto_push.bat'
         if (Test-Path $propagation) {
             Add-SystemFinding 'TEMP' "[PROPAGATION] Auto-push script in temp directory: $propagation"
+        }
+    }
+}
+
+# -------------------------------------------------------------------------
+# 9a. Propagation scripts — full system search across all user directories
+# -------------------------------------------------------------------------
+function Scan-PropagationScripts {
+    Write-Section 'PROPAGATION' 'Searching for propagation scripts across user directories...'
+
+    $searchDirs = @()
+    foreach ($userProfile in (Get-AllUserProfiles)) {
+        if (Test-Path $userProfile) { $searchDirs += $userProfile }
+    }
+
+    foreach ($dir in $searchDirs) {
+        Write-Verbose "Scanning $dir for propagation scripts"
+
+        # temp_auto_push.bat — highly specific name, flag on presence alone
+        $hits = @(Get-ChildItem $dir -Recurse -Filter 'temp_auto_push.bat' -File -ErrorAction SilentlyContinue)
+        foreach ($hit in $hits) {
+            Add-SystemFinding 'PROPAGATION' "[CONFIRMED] PolinRider auto-push script: $($hit.FullName)"
+            $null = $script:CleanupBatFiles.Add($hit.FullName)
+            $script:PropagationScriptFound = $true
+        }
+
+        # config.bat — generic name; validate content before flagging to avoid false positives
+        $cfgHits = @(Get-ChildItem $dir -Recurse -Filter 'config.bat' -File -ErrorAction SilentlyContinue)
+        foreach ($hit in $cfgHits) {
+            $content = Get-FileContent $hit.FullName
+            $confirmed = $content -and (
+                $content.Contains('LAST_COMMIT_DATE') -or
+                $content.Contains('--no-verify') -or
+                $content.Contains('git push -uf') -or
+                $content.Contains('temp_auto_push')
+            )
+            if ($confirmed) {
+                Add-SystemFinding 'PROPAGATION' "[CONFIRMED] PolinRider config.bat orchestrator: $($hit.FullName)"
+                $null = $script:CleanupBatFiles.Add($hit.FullName)
+                $script:PropagationScriptFound = $true
+            } else {
+                Add-SystemFinding 'PROPAGATION' "[REVIEW] config.bat found — verify manually: $($hit.FullName)"
+            }
         }
     }
 }
@@ -1428,6 +1476,12 @@ function Write-RiskAssessment {
     if ($script:StealerArtifactsFound) {
         $score += 20
         $null = $factors.Add("  +20  Credential stealer artifacts found on disk")
+    }
+
+    # Propagation scripts — confirmed infection, override to CRITICAL
+    if ($script:PropagationScriptFound) {
+        $score = 100
+        $null = $factors.Add("  =100 Propagation script(s) found on disk — confirmed active infection")
     }
 
     # Infected repos
@@ -2073,9 +2127,10 @@ if ($FullSystem) {
         @{ Name = 'StealerArtifacts'; Fn = { Scan-StealerArtifacts } },
         @{ Name = 'VSCodeExtensions'; Fn = { Scan-VSCodeExtensions } },
         @{ Name = 'NpmGlobal';        Fn = { Scan-NpmGlobal } },
-        @{ Name = 'TempDirs';         Fn = { Scan-TempDirs } },
-        @{ Name = 'BrowserExtensions';Fn = { Scan-BrowserExtensions } },
-        @{ Name = 'DnsInvestigation'; Fn = { Scan-DnsInvestigation } }
+        @{ Name = 'TempDirs';           Fn = { Scan-TempDirs } },
+        @{ Name = 'PropagationScripts'; Fn = { Scan-PropagationScripts } },
+        @{ Name = 'BrowserExtensions'; Fn = { Scan-BrowserExtensions } },
+        @{ Name = 'DnsInvestigation';  Fn = { Scan-DnsInvestigation } }
     )
     $fsIdx = 0
     foreach ($mod in $modules) {
