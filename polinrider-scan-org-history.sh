@@ -970,6 +970,7 @@ scan_single_repo_worker() {
                 if [ -n "$_old_results_dir" ] && [ -f "${_old_results_dir}/${repo_short}.log" ]; then
                     cp "${_old_results_dir}/${repo_short}.log" "${results_dir}/${repo_short}.log" 2>/dev/null || true
                 fi
+                ui_mark_state "$status_dir" "$repo_short" "infected"
                 ;;
             history*)
                 if [ -n "$_old_results_dir" ] && [ -f "${_old_results_dir}/${repo_short}.history" ]; then
