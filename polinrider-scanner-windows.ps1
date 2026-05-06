@@ -354,13 +354,15 @@ function Scan-Repo ([string]$RepoDir) {
             }
     }
 
-    # --- Propagation scripts: temp_auto_push.bat / config.bat ---
-    $batFile = Join-Path $RepoDir 'temp_auto_push.bat'
-    if (Test-Path $batFile) {
-        Add-RepoFinding 'temp_auto_push.bat' 'PolinRider propagation script detected' 'HIGH'
-        $null = $script:CleanupBatFiles.Add($batFile)
-        $script:PropagationScriptFound = $true
-        $findingCount++
+    # --- Propagation scripts: temp_auto_push.bat / temp_interactive_push.bat / config.bat ---
+    foreach ($propBat in @('temp_auto_push.bat', 'temp_interactive_push.bat')) {
+        $batFile = Join-Path $RepoDir $propBat
+        if (Test-Path $batFile) {
+            Add-RepoFinding $propBat 'PolinRider propagation script detected' 'HIGH'
+            $null = $script:CleanupBatFiles.Add($batFile)
+            $script:PropagationScriptFound = $true
+            $findingCount++
+        }
     }
 
     $cfgBat = Join-Path $RepoDir 'config.bat'
@@ -383,6 +385,11 @@ function Scan-Repo ([string]$RepoDir) {
         }
         if ($lines -contains 'temp_auto_push.bat') {
             Add-RepoFinding '.gitignore' 'temp_auto_push.bat entry injected' 'HIGH'
+            $findingCount++
+            $giHit = $true
+        }
+        if ($lines -contains 'temp_interactive_push.bat') {
+            Add-RepoFinding '.gitignore' 'temp_interactive_push.bat entry injected' 'HIGH'
             $findingCount++
             $giHit = $true
         }
@@ -1149,9 +1156,11 @@ function Scan-TempDirs {
                 }
             }
 
-        $propagation = Join-Path $tmpDir 'temp_auto_push.bat'
-        if (Test-Path $propagation) {
-            Add-SystemFinding 'TEMP' "Propagation script in temp: $propagation"
+        foreach ($propName in @('temp_auto_push.bat', 'temp_interactive_push.bat')) {
+            $propagation = Join-Path $tmpDir $propName
+            if (Test-Path $propagation) {
+                Add-SystemFinding 'TEMP' "Propagation script in temp: $propagation"
+            }
         }
     }
 }
@@ -1167,7 +1176,7 @@ function Scan-PropagationScripts {
         Where-Object { $_.Root -and (Test-Path $_.Root) } |
         ForEach-Object { $searchDirs += $_.Root }
 
-    $batNames = @('temp_auto_push.bat', 'config.bat')
+    $batNames = @('temp_auto_push.bat', 'temp_interactive_push.bat', 'config.bat')
     foreach ($dir in $searchDirs) {
         Write-Verbose "Scanning $dir for propagation scripts"
         foreach ($batName in $batNames) {
@@ -1620,7 +1629,7 @@ function Invoke-Cleanup {
     }
 
     if ($script:CleanupGitignoreRepos.Count -gt 0) {
-        Write-Host '.gitignore entries to remove (config.bat / temp_auto_push.bat):' -ForegroundColor White
+        Write-Host '.gitignore entries to remove (config.bat / temp_auto_push.bat / temp_interactive_push.bat):' -ForegroundColor White
         foreach ($d in $script:CleanupGitignoreRepos) { Write-Host "  - $d\.gitignore" -ForegroundColor Red }
         Write-Host ''
     }
@@ -1657,7 +1666,7 @@ function Invoke-Cleanup {
                 if (Test-Path $giFile) {
                     try {
                         $cleaned = Get-Content $giFile -ErrorAction Stop |
-                            Where-Object { $_ -ne 'config.bat' -and $_ -ne 'temp_auto_push.bat' }
+                            Where-Object { $_ -ne 'config.bat' -and $_ -ne 'temp_auto_push.bat' -and $_ -ne 'temp_interactive_push.bat' }
                         Set-Content $giFile -Value $cleaned -ErrorAction Stop
                         Write-Host "  [OK]  Cleaned: $giFile" -ForegroundColor Green
                     } catch {
@@ -1709,8 +1718,8 @@ function Write-Remediation {
     Write-Host "  1. Remove obfuscated payload from infected config files"
     Write-Host "     - Variant 1: everything after legitimate config, starting with global['!']"
     Write-Host "     - Variant 2: everything after legitimate config, starting with global['_V']"
-    Write-Host '  2. Delete temp_auto_push.bat and config.bat if present'
-    Write-Host '  3. Remove "config.bat" from .gitignore'
+    Write-Host '  2. Delete temp_auto_push.bat, temp_interactive_push.bat, and config.bat if present'
+    Write-Host '  3. Remove "config.bat" / "temp_interactive_push.bat" from .gitignore'
     Write-Host '  4. Remove malicious npm dependencies from package.json and run npm install'
     Write-Host '  5. Delete any .woff2 files containing JS payloads'
     Write-Host '  6. Remove malicious .vscode/tasks.json entries'
