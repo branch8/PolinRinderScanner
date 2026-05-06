@@ -2101,33 +2101,44 @@ if ($FullSystem) {
         }
     }
 
-    if (-not $Path) { $Path = "$env:SystemDrive\Users" }
+    if (-not $Path) {
+        # Scan git repos across all drives
+        $allDriveRoots = @(Get-PSDrive -PSProvider FileSystem -ErrorAction SilentlyContinue |
+            Where-Object { $_.Root -and (Test-Path $_.Root) } |
+            ForEach-Object { $_.Root })
+    }
 }
 
 # --- Directory-based repo scan ---
-if (-not $Path) { $Path = '.' }
-$Path = (Resolve-Path $Path -ErrorAction SilentlyContinue).Path
-if (-not $Path -or -not (Test-Path $Path -PathType Container)) {
-    Write-Host "Error: Directory not found: $Path" -ForegroundColor Red
-    Export-ScanReport -ExitCode 2 -Duration ((Get-Date) - $startTime)
-    exit 2
+if (-not $Path -and -not $allDriveRoots) { $allDriveRoots = @('.') }
+
+if ($Path) {
+    $Path = (Resolve-Path $Path -ErrorAction SilentlyContinue).Path
+    if (-not $Path -or -not (Test-Path $Path -PathType Container)) {
+        Write-Host "Error: Directory not found: $Path" -ForegroundColor Red
+        Export-ScanReport -ExitCode 2 -Duration ((Get-Date) - $startTime)
+        exit 2
+    }
+    $allDriveRoots = @($Path)
 }
 
-Write-Section 'REPOS' "Scanning git repositories under $Path..."
-
-$repos = Get-ChildItem $Path -Recurse -Filter '.git' -Directory -Force -ErrorAction SilentlyContinue |
-    Where-Object { $_.FullName -notlike '*node_modules*' } |
-    ForEach-Object { $_.Parent.FullName } |
-    Sort-Object -Unique
-
-if (-not $repos) {
-    Write-Host "  No git repositories found under $Path"
-} else {
-    $repoCount = @($repos).Count
-    Write-Host "  Found $repoCount git repositories..."
-    foreach ($repo in $repos) {
-        Scan-Repo $repo | Out-Null
+$allRepos = @()
+foreach ($scanRoot in $allDriveRoots) {
+    Write-Section 'REPOS' "Scanning git repositories under $scanRoot..."
+    $repos = @(Get-ChildItem $scanRoot -Recurse -Filter '.git' -Directory -Force -ErrorAction SilentlyContinue |
+        Where-Object { $_.FullName -notlike '*node_modules*' -and $_.FullName -notlike '*\$Recycle.Bin\*' -and $_.FullName -notlike '*\Windows\*' } |
+        ForEach-Object { $_.Parent.FullName } |
+        Sort-Object -Unique)
+    if ($repos.Count -eq 0) {
+        Write-Host "  No git repositories found under $scanRoot"
+    } else {
+        Write-Host "  Found $($repos.Count) git repositories under $scanRoot..."
+        $allRepos += $repos
     }
+}
+
+foreach ($repo in $allRepos) {
+    Scan-Repo $repo | Out-Null
 }
 
 # =========================================================================
