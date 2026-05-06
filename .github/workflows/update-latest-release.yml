@@ -24,6 +24,7 @@ jobs:
         run: |
           gh release create latest \
             --title "Latest (自動更新 / Auto-updated)" \
+            --latest \
             --notes "## 最新版 / Latest Version
 
 這個 release 會在每次更新時自動覆蓋，永遠是最新版本。
