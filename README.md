@@ -14,6 +14,8 @@ Branch8's fork of the [official PolinRider scanner](README-OFFICIAL.md) by OpenS
 | `polinrider-scan-org-history.sh` | Deep-scan commit **history** of a GitHub org — catches infections that were already patched but remain in git history |
 | `polinrider-scan-local.sh` | Scan the **current device** (macOS/Linux) — repos, processes, persistence, browser extensions, npm global |
 | `polinrider-scan-local-windows.ps1` | Scan the **current device** (Windows) — repos, scheduled tasks, registry, PS profiles, browser extensions |
+| `polinrider-quickstart-mac.command` | **Non-technical users (macOS)** — double-click to run, downloads latest scanner automatically |
+| `polinrider-quickstart-windows.bat` | **Non-technical users (Windows)** — double-click to run, downloads latest scanner automatically |
 
 CI gate: `.github/workflows/polinrider-scan.yml` — blocks builds on infected working trees.
 
@@ -177,6 +179,27 @@ Run in PowerShell (5.1+ or PowerShell 7):
 
 **Output:**
 - `scan-logs\local-windows\report-<hostname>-<timestamp>.json`
+
+---
+
+## Non-Technical User Quick Start
+
+For team members who are not comfortable with the terminal. No git clone, no command line — just download and double-click.
+
+### macOS — `polinrider-quickstart-mac.command`
+
+1. Download `polinrider-quickstart-mac.command` to anywhere (e.g. Desktop)
+2. **First time only:** right-click → **Open** → click **Open** (bypasses Gatekeeper)
+3. From then on: double-click directly
+4. Terminal opens automatically, downloads the latest scanner, runs a full system scan, and keeps the window open so you can read the results
+
+### Windows — `polinrider-quickstart-windows.bat`
+
+1. Download `polinrider-quickstart-windows.bat` to anywhere (e.g. Desktop)
+2. Double-click — no special setup needed
+3. PowerShell opens automatically, downloads the latest scanner, runs a full system scan, and keeps the window open so you can read the results
+
+> Both launchers always download the latest scanner from GitHub on each run, so they stay up to date without any manual steps.
 
 ---
 
