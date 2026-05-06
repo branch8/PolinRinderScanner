@@ -140,4 +140,4 @@ We will update you here when it is safe to resume normal IDE use.
 
 **If you run into any issues, have questions, or get results you're unsure about — please speak up.** The sooner we know, the faster we can contain it.
 
-Please complete your **first scan and credential rotation by end of today**.
+Please complete your **first scan and credential rotation ASAP**.
