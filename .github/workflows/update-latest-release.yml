@@ -1,0 +1,50 @@
+name: Update latest release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'polinrider-quickstart-mac.command'
+      - 'polinrider-quickstart-windows.bat'
+
+jobs:
+  update-latest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Delete existing latest release and tag
+        run: gh release delete latest --yes --cleanup-tag 2>/dev/null || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Recreate latest release
+        run: |
+          gh release create latest \
+            --title "Latest (自動更新 / Auto-updated)" \
+            --prerelease \
+            --notes "## 最新版 / Latest Version
+
+這個 release 會在每次更新時自動覆蓋，永遠是最新版本。
+This release is automatically updated on every push — always the latest version.
+
+如果需要穩定版本請至 Releases 頁面選擇有版號的 release。
+For a stable version, choose a numbered release on the Releases page.
+
+---
+
+### 非技術人員一鍵掃描 / Quick Start for Non-Technical Users
+
+| 檔案 | 系統 |
+|---|---|
+| \`polinrider-quickstart-mac.command\` | macOS |
+| \`polinrider-quickstart-windows.bat\` | Windows |
+
+**macOS 第一次使用：** 右鍵 → 「開啟」→ 再點「開啟」（繞過 Gatekeeper）
+**macOS first run:** right-click → Open → Open (bypasses Gatekeeper)" \
+            polinrider-quickstart-mac.command \
+            polinrider-quickstart-windows.bat
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
