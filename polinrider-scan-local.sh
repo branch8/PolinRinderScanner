@@ -1791,7 +1791,7 @@ find "$SCAN_DIR" \
        -o -name scan-bare-clones -o -name '.polinrider-fast-tmp-*' \) -prune -o \
     -name .git -type d -print 2>/dev/null > "$_find_tmp"
 
-TOTAL_REPOS=$(grep -c . "$_find_tmp" 2>/dev/null || printf '0')
+TOTAL_REPOS=$(wc -l < "$_find_tmp" | tr -d ' ')
 
 if [ "$TOTAL_REPOS" -eq 0 ]; then
     rm -f "$_find_tmp"
