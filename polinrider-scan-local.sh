@@ -105,6 +105,9 @@ if [ -t 1 ]; then
     RESET='\033[0m'
 fi
 
+# Enable spinner when /dev/tty is writable (works even through the logging re-exec pipe)
+{ [ -w /dev/tty ] && PROGRESS_UI=1; } 2>/dev/null || true
+
 # ---------------------------------------------------------------------------
 # Counters
 # ---------------------------------------------------------------------------
@@ -113,6 +116,11 @@ INFECTED_REPOS=0
 INFECTED_REPO_PATHS=""
 SYSTEM_FINDINGS=0
 SYSTEM_FINDINGS_DETAIL=""
+
+# Progress UI
+PROGRESS_UI=0
+SPINNER_PID=0
+REPO_DONE=0
 
 # Auto-cleanup tracking (populated during local repo scan only)
 CLEANUP_BAT_FILES=()
@@ -194,10 +202,36 @@ init_log() {
 
 cleanup() {
     local exit_code=$?
+    _spinner_stop 2>/dev/null
     wait 2>/dev/null
     exit $exit_code
 }
 trap cleanup EXIT
+
+# ---------------------------------------------------------------------------
+# Spinner helpers — write to /dev/tty so they bypass the logging re-exec pipe
+# ---------------------------------------------------------------------------
+_spinner_start() {
+    [ "$PROGRESS_UI" -eq 1 ] || return 0
+    local msg="$1"
+    ( local _sp='|/-\'
+      local _i=0
+      while true; do
+          printf "\r  %s  %s   " "${_sp:$((_i % 4)):1}" "$msg" >/dev/tty 2>/dev/null
+          _i=$((_i + 1))
+          sleep 0.3 2>/dev/null || sleep 1
+      done ) &
+    SPINNER_PID=$!
+}
+
+_spinner_stop() {
+    if [ "${SPINNER_PID:-0}" -ne 0 ]; then
+        kill "$SPINNER_PID" 2>/dev/null
+        wait "$SPINNER_PID" 2>/dev/null || true
+        printf "\r\033[2K" >/dev/tty 2>/dev/null
+        SPINNER_PID=0
+    fi
+}
 
 log_scan_complete() {
     local end_time
@@ -1546,16 +1580,26 @@ if [ "$FULL_SYSTEM" -eq 1 ]; then
     printf "Mode: ${BOLD}Full System Scan${RESET}\n"
     printf "This will scan processes, persistence, extensions, repos, and more.\n"
 
-    # System-level scans
-    scan_processes
-    scan_network
-    scan_persistence_plists
-    scan_crontab
-    scan_shell_profiles
-    scan_vscode_extensions
-    scan_npm_global
-    scan_temp_dirs
-    scan_browser_extensions
+    _fs_mod=0
+    _fs_mod_total=9
+
+    _run_fs_module() {
+        _fs_mod=$((_fs_mod + 1))
+        local _label="$1"; local _fn="$2"
+        _spinner_start "[${_fs_mod}/${_fs_mod_total}] ${_label}..."
+        "$_fn"
+        _spinner_stop
+    }
+
+    _run_fs_module "Processes"          scan_processes
+    _run_fs_module "Network"            scan_network
+    _run_fs_module "Persistence"        scan_persistence_plists
+    _run_fs_module "Crontab"            scan_crontab
+    _run_fs_module "Shell profiles"     scan_shell_profiles
+    _run_fs_module "VS Code extensions" scan_vscode_extensions
+    _run_fs_module "npm global"         scan_npm_global
+    _run_fs_module "Temp dirs"          scan_temp_dirs
+    _run_fs_module "Browser extensions" scan_browser_extensions
 
     # Also scan the home directory (or specified dir) for git repos
     if [ -z "$SCAN_DIR" ]; then
@@ -1601,7 +1645,25 @@ else
 
     while IFS= read -r repo; do
         if [ -n "$repo" ]; then
+            REPO_DONE=$((REPO_DONE + 1))
+            _prev_infected=$INFECTED_REPOS
+            _rname="$(basename "$repo")"
+            _spinner_start "[${REPO_DONE}/${TOTAL_REPOS}] ${_rname}..."
             scan_repo "$repo"
+            _spinner_stop
+            # Progress bar line after each repo
+            if [ "$INFECTED_REPOS" -gt "$_prev_infected" ]; then
+                _rstatus="${RED}INFECTED${RESET}"
+            else
+                _rstatus="${GREEN}clean${RESET}"
+            fi
+            _pct=$(( (REPO_DONE * 100) / TOTAL_REPOS ))
+            _bfill=$(( (REPO_DONE * 20) / TOTAL_REPOS ))
+            _bempty=$(( 20 - _bfill ))
+            _bfill_s=""; _bi=0; while [ "$_bi" -lt "$_bfill" ]; do _bfill_s="${_bfill_s}="; _bi=$((_bi+1)); done
+            _bempty_s=""; _bi=0; while [ "$_bi" -lt "$_bempty" ]; do _bempty_s="${_bempty_s} "; _bi=$((_bi+1)); done
+            printf "  [%s%s] %3d%%  done:%d/%d  ${RED}infected:%d${RESET}  %b\n" \
+                "$_bfill_s" "$_bempty_s" "$_pct" "$REPO_DONE" "$TOTAL_REPOS" "$INFECTED_REPOS" "$_rstatus"
         fi
     done <<REPOEOF
 $REPO_LIST

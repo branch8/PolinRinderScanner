@@ -1995,7 +1995,12 @@ if ($Quick) {
         @{ Name = 'Network';          Fn = { Scan-Network } },
         @{ Name = 'DnsInvestigation'; Fn = { Scan-DnsInvestigation } }
     )
+    $qIdx = 0
     foreach ($mod in $quickModules) {
+        $qIdx++
+        Write-Progress -Activity 'PolinRider Quick Scan' `
+                       -Status "[$qIdx/$($quickModules.Count)] $($mod.Name)..." `
+                       -PercentComplete ([int](($qIdx - 1) / $quickModules.Count * 100))
         try {
             & $mod.Fn
             Set-ModuleStatus $mod.Name 'OK' ''
@@ -2004,6 +2009,7 @@ if ($Quick) {
             Write-Host "  WARNING: $($mod.Name) module failed: $($_.Exception.Message)" -ForegroundColor Yellow
         }
     }
+    Write-Progress -Activity 'PolinRider Quick Scan' -Completed
 
     Write-Host ''
     Write-Host '================================================' -ForegroundColor White
@@ -2071,7 +2077,12 @@ if ($FullSystem) {
         @{ Name = 'BrowserExtensions';Fn = { Scan-BrowserExtensions } },
         @{ Name = 'DnsInvestigation'; Fn = { Scan-DnsInvestigation } }
     )
+    $fsIdx = 0
     foreach ($mod in $modules) {
+        $fsIdx++
+        Write-Progress -Activity 'PolinRider Full System Scan' `
+                       -Status "[$fsIdx/$($modules.Count)] $($mod.Name)..." `
+                       -PercentComplete ([int](($fsIdx - 1) / $modules.Count * 100))
         try {
             & $mod.Fn
             Set-ModuleStatus $mod.Name 'OK' ''
@@ -2080,6 +2091,7 @@ if ($FullSystem) {
             Write-Host "  WARNING: $($mod.Name) module failed: $($_.Exception.Message)" -ForegroundColor Yellow
         }
     }
+    Write-Progress -Activity 'PolinRider Full System Scan' -Completed
 
     if (-not $Path) { $Path = "$env:SystemDrive\Users" }
 }
@@ -2105,9 +2117,16 @@ if (-not $repos) {
 } else {
     $repoCount = @($repos).Count
     Write-Host "  Found $repoCount git repositories..."
+    $repoIdx = 0
     foreach ($repo in $repos) {
+        $repoIdx++
+        $repoName = Split-Path $repo -Leaf
+        Write-Progress -Activity 'PolinRider Repo Scan' `
+                       -Status "[$repoIdx/$repoCount] $repoName" `
+                       -PercentComplete ([int](($repoIdx - 1) / $repoCount * 100))
         Scan-Repo $repo | Out-Null
     }
+    Write-Progress -Activity 'PolinRider Repo Scan' -Completed
 }
 
 # =========================================================================
