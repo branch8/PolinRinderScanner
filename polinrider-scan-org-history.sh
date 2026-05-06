@@ -375,22 +375,29 @@ render_progress_bar() {
     local _verbose_mode=0
     { [ "$VERBOSE" -eq 1 ] || [ "$VERBOSE_DETAIL" -eq 1 ]; } && _verbose_mode=1
 
-    # Erase current sticky area then flush new log lines (colorized)
-    if [ "$PROGRESS_LINES" -gt 0 ]; then
-        printf "\033[%sA\033[J" "$PROGRESS_LINES"
-    fi
+    # Flush new log events: erase sticky area, print lines, reset counter.
+    # Only erases when there is actually new content — avoids flicker on normal ticks.
     if [ "$_verbose_mode" -eq 1 ]; then
         local queue_file="${status_dir}/event-log"
         if [ -f "$queue_file" ]; then
             local current_lines
             current_lines=$(wc -l < "$queue_file" 2>/dev/null | tr -d ' ')
             if [ "$current_lines" -gt "$LAST_QUEUE_LINE" ]; then
+                if [ "$PROGRESS_LINES" -gt 0 ]; then
+                    printf "\033[%sA\033[J" "$PROGRESS_LINES"
+                fi
                 while IFS= read -r _line; do
                     _colorize_log_line "$_line"
                 done < <(tail -n +"$((LAST_QUEUE_LINE + 1))" "$queue_file")
                 LAST_QUEUE_LINE=$current_lines
+                PROGRESS_LINES=0
             fi
         fi
+    fi
+
+    # Reposition cursor for in-place redraw; no-op on first draw or after log flush
+    if [ "$PROGRESS_LINES" -gt 0 ]; then
+        printf "\033[%sA" "$PROGRESS_LINES"
     fi
 
     # Braille spinner with 4-color cycling
@@ -415,14 +422,15 @@ render_progress_bar() {
     active_repos=$(find "$status_dir" -type f -name 'active-*' 2>/dev/null \
         | xargs -I{} cat {} 2>/dev/null | tr '\n' ' ' | sed 's/ $//')
 
-    # Bar: green fill █, dark-gray empty ─
+    # Bar: use bash loop (tr does not handle multi-byte UTF-8 on Linux)
     local percent=$((done * 100 / total))
     local width=30
     local fill=$((done * width / total))
     local empty=$((width - fill))
-    local bar_fill bar_empty
-    bar_fill="$(printf "%${fill}s" "" | tr ' ' '█')"
-    bar_empty="$(printf "%${empty}s" "" | tr ' ' '─')"
+    local bar_fill="" bar_empty="" _bi=0
+    while [ "$_bi" -lt "$fill" ];  do bar_fill="${bar_fill}█";  _bi=$((_bi+1)); done
+    _bi=0
+    while [ "$_bi" -lt "$empty" ]; do bar_empty="${bar_empty}─"; _bi=$((_bi+1)); done
 
     # Verbose separator above sticky area
     local _plines=3
