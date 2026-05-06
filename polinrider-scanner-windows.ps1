@@ -1,6 +1,6 @@
 #Requires -Version 5.1
 <#
-    PolinRider Malware Scanner v1.3 (Windows)
+    PolinRider Malware Scanner v1.4 (Windows)
 
     Scans a Windows system for PolinRider / TasksJacker malware indicators.
     Detects both obfuscator variants (rmcej%otb% and Cot%3t=shtP),
@@ -180,7 +180,7 @@ function Get-AllUserProfiles {
 function Write-Banner {
     Write-Host ''
     Write-Host '================================================' -ForegroundColor White
-    Write-Host '  PolinRider Malware Scanner v1.3 (Windows)'     -ForegroundColor White
+    Write-Host '  PolinRider Malware Scanner v1.4 (Windows)'     -ForegroundColor White
     Write-Host '  https://opensourcemalware.com'                  -ForegroundColor White
     Write-Host '  Detects variants: rmcej%otb% + Cot%3t=shtP'    -ForegroundColor White
     Write-Host '================================================' -ForegroundColor White
@@ -1787,7 +1787,7 @@ function New-JsonReport ([int]$ExitCode, [timespan]$Duration) {
     $report = [ordered]@{
         report_metadata = [ordered]@{
             report_id            = [guid]::NewGuid().ToString()
-            scanner_version      = '1.3'
+            scanner_version      = '1.4'
             scan_mode            = $scanMode
             scan_timestamp_utc   = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
             scan_duration_seconds = [math]::Round($Duration.TotalSeconds, 1)
