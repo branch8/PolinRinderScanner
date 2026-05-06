@@ -1,7 +1,8 @@
 #!/bin/bash
 #
-# PolinRider Org History Scanner v3.0
-# https://opensourcemalware.com
+# PolinRider Org History Scanner v3.1 — Branch8 Edition
+# Customized by Glenn Cheng
+# https://github.com/branch8/PolinRiderScanner
 #
 # Deep audit scanner for GitHub org/user repos.
 # Scans all branch heads via git grep AND scans git commit history
@@ -22,12 +23,31 @@
 #   0 - No infections or history hits found
 #   1 - Infections or history hits found
 #   2 - Error (invalid path, missing tools, etc.)
+#
+# Changelog:
+#   v3.1 (2026-05-06)  — Branch8 Edition
+#     - Braille spinner (⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏) cycling through 4 colors
+#     - Progress bar uses █/─ with green fill, dark-gray empty
+#     - Bar header now shows [org: <owner>] for clarity
+#     - done:/workers: counts colorized; infected: only shown when >0 (red)
+#     - Sticky bar expanded to 3 lines: bar + scanning repos + status line
+#     - Scanning line: each active repo name cycles through 4 colors
+#     - Status line: latest worker event always visible as 3rd sticky line
+#     - Verbose: separator + 2 blank lines above bar; log lines colorized
+#       (red=infected, yellow=history-only, green=clean, cyan=complete, dim=in-progress)
+#     - Continuous animation: wait loops poll every 0.3s so spinner never stalls
+#     - Banner updated: Branch8 Edition, Glenn Cheng
+#
+#   v3.0
+#     - Branch8 fork: bare-clone + git-grep + commit-history audit with
+#       INFECTED/HISTORY classification, multi-org support, persistent
+#       resume/restart state, parallel workers, sticky progress bar
 
 set -u
 
 ORIG_ARGS=("$@")
 
-VERSION="3.0"
+VERSION="3.1"
 VERBOSE=0
 VERBOSE_DETAIL=0
 GITHUB_OWNERS=""
@@ -97,7 +117,7 @@ IDE_CONFIG_DIRS=".vscode .cursor .claude"
 # ---------------------------------------------------------------------------
 # Colors (disabled if not a terminal)
 # ---------------------------------------------------------------------------
-RED="" GREEN="" YELLOW="" CYAN="" MAGENTA="" BOLD="" RESET=""
+RED="" GREEN="" YELLOW="" CYAN="" MAGENTA="" BOLD="" DIM="" RESET=""
 if [ -t 1 ]; then
     RED='\033[0;31m'
     GREEN='\033[0;32m'
@@ -105,6 +125,7 @@ if [ -t 1 ]; then
     CYAN='\033[0;36m'
     MAGENTA='\033[0;35m'
     BOLD='\033[1m'
+    DIM='\033[0;90m'
     RESET='\033[0m'
 fi
 
@@ -124,8 +145,9 @@ SPINNER_IDX=0
 print_banner() {
     printf "\n"
     printf "${BOLD}================================================${RESET}\n"
-    printf "${BOLD}  PolinRider Org History Scanner v%s${RESET}\n" "$VERSION"
-    printf "${BOLD}  https://opensourcemalware.com${RESET}\n"
+    printf "${BOLD}  PolinRider Org History Scanner v%s — Branch8 Edition${RESET}\n" "$VERSION"
+    printf "${BOLD}  Customized by Glenn Cheng${RESET}\n"
+    printf "${BOLD}  https://github.com/branch8/PolinRiderScanner${RESET}\n"
     printf "${BOLD}  Bare-clone + git-grep + commit history audit${RESET}\n"
     printf "${BOLD}================================================${RESET}\n"
     printf "\n"
@@ -251,6 +273,24 @@ ui_log_result() {
     fi
 }
 
+_colorize_log_line() {
+    local _line="$1"
+    case "$_line" in
+        *"CONFIRMED"*|*" INFECTED"*|*"[INFECTED]"*|*"[V1"*|*"[V2"*)
+            printf "${RED}%s${RESET}\n" "$_line" ;;
+        *"HISTORY"*)
+            printf "${YELLOW}%s${RESET}\n" "$_line" ;;
+        *" — clean"*|*": clean"*)
+            printf "${GREEN}%s${RESET}\n" "$_line" ;;
+        *"Complete:"*|*"complete:"*)
+            printf "${CYAN}%s${RESET}\n" "$_line" ;;
+        *"Starting"*|*"Cloning"*|*"Fetching"*|*"Scanning"*)
+            printf "${DIM}%s${RESET}\n" "$_line" ;;
+        *)
+            printf "%s\n" "$_line" ;;
+    esac
+}
+
 ui_mark_state() {
     local status_dir="$1"
     local repo_short="$2"
@@ -332,29 +372,41 @@ render_progress_bar() {
         return
     fi
 
-    # Flush new events from workers above the sticky progress bar
-    if [ "$VERBOSE" -eq 1 ] || [ "$VERBOSE_DETAIL" -eq 1 ]; then
+    local _verbose_mode=0
+    { [ "$VERBOSE" -eq 1 ] || [ "$VERBOSE_DETAIL" -eq 1 ]; } && _verbose_mode=1
+
+    # Erase current sticky area then flush new log lines (colorized)
+    if [ "$PROGRESS_LINES" -gt 0 ]; then
+        printf "\033[%sA\033[J" "$PROGRESS_LINES"
+    fi
+    if [ "$_verbose_mode" -eq 1 ]; then
         local queue_file="${status_dir}/event-log"
         if [ -f "$queue_file" ]; then
             local current_lines
             current_lines=$(wc -l < "$queue_file" 2>/dev/null | tr -d ' ')
             if [ "$current_lines" -gt "$LAST_QUEUE_LINE" ]; then
-                if [ "$PROGRESS_LINES" -gt 0 ]; then
-                    printf "\033[%sA" "$PROGRESS_LINES"
-                    printf "\033[J"
-                    PROGRESS_LINES=0
-                fi
-                tail -n +"$((LAST_QUEUE_LINE + 1))" "$queue_file"
+                while IFS= read -r _line; do
+                    _colorize_log_line "$_line"
+                done < <(tail -n +"$((LAST_QUEUE_LINE + 1))" "$queue_file")
                 LAST_QUEUE_LINE=$current_lines
             fi
         fi
     fi
 
-    # Spinner to indicate activity
-    local _sp='|/-\'
-    local spinner="${_sp:$((SPINNER_IDX % 4)):1}"
+    # Braille spinner with 4-color cycling
+    local spinner
+    case $((SPINNER_IDX % 10)) in
+        0) spinner="⠋" ;; 1) spinner="⠙" ;; 2) spinner="⠹" ;; 3) spinner="⠸" ;;
+        4) spinner="⠼" ;; 5) spinner="⠴" ;; 6) spinner="⠦" ;; 7) spinner="⠧" ;;
+        8) spinner="⠇" ;; *) spinner="⠏" ;;
+    esac
+    local _sc
+    case $((SPINNER_IDX % 4)) in
+        0) _sc="$CYAN" ;; 1) _sc="$GREEN" ;; 2) _sc="$YELLOW" ;; *) _sc="$MAGENTA" ;;
+    esac
     SPINNER_IDX=$((SPINNER_IDX + 1))
 
+    # Collect stats
     local infected done latest_event active_repos
     infected=$(find "$status_dir" -type f -name '*.infected' 2>/dev/null | wc -l | tr -d ' ')
     done=$(find "$status_dir" -type f -name '*.done' 2>/dev/null | wc -l | tr -d ' ')
@@ -362,24 +414,50 @@ render_progress_bar() {
     [ -z "$latest_event" ] && latest_event="Waiting for workers..."
     active_repos=$(find "$status_dir" -type f -name 'active-*' 2>/dev/null \
         | xargs -I{} cat {} 2>/dev/null | tr '\n' ' ' | sed 's/ $//')
-    [ -z "$active_repos" ] && active_repos="(idle)"
 
+    # Bar: green fill █, dark-gray empty ─
     local percent=$((done * 100 / total))
     local width=30
     local fill=$((done * width / total))
     local empty=$((width - fill))
     local bar_fill bar_empty
-    bar_fill="$(printf "%${fill}s" "" | tr ' ' '#')"
-    bar_empty="$(printf "%${empty}s" "" | tr ' ' '-')"
+    bar_fill="$(printf "%${fill}s" "" | tr ' ' '█')"
+    bar_empty="$(printf "%${empty}s" "" | tr ' ' '─')"
 
-    if [ "$PROGRESS_LINES" -gt 0 ]; then
-        printf "\033[%sA" "$PROGRESS_LINES"
+    # Verbose separator above sticky area
+    local _plines=3
+    if [ "$_verbose_mode" -eq 1 ]; then
+        printf "\033[2K${DIM}──────────────────── scan log ───────────────────────${RESET}\n"
+        printf "\033[2K\n"
+        printf "\033[2K\n"
+        _plines=6
     fi
 
-    printf "\033[2K%s ${CYAN}[%s]${RESET} [%s%s] %3d%%  done:%d/%d  ${RED}infected:%d${RESET}  workers:%d\n" \
-        "$spinner" "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$infected" "$running"
-    printf "\033[2K  scanning: %s\n" "$active_repos"
-    PROGRESS_LINES=2
+    # Line 1: spinner + [org: owner] + bar + stats
+    if [ "$infected" -gt 0 ]; then
+        printf "\033[2K${_sc}%s${RESET} ${BOLD}${CYAN}[org: %s]${RESET} [${GREEN}%s${RESET}${DIM}%s${RESET}] %3d%%  ${CYAN}done: %d/%d${RESET}  ${RED}infected: %d${RESET}  ${YELLOW}workers: %d${RESET}\n" \
+            "$spinner" "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$infected" "$running"
+    else
+        printf "\033[2K${_sc}%s${RESET} ${BOLD}${CYAN}[org: %s]${RESET} [${GREEN}%s${RESET}${DIM}%s${RESET}] %3d%%  ${CYAN}done: %d/%d${RESET}  ${YELLOW}workers: %d${RESET}\n" \
+            "$spinner" "$owner" "$bar_fill" "$bar_empty" "$percent" "$done" "$total" "$running"
+    fi
+
+    # Line 2: active repos with per-repo color cycling
+    local _colored="" _ri=0 _rc
+    for _repo in $active_repos; do
+        case $((_ri % 4)) in
+            0) _rc="$CYAN" ;; 1) _rc="$GREEN" ;; 2) _rc="$YELLOW" ;; *) _rc="$MAGENTA" ;;
+        esac
+        _colored="${_colored}${_rc}${_repo}${RESET}  "
+        _ri=$((_ri + 1))
+    done
+    [ "$_ri" -eq 0 ] && _colored="(idle)"
+    printf "\033[2K  ${DIM}scanning:${RESET} %b\n" "$_colored"
+
+    # Line 3: latest pipeline status
+    printf "\033[2K  ${DIM}status:${RESET}   %s\n" "$latest_event"
+
+    PROGRESS_LINES=$_plines
 }
 
 clear_progress_line() {
@@ -1048,8 +1126,16 @@ scan_github_owner() {
         repo_idx=$((repo_idx + 1))
 
         while [ "$running_jobs" -ge "$MAX_PARALLEL" ]; do
-            wait -n 2>/dev/null || true
-            running_jobs=$((running_jobs - 1))
+            sleep 0.3
+            _np="" _nc=0
+            for _p in $pids; do
+                if kill -0 "$_p" 2>/dev/null; then
+                    _np="${_np} $_p"; _nc=$((_nc + 1))
+                else
+                    wait "$_p" 2>/dev/null || true
+                fi
+            done
+            pids="$_np"; running_jobs=$_nc
             if [ "$PROGRESS_UI" -eq 1 ]; then
                 render_progress_bar "$owner" "$repo_count" "$running_jobs" "$status_dir"
             fi
@@ -1072,11 +1158,17 @@ scan_github_owner() {
 $repo_list
 GHREPOEOF
 
-    for pid in $pids; do
-        wait "$pid" 2>/dev/null || true
-        if [ "$running_jobs" -gt 0 ]; then
-            running_jobs=$((running_jobs - 1))
-        fi
+    while [ "$running_jobs" -gt 0 ]; do
+        sleep 0.3
+        _np="" _nc=0
+        for _p in $pids; do
+            if kill -0 "$_p" 2>/dev/null; then
+                _np="${_np} $_p"; _nc=$((_nc + 1))
+            else
+                wait "$_p" 2>/dev/null || true
+            fi
+        done
+        pids="$_np"; running_jobs=$_nc
         if [ "$PROGRESS_UI" -eq 1 ]; then
             render_progress_bar "$owner" "$repo_count" "$running_jobs" "$status_dir"
         fi
