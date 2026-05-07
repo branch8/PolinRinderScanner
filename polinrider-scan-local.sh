@@ -130,8 +130,12 @@ fi
 TOTAL_REPOS=0
 INFECTED_REPOS=0
 INFECTED_REPO_PATHS=""
+INFECTED_REPO_DETAIL=""
 SYSTEM_FINDINGS=0
 SYSTEM_FINDINGS_DETAIL=""
+NPM_MALICIOUS_PKGS_FOUND=""
+FALSE_POSITIVE_DETAIL=""
+FALSE_POSITIVE_COUNT=0
 
 # Progress UI (set by init_progress_ui)
 PROGRESS_UI=0
@@ -972,6 +976,17 @@ REFSEOF
                     esac
                     gg_seen="${gg_seen}|${gg_key}|"
 
+                    # .claude/ files are Claude Code session/memory files — they log
+                    # scanner command strings as text, not actual malware payloads.
+                    case "$gg_file" in
+                        .claude/*|*/.claude/*)
+                            FALSE_POSITIVE_DETAIL="${FALSE_POSITIVE_DETAIL}  ${YELLOW}[FP?]${RESET} ${BOLD}$(basename "$repo_dir")${RESET}  [${gg_branch}] ${gg_file}\n"
+                            FALSE_POSITIVE_DETAIL="${FALSE_POSITIVE_DETAIL}        ${DIM}Claude Code session/memory file — contains scanner command strings as logged text${RESET}\n"
+                            FALSE_POSITIVE_COUNT=$((FALSE_POSITIVE_COUNT + 1))
+                            continue
+                            ;;
+                    esac
+
                     branch_findings="${branch_findings}  ${RED}-${RESET} ${BOLD}[git:${gg_branch}] ${gg_file}${RESET}: ${sig_label}\n"
                     branch_finding_count=$((branch_finding_count + 1))
                 done <<< "$gg_results"
@@ -998,6 +1013,11 @@ REFSEOF
 
         INFECTED_REPOS=$((INFECTED_REPOS + 1))
         INFECTED_REPO_PATHS="${INFECTED_REPO_PATHS}${repo_dir}\n"
+        # Accumulate detail for final report
+        local _rpt="${RED}${BOLD}▶ $(basename "$repo_dir")${RESET}  ${DIM}${repo_dir}${RESET}\n"
+        [ "$finding_count" -gt 0 ]        && _rpt="${_rpt}  ${CYAN}Working tree (${finding_count} finding(s)):${RESET}\n${findings}"
+        [ "$branch_finding_count" -gt 0 ] && _rpt="${_rpt}  ${MAGENTA}Git history (${branch_finding_count} branch(es)):${RESET}\n${branch_findings}"
+        INFECTED_REPO_DETAIL="${INFECTED_REPO_DETAIL}${_rpt}\n"
         return 1
     else
         log_verbose "Clean: $repo_dir"
@@ -1331,6 +1351,7 @@ scan_npm_global() {
             for mal_pkg in $MALICIOUS_NPM_PKGS; do
                 if echo "$npm_list" | grep -qF "$mal_pkg" 2>/dev/null; then
                     add_system_finding "NPM-GLOBAL" "Malicious global npm package installed: ${mal_pkg}"
+                    NPM_MALICIOUS_PKGS_FOUND="${NPM_MALICIOUS_PKGS_FOUND}${mal_pkg} "
                 fi
             done
             IFS="$old_ifs"
@@ -1606,44 +1627,133 @@ perform_cleanup() {
 }
 
 # ===================================================================
-#  REMEDIATION OUTPUT
+#  FINAL REPORT
 # ===================================================================
-print_remediation() {
-    printf "\n${BOLD}REMEDIATION STEPS:${RESET}\n"
+print_final_report() {
+    local _ts _report_file
+    _ts=$(date '+%Y-%m-%d %H:%M:%S')
+    _report_file="${HOME}/polinrider-report-$(date '+%Y%m%d-%H%M%S').txt"
+
+    printf "\n${BOLD}════════════════════════════════════════════════${RESET}\n"
+    printf "${BOLD}  SCAN REPORT — %s${RESET}\n" "$_ts"
+    printf "${BOLD}════════════════════════════════════════════════${RESET}\n\n"
+
+    # Summary
+    printf "${BOLD}SUMMARY${RESET}\n"
+    printf "  Repos scanned   : ${BOLD}%d${RESET}\n" "$TOTAL_REPOS"
+    if [ "$INFECTED_REPOS" -gt 0 ]; then
+        printf "  Infected repos  : ${RED}${BOLD}%d${RESET}\n" "$INFECTED_REPOS"
+    else
+        printf "  Infected repos  : ${GREEN}${BOLD}0${RESET}\n"
+    fi
+    if [ "$SYSTEM_FINDINGS" -gt 0 ]; then
+        printf "  System findings : ${RED}${BOLD}%d${RESET}\n" "$SYSTEM_FINDINGS"
+    else
+        printf "  System findings : ${GREEN}${BOLD}0${RESET}\n"
+    fi
+    if [ "$FALSE_POSITIVE_COUNT" -gt 0 ]; then
+        printf "  Possible FP     : ${YELLOW}${BOLD}%d${RESET} ${DIM}(review manually — see below)${RESET}\n" "$FALSE_POSITIVE_COUNT"
+    fi
     printf "\n"
-    printf "${BOLD}Repository cleanup:${RESET}\n"
-    printf "  1. Remove the obfuscated payload from infected config files\n"
-    printf "     - Variant 1: everything after legitimate config, starting with global['!']\n"
-    printf "     - Variant 2: everything after legitimate config, starting with global['_V']\n"
-    printf "  2. Delete temp_auto_push.bat and config.bat if present\n"
-    printf "  3. Remove \"config.bat\" from .gitignore\n"
-    printf "  4. Remove malicious npm dependencies from package.json and run npm install\n"
-    printf "  5. Delete any .woff2 files containing JS payloads\n"
-    printf "  6. Remove malicious .vscode/tasks.json entries\n"
-    printf "  7. Force-push clean versions to GitHub\n"
-    printf "\n"
-    printf "${BOLD}System cleanup (macOS: LaunchAgents/Daemons):${RESET}\n"
-    printf "  8.  Kill suspicious node processes:\n"
-    printf "      kill -9 <PID>   (use PIDs from scan results above)\n"
-    printf "  9.  Remove malicious LaunchAgents/LaunchDaemons:\n"
-    printf "      launchctl unload <plist_path> && rm <plist_path>\n"
-    printf "  10. Clean shell profiles (~/.zshrc, ~/.bash_profile, etc.):\n"
-    printf "      Review and remove any injected curl|bash or node -e lines\n"
-    printf "  11. Uninstall malicious global npm packages:\n"
-    printf "      npm uninstall -g <package_name>\n"
-    printf "  12. Remove malicious VS Code / Cursor extensions:\n"
-    printf "      code --uninstall-extension <ext_id>  OR  delete from ~/.vscode/extensions/\n"
-    printf "  13. Remove malicious crontab entries:\n"
-    printf "      crontab -e   (remove suspicious lines)\n"
-    printf "  14. Clean temp directories:\n"
-    printf "      rm /tmp/<suspicious_files>\n"
-    printf "\n"
-    printf "${BOLD}Post-cleanup:${RESET}\n"
-    printf "  15. Rotate ALL secrets, tokens, API keys, and credentials\n"
-    printf "  16. Review browser extensions and remove any unrecognized ones\n"
-    printf "  17. Re-scan periodically — the threat actor re-infects cleaned repos\n"
-    printf "  18. Report to https://opensourcemalware.com\n"
-    printf "\n"
+
+    # Infected repos
+    if [ "$INFECTED_REPOS" -gt 0 ]; then
+        printf "${RED}${BOLD}── INFECTED REPOS (%d) ──────────────────────────${RESET}\n\n" "$INFECTED_REPOS"
+        printf "$INFECTED_REPO_DETAIL"
+        printf "${BOLD}Cleanup steps:${RESET}\n"
+        printf "  For each infected config file:\n"
+        printf "    Variant 1 — delete from ${DIM}global['!']${RESET} to end of file\n"
+        printf "    Variant 2 — delete from ${DIM}global['_V']${RESET} to end of file\n"
+        printf "  Delete propagation scripts if present:\n"
+        printf "    rm -f <repo>/temp_auto_push.bat <repo>/config.bat\n"
+        printf "  If node_modules was flagged, reinstall clean packages:\n"
+        printf "    rm -rf <repo>/node_modules && npm install\n"
+        printf "  Commit and force-push the clean state:\n"
+        printf "    git add -A && git commit -m 'remove malware' && git push --force origin <branch>\n"
+        printf "  ${RED}Rotate ALL credentials${RESET} (API keys, tokens, passwords) used in each infected project\n"
+        printf "\n"
+    fi
+
+    # NPM malicious packages
+    if [ -n "$NPM_MALICIOUS_PKGS_FOUND" ]; then
+        printf "${RED}${BOLD}── MALICIOUS NPM PACKAGES ───────────────────────${RESET}\n\n"
+        printf "  Remove with:\n"
+        local _old_ifs="$IFS"; IFS=' '
+        for _pkg in $NPM_MALICIOUS_PKGS_FOUND; do
+            [ -n "$_pkg" ] && printf "    ${BOLD}npm uninstall -g %s${RESET}\n" "$_pkg"
+        done
+        IFS="$_old_ifs"
+        printf "\n"
+    fi
+
+    # System findings
+    if [ "$SYSTEM_FINDINGS" -gt 0 ]; then
+        printf "${RED}${BOLD}── SYSTEM FINDINGS (%d) ─────────────────────────${RESET}\n\n" "$SYSTEM_FINDINGS"
+        printf "$SYSTEM_FINDINGS_DETAIL"
+        printf "\n  ${BOLD}Cleanup:${RESET}\n"
+        printf "  • Suspicious node process  : kill -9 <PID>\n"
+        printf "  • LaunchAgent/Daemon       : launchctl unload <plist> && rm <plist>\n"
+        printf "  • Shell profile injection  : edit ~/.zshrc / ~/.bashrc, remove injected lines\n"
+        printf "  • Malicious VS Code ext    : code --uninstall-extension <id>\n"
+        printf "  • Crontab entry            : crontab -e\n"
+        printf "  • Temp artifacts           : rm /tmp/<file>\n"
+        printf "\n"
+    fi
+
+    # Possible false positives
+    if [ "$FALSE_POSITIVE_COUNT" -gt 0 ]; then
+        printf "${YELLOW}${BOLD}── POSSIBLE FALSE POSITIVES (%d) ────────────────${RESET}\n\n" "$FALSE_POSITIVE_COUNT"
+        printf "  These matched malware signatures but are likely benign.\n"
+        printf "  ${DIM}Review manually before treating as infected.${RESET}\n\n"
+        printf "$FALSE_POSITIVE_DETAIL"
+        printf "\n"
+    fi
+
+    # Clean result
+    if [ "$INFECTED_REPOS" -eq 0 ] && [ "$SYSTEM_FINDINGS" -eq 0 ]; then
+        printf "  ${GREEN}${BOLD}No infections found.${RESET}\n\n"
+    fi
+
+    # Post-cleanup always
+    printf "${BOLD}Post-cleanup reminders:${RESET}\n"
+    printf "  • Rotate ALL secrets/tokens/API keys if any infection was found\n"
+    printf "  • Re-scan periodically — threat actor re-infects cleaned repos\n"
+    printf "  • Report confirmed cases to https://opensourcemalware.com\n\n"
+
+    # Save plaintext report file
+    {
+        printf "PolinRider Scan Report — %s\n" "$_ts"
+        printf "Repos: %d  Infected: %d  System: %d  Possible-FP: %d\n\n" \
+            "$TOTAL_REPOS" "$INFECTED_REPOS" "$SYSTEM_FINDINGS" "$FALSE_POSITIVE_COUNT"
+        if [ "$INFECTED_REPOS" -gt 0 ]; then
+            printf "INFECTED REPOS:\n"
+            printf "%b" "$INFECTED_REPO_PATHS" | while IFS= read -r _rp; do
+                [ -n "$_rp" ] && printf "  %s\n" "$_rp"
+            done
+            printf "\nFILES FOUND (with ANSI stripped below):\n"
+            printf "%b" "$INFECTED_REPO_DETAIL"
+        fi
+        if [ -n "$NPM_MALICIOUS_PKGS_FOUND" ]; then
+            printf "\nMALICIOUS NPM PACKAGES:\n"
+            local _oi="$IFS"; IFS=' '
+            for _p in $NPM_MALICIOUS_PKGS_FOUND; do
+                [ -n "$_p" ] && printf "  npm uninstall -g %s\n" "$_p"
+            done
+            IFS="$_oi"
+        fi
+        if [ "$SYSTEM_FINDINGS" -gt 0 ]; then
+            printf "\nSYSTEM FINDINGS:\n"
+            printf "%b" "$SYSTEM_FINDINGS_DETAIL"
+        fi
+        if [ "$FALSE_POSITIVE_COUNT" -gt 0 ]; then
+            printf "\nPOSSIBLE FALSE POSITIVES:\n"
+            printf "%b" "$FALSE_POSITIVE_DETAIL"
+        fi
+    } | sed 's/\x1b\[[0-9;]*m//g' > "$_report_file" 2>/dev/null \
+        && printf "${DIM}  Report saved: %s${RESET}\n\n" "$_report_file" \
+        || true
+
+    printf "${BOLD}════════════════════════════════════════════════${RESET}\n"
 }
 
 # ===================================================================
@@ -1820,36 +1930,14 @@ cleanup_progress_ui
 # ===================================================================
 #  SUMMARY
 # ===================================================================
-CLEAN_REPOS=$((TOTAL_REPOS - INFECTED_REPOS))
 TOTAL_ISSUES=$((INFECTED_REPOS + SYSTEM_FINDINGS))
 
-printf "\n"
-
-if [ "$TOTAL_REPOS" -gt 0 ] && [ "$CLEAN_REPOS" -gt 0 ]; then
-    printf "${GREEN}${BOLD}[CLEAN]${RESET} %d repositories scanned clean\n" "$CLEAN_REPOS"
-fi
-
-printf "\n${BOLD}================================================${RESET}\n"
+print_final_report
+perform_cleanup
+log_scan_complete
 
 if [ "$TOTAL_ISSUES" -gt 0 ]; then
-    if [ "$INFECTED_REPOS" -gt 0 ]; then
-        printf "  ${RED}${BOLD}REPOS:   %d infected repo(s) found${RESET}\n" "$INFECTED_REPOS"
-    fi
-    if [ "$SYSTEM_FINDINGS" -gt 0 ]; then
-        printf "  ${RED}${BOLD}SYSTEM:  %d system finding(s) detected${RESET}\n" "$SYSTEM_FINDINGS"
-        printf "${BOLD}================================================${RESET}\n"
-        printf "\n${BOLD}System Findings:${RESET}\n"
-        printf "$SYSTEM_FINDINGS_DETAIL"
-    else
-        printf "${BOLD}================================================${RESET}\n"
-    fi
-    print_remediation
-    perform_cleanup
-    log_scan_complete
     exit 1
 else
-    printf "  ${GREEN}${BOLD}RESULTS: No infections found${RESET}\n"
-    printf "${BOLD}================================================${RESET}\n\n"
-    log_scan_complete
     exit 0
 fi
