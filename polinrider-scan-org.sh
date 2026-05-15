@@ -835,6 +835,36 @@ REFSEOF
     fi
     rm -f "$gitignore_out"
 
+    # --- Pass 5c: Fabricated fonts directory README ---
+    # PolinRider injects a fake README.md into public/fonts/ (or src/fonts/)
+    # claiming the project is a "Blockchain Explorer" using non-existent
+    # BlockchainFont/TechMono fonts, to disguise injected Font Awesome woff2
+    # files. Confirmed IOC 2026-05-15. When found, entire fonts/ dir should
+    # be deleted.
+    local fonts_readme_out
+    fonts_readme_out=$(mktemp)
+    # shellcheck disable=SC2086
+    git -c grep.threads=4 -C "$bare_dir" grep -lF \
+        -e "BlockchainFont" \
+        -e "TechMono" \
+        -e "Blockchain Explorer" \
+        $all_refs -- ':(glob)**/fonts/README.md' ':(glob)**/fonts/readme.md' > "$fonts_readme_out" 2>/dev/null || true
+
+    if [ -s "$fonts_readme_out" ]; then
+        while IFS= read -r hit_line; do
+            if [ -z "$hit_line" ]; then continue; fi
+            local ref="${hit_line%%:*}"
+            local filepath="${hit_line#*:}"
+            if [ "$ref" = "$hit_line" ] || [ -z "$filepath" ]; then continue; fi
+            local branch="${ref#refs/heads/}"
+            case "$branch" in origin/*|*/HEAD) continue ;; esac
+            local fontdir
+            fontdir="$(dirname "$filepath")"
+            printf 'FINDING\t%s\t%s\t[FAKE FONTS README] Fabricated Blockchain Explorer decoy — delete entire %s/ directory\n' "$branch" "$filepath" "$fontdir" >> "$results_file"
+        done < "$fonts_readme_out"
+    fi
+    rm -f "$fonts_readme_out"
+
     # --- Passes 6-10: IDE config checks (run in parallel) ---
     _ep "IDE configs..."
     local ide_results_8 ide_results_9 ide_results_10 ide_results_11 ide_results_12
