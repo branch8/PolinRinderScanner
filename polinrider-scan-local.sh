@@ -590,6 +590,27 @@ PKGDIREOF
 $(find "$repo_dir" \( -name "*.woff2" -o -name "*.woff" \) -type f -not -path "*/.git/*" 2>/dev/null)
 WOFFEOF
 
+    # --- Fake fonts directory README (fabricated decoy) ---
+    # PolinRider injects a boilerplate README.md into fonts/ directories to
+    # make injected Font Awesome woff2 files look legitimate. The README
+    # falsely claims the project is a "Blockchain Explorer" using non-existent
+    # "BlockchainFont" / "TechMono" fonts. When found, delete the entire dir.
+    while IFS= read -r readme_file; do
+        if [ -f "$readme_file" ]; then
+            if grep -qF "BlockchainFont" "$readme_file" 2>/dev/null || \
+               grep -qF "TechMono" "$readme_file" 2>/dev/null || \
+               grep -qF "Blockchain Explorer" "$readme_file" 2>/dev/null; then
+                local relpath="${readme_file#${repo_dir}/}"
+                local fontdir
+                fontdir="$(dirname "$relpath")"
+                findings="${findings}  ${RED}-${RESET} ${BOLD}${relpath}${RESET}: Fabricated fonts README (PolinRider decoy) — delete entire ${fontdir}/ directory\n"
+                finding_count=$((finding_count + 1))
+            fi
+        fi
+    done <<READMEOF
+$(find "$repo_dir" -name "README.md" -path "*/fonts/*" -not -path "*/.git/*" -not -path "*/vendor/*" -not -path "*/node_modules/*" 2>/dev/null)
+READMEOF
+
     # --- Deep JS scan (--js-all) ---
     if [ "$JS_ALL" -eq 1 ]; then
         while IFS= read -r jsfile; do

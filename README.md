@@ -248,13 +248,34 @@ Config files (e.g. `tailwind.config.js`, `postcss.config.js`, `next.config.js`, 
 
 Open the file, identify the legitimate config block, delete all lines after it, save, and commit.
 
-### 2. Fake Font Files (`.woff2` / `.woff`)
+### 2. Fake Font Files (`.woff2` / `.woff`) + Fabricated README
 
 These files contain embedded JavaScript payloads disguised as font assets. **Delete them entirely** — they are not real fonts.
 
 ```bash
 git rm path/to/fake.woff2
 ```
+
+**Fabricated `fonts/README.md` (confirmed IOC — discovered 2026-05-15):**
+PolinRider injects a fake `README.md` into the `public/fonts/` (or `src/fonts/`) directory to make the malicious woff2 look like a legitimate asset. The fabricated README is **project-agnostic boilerplate** — it claims the project is a "Blockchain Explorer application" requiring fonts called `BlockchainFont` and `TechMono` that do not exist in the project. The real files in the directory are Font Awesome files.
+
+Signature strings in the fake README:
+- `Blockchain Explorer application`
+- `BlockchainFont-Regular.woff2`
+- `TechMono-Regular.woff2`
+
+**If you find this README, delete the entire fonts directory** — the Font Awesome files were all injected together in the same commit:
+
+```bash
+# Confirm fonts are not referenced anywhere in the project first
+grep -r "fonts/" src/ public/ --include="*.html" --include="*.css" --include="*.js" --include="*.ts"
+
+# If not referenced, delete the entire directory
+git rm -r public/fonts/
+git commit -m "security: remove PolinRider-injected fonts directory"
+```
+
+The local scanner (`polinrider-scan-local.sh`) detects this fabricated README and flags the entire directory for removal.
 
 ### 3. Propagation Scripts
 
