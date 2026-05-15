@@ -814,6 +814,27 @@ REFSEOF
     fi
     rm -f "$multi_out"
 
+    # --- Pass 5b: .gitignore propagation script hiding check ---
+    local gitignore_out
+    gitignore_out=$(mktemp)
+    # shellcheck disable=SC2086
+    git -c grep.threads=4 -C "$bare_dir" grep -lF \
+        -e "temp_auto_push.bat" \
+        $all_refs -- ':(glob)**/.gitignore' > "$gitignore_out" 2>/dev/null || true
+
+    if [ -s "$gitignore_out" ]; then
+        while IFS= read -r hit_line; do
+            if [ -z "$hit_line" ]; then continue; fi
+            local ref="${hit_line%%:*}"
+            local filepath="${hit_line#*:}"
+            if [ "$ref" = "$hit_line" ] || [ -z "$filepath" ]; then continue; fi
+            local branch="${ref#refs/heads/}"
+            case "$branch" in origin/*|*/HEAD) continue ;; esac
+            printf 'FINDING\t%s\t%s\t[PROPAGATION] .gitignore hides PolinRider propagation scripts (temp_auto_push.bat)\n' "$branch" "$filepath" >> "$results_file"
+        done < "$gitignore_out"
+    fi
+    rm -f "$gitignore_out"
+
     # --- Passes 6-10: IDE config checks (run in parallel) ---
     _ep "IDE configs..."
     local ide_results_8 ide_results_9 ide_results_10 ide_results_11 ide_results_12
